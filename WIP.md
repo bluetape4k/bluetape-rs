@@ -27,4 +27,5 @@ or Go APIs.
 
 ## Evidence
 
-- Feasibility research: `../bluetape4k-wiki/research/2026-06-08-bluetape-rs-backend-library-feasibility.md`
+- Repo-local feasibility research: `docs/research/2026-06-08-backend-library-feasibility.md`
+- Source wiki record: `../bluetape4k-wiki/research/2026-06-08-bluetape-rs-backend-library-feasibility.md`

@@ -63,7 +63,8 @@ cargo test --workspace
 ## Project Management
 
 - [Current WIP](WIP.md)
-- [Research note](../bluetape4k-wiki/research/2026-06-08-bluetape-rs-backend-library-feasibility.md)
+- [Research index](docs/research/README.md)
+- [Backend library feasibility](docs/research/2026-06-08-backend-library-feasibility.md)
 
 ## Project Rules
 
