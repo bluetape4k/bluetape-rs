@@ -1,0 +1,17 @@
+[package]
+name = "bluetape-rs"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Rust backend primitives for the bluetape ecosystem."
+license = "MIT"
+repository = "https://github.com/bluetape4k/bluetape-rs"
+readme = "README.md"
+keywords = ["backend", "sql", "resilience", "distributed", "rust"]
+categories = ["database", "web-programming", "asynchronous"]
+
+[lib]
+name = "bluetape_rs"
+path = "src/lib.rs"
+
+[dependencies]
