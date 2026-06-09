@@ -1,4 +1,12 @@
 //! Reusable test support helpers.
+//!
+//! ```
+//! use bluetape_rs_test::TempDir;
+//!
+//! let temp = TempDir::new("bluetape-rs-test").expect("temp dir");
+//! assert!(temp.path().exists());
+//! temp.close().expect("cleanup");
+//! ```
 
 use std::future::Future;
 use std::panic::{AssertUnwindSafe, catch_unwind};
