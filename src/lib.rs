@@ -1,10 +1,8 @@
 //! Rust backend primitives for the bluetape ecosystem.
 //!
-//! This crate is intentionally empty while the repository is in its WIP
-//! bootstrap phase. Planned modules will be split into focused crates before
-//! the first usable release.
+//! This root crate is a small convenience facade over the foundation crates
+//! shipped in the first release. Use the focused crates directly when a smaller
+//! dependency surface is preferred.
 
-/// Returns the current bootstrap status of the repository.
-pub fn status() -> &'static str {
-    "wip"
-}
+#[cfg(feature = "core")]
+pub use bluetape_rs_core as core;

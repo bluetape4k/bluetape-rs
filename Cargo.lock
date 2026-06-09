@@ -5,3 +5,10 @@ version = 4
 [[package]]
 name = "bluetape-rs"
 version = "0.1.0"
+dependencies = [
+ "bluetape-rs-core",
+]
+
+[[package]]
+name = "bluetape-rs-core"
+version = "0.1.0"
