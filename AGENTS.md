@@ -4,6 +4,32 @@ This repository is the Rust backend library line for the bluetape ecosystem.
 It is governed by the workspace-level `AGENTS.md`; this file narrows the rules
 for Rust work in this repo.
 
+## Mandatory Workflow
+
+- Every task in this repository must start by loading and applying
+  `bluetape4k-workflow`.
+- Classify the work type through `bluetape4k-workflow` before editing files,
+  committing, creating PRs, changing GitHub issues, or running release/project
+  management steps.
+- For Rust implementation, Rust review, Rust PR review, or Rust release
+  preflight, also load and apply `bluetape-rs-patterns`.
+- Code-changing work must use an issue-scoped git worktree under `.worktrees/`
+  unless the user explicitly selects the current checkout.
+- Code-changing Type A/B/C work and every PR that contains code must complete
+  the required `bluetape4k-workflow` review gates before being reported as
+  ready:
+  - Step 6-R local/native 7-Tier review on the implemented diff.
+  - Step 7-R post-PR review before any CI/merge-ready claim.
+  - Native subagent review lanes when the session supports them, with
+    `code-reviewer` and `verifier` as the minimum code-review baseline and
+    additional reviewers selected by risk signals.
+  - Explicit `P0=0 P1=0` evidence before advancing to the next gate.
+- PR bodies must end with the workflow-required `## DoD Status` section, and
+  review evidence must be recorded as required by `bluetape4k-workflow`.
+- If any required workflow gate was skipped, stop downstream work, mark the
+  gate as failed, run the missing gate, repair all P0/P1 findings, and only then
+  continue.
+
 ## Language Policy
 
 - User-facing chat remains Korean.
