@@ -1,0 +1,19 @@
+[package]
+name = "bluetape-rs-logging"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Tracing conventions and subscriber builders for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["logging", "tracing", "backend"]
+categories = ["development-tools::debugging"]
+
+[lib]
+name = "bluetape_rs_logging"
+path = "src/lib.rs"
+
+[dependencies]
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter", "std"] }

@@ -13,6 +13,7 @@ categories = ["development-tools", "asynchronous"]
 [workspace]
 members = [
     "crates/core",
+    "crates/logging",
 ]
 resolver = "3"
 
@@ -24,6 +25,9 @@ repository = "https://github.com/bluetape4k/bluetape-rs"
 
 [workspace.dependencies]
 bluetape-rs-core = { path = "crates/core", version = "0.1.0" }
+bluetape-rs-logging = { path = "crates/logging", version = "0.1.0" }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", default-features = false }
 
 [lib]
 name = "bluetape_rs"
@@ -32,6 +36,8 @@ path = "src/lib.rs"
 [features]
 default = ["core"]
 core = ["dep:bluetape-rs-core"]
+logging = ["dep:bluetape-rs-logging"]
 
 [dependencies]
 bluetape-rs-core = { workspace = true, optional = true }
+bluetape-rs-logging = { workspace = true, optional = true }
