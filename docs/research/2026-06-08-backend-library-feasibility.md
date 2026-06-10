@@ -31,30 +31,39 @@ The repo should focus on Rust-specific value:
 
 | Area | Working name | Scope |
 |---|---|---|
-| Core | `bt-rs-core` | Errors, validation, IDs, time, configuration, and small typed helpers. |
-| SQL | `bt-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
-| SQLx | `bt-rs-sqlx` | SQLx executor, pool, transaction, migration, and repository adapters. |
-| Resilience | `bt-rs-resilience` | Retry, timeout, circuit breaker, bulkhead, backoff, and service policies. |
-| Leader | `bt-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
-| AWS | `bt-rs-aws` | Thin helpers around the official AWS SDK for Rust. |
-| Audit | `bt-rs-audit` | Snapshot, diff, outbox, and event-stream primitives. |
-| Graph | `bt-rs-graph` | Graph model, bulk I/O, and backend adapters where Rust drivers are mature enough. |
-| Text | `bt-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrappers, and language detection. |
-| Workshop | `bt-rs-workshop` | Runnable axum, Tokio, SQLx, Redis, AWS, graph, and text examples. |
+| Core | `bluetape-rs-core` | Typed validation errors, validation helpers, string helpers, and small numeric checks. |
+| Logging | `bluetape-rs-logging` | Tracing setup helpers, structured fields, correlation IDs, test capture, and redaction conventions. |
+| Testing | `bluetape-rs-test` | Async assertions, deterministic fixtures, temporary resources, and future Testcontainers boundaries. |
+| Collections | `bluetape-rs-collections` | Focused iterator, slice, map, grouping, chunking, and error-aware transform helpers. |
+| Codec | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
+| Compression | `bluetape-rs-compression` | Opt-in compression helpers and registry-style codec selection. |
+| Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
+| Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
+| SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
+| SQLx | `bluetape-rs-sqlx` | SQLx executor, pool, transaction, migration, and repository adapters. |
+| Resilience | `bluetape-rs-resilience` | Retry, timeout, circuit breaker, bulkhead, backoff, and service policies. |
+| Leader | `bluetape-rs-leader` | Redis, RDB, etcd, and Kubernetes Lease leader election after SQL and resilience foundations. |
+| AWS | `bluetape-rs-aws` | Thin helpers around the official AWS SDK for Rust. |
+| Audit | `bluetape-rs-audit` | Snapshot, diff, outbox, and event-stream primitives. |
+| Graph | `bluetape-rs-graph` | Graph model, bulk I/O, and backend adapters where Rust drivers are mature enough. |
+| Text | `bluetape-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrappers, and language detection. |
+| Workshop | `bluetape-rs-workshop` | Runnable axum, Tokio, SQLx, Redis, AWS, graph, and text examples. |
 
 ## SQL Direction
 
-The SQL DSL should be the first representative feature.
+The SQL DSL should be implemented after the general helper, Testcontainers, and
+testing foundations are stable, and before resilience. It should not be part of
+`0.1.0`.
 
 Recommended first shape:
 
-1. `bt-rs-sql-ast`: `Select`, `Insert`, `Update`, `Delete`, `Expr`, `Condition`,
-   `Value`, `Bind`, and `Dialect`.
-2. `bt-rs-sql-render`: Postgres/MySQL/SQLite renderers, bind placeholder policy,
+1. `bluetape-rs-sql-ast`: `Select`, `Insert`, `Update`, `Delete`, `Expr`,
+   `Condition`, `Value`, `Bind`, and `Dialect`.
+2. `bluetape-rs-sql-render`: Postgres/MySQL/SQLite renderers, bind placeholder policy,
    and identifier quoting.
-3. `bt-rs-sql-schema`: optional table/column derive macro or declarative macro.
-4. `bt-rs-sqlx`: SQLx `Executor`, `Pool`, and `Transaction` adapter.
-5. `bt-rs-repository`: repository traits, pagination, optimistic locking, and
+3. `bluetape-rs-sql-schema`: optional table/column derive macro or declarative macro.
+4. `bluetape-rs-sqlx`: SQLx `Executor`, `Pool`, and `Transaction` adapter.
+5. `bluetape-rs-repository`: repository traits, pagination, optimistic locking, and
    transaction context.
 
 The MVP should be an inspectable SQL AST plus SQLx execution adapter. It should
@@ -75,11 +84,16 @@ transaction semantics are explicitly designed and tested.
 
 ## First Milestones
 
-1. Create crate layout and contribution rules.
-2. Prototype SQL AST rendering and bind collection.
-3. Add SQLx PostgreSQL execution and Testcontainers smoke tests.
-4. Prototype Redis and SQL leader election with fencing tokens.
-5. Add a small axum/Tokio workshop example after the SQL and leader prototypes.
+1. `0.1.0`: create workspace layout plus `bluetape-rs-core`,
+   `bluetape-rs-logging`, and `bluetape-rs-test` with async assertions,
+   `MultithreadingTester`, `SuspendedJobTester`, and temporary resources.
+2. `0.2.0`: add focused collections and async/concurrency helpers.
+3. `0.3.0` through `0.5.0`: split codec, compression, and serialization.
+4. `0.6.0`: add explicit Testcontainers fixtures.
+5. `0.7.0`: implement relational SQL before resilience.
+6. `0.8.0`: implement resilience.
+7. `0.9.0`: implement leader election after SQL and resilience because Redis,
+   RDB, etcd, and Kubernetes Lease make it a larger multi-backend track.
 
 ## Risks
 

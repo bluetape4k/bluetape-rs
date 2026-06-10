@@ -1,17 +1,48 @@
 [package]
 name = "bluetape-rs"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Rust backend primitives for the bluetape ecosystem."
 license = "MIT"
 repository = "https://github.com/bluetape4k/bluetape-rs"
 readme = "README.md"
-keywords = ["backend", "sql", "resilience", "distributed", "rust"]
-categories = ["database", "web-programming", "asynchronous"]
+keywords = ["backend", "validation", "logging", "testing", "rust"]
+categories = ["development-tools", "asynchronous"]
+
+[workspace]
+members = [
+    "crates/core",
+    "crates/logging",
+    "crates/test",
+]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/bluetape4k/bluetape-rs"
+
+[workspace.dependencies]
+bluetape-rs-core = { path = "crates/core", version = "0.1.0" }
+bluetape-rs-logging = { path = "crates/logging", version = "0.1.0" }
+bluetape-rs-test = { path = "crates/test", version = "0.1.0" }
+tokio = { version = "1.48.0", default-features = false }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", default-features = false }
 
 [lib]
 name = "bluetape_rs"
 path = "src/lib.rs"
 
+[features]
+default = ["core"]
+core = ["dep:bluetape-rs-core"]
+logging = ["dep:bluetape-rs-logging"]
+test = ["dep:bluetape-rs-test"]
+
 [dependencies]
+bluetape-rs-core = { workspace = true, optional = true }
+bluetape-rs-logging = { workspace = true, optional = true }
+bluetape-rs-test = { workspace = true, optional = true }
