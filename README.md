@@ -14,8 +14,8 @@ integration tests matter.
 
 ## Current Status
 
-The current package scope is the `0.2.0` collections and async/concurrency
-release line.
+The current package scope includes the released `0.2.0` collections and
+async/concurrency line plus the in-progress `0.3.0` codec line.
 
 Completed foundation and `0.2.0` work stays narrow:
 
@@ -31,9 +31,10 @@ Completed foundation and `0.2.0` work stays narrow:
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
-`0.2.0` does not include codec, compression, serialization, Testcontainers,
-SQL, resilience, or leader election packages. Those tracks remain separate
-milestones so their dependency and runtime costs stay explicit.
+The `0.3.0` line adds the explicit `bluetape-rs-codec` boundary for hex,
+Base64, Base58, and Base62 helpers. Compression, serialization,
+Testcontainers, SQL, resilience, and leader election remain separate milestones
+so their dependency and runtime costs stay explicit.
 
 ## Intended Package Families
 
@@ -114,6 +115,7 @@ use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_codec::{decode_hex, encode_hex_lower};
 use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
+use bluetape_rs_codec::{decode_base58, encode_base58};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -162,8 +164,9 @@ For codec helpers:
 bluetape-rs-codec = "0.3.0"
 ```
 
-`bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64, and
-URL-safe encoding helpers. Compression remains deferred to `0.4.0`, and
+`bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64,
+Base58, Base62, and URL-safe encoding helpers. Compression remains deferred to
+`0.4.0`, and
 serde-oriented serialization remains deferred to `0.5.0`.
 
 ```rust
@@ -197,6 +200,27 @@ assert_eq!(
 
 Standard helpers use the `+` and `/` alphabet. URL-safe helpers use `-` and
 `_`. Function names ending in `_unpadded` reject `=` padding during decode.
+
+```rust
+use bluetape_rs_codec::{decode_base58, decode_base62, encode_base58, encode_base62};
+
+assert_eq!(encode_base58(b"Hello, World!"), "72k1xXWG59fYdzSNoA");
+assert_eq!(
+    decode_base58("72k1xXWG59fYdzSNoA").expect("valid Base58"),
+    b"Hello, World!"
+);
+
+assert_eq!(encode_base62(b"Hello, World!"), "1wJfrzvdbtXUOlUjUf");
+assert_eq!(
+    decode_base62("1wJfrzvdbtXUOlUjUf").expect("valid Base62"),
+    b"Hello, World!"
+);
+```
+
+Base58 uses the Bitcoin alphabet and preserves leading zero bytes as `1`.
+Base62 uses `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+and preserves leading zero bytes as `0`. This Base62 API is byte-oriented;
+integer and UUID rendering can build on top of it later.
 
 ## Development
 
