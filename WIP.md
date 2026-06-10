@@ -47,6 +47,14 @@ the foundation line without turning into a catch-all utility package.
 
 ## Release Checklist
 
+Branch policy:
+
+- Use `develop` as the default branch and active development center.
+- Use `main` as the latest stable release source branch.
+- Promote the verified `develop` tree to `main` before creating a stable
+  version tag and GitHub Release.
+- Keep the operational release flow in `docs/release/release-guide.md`.
+
 1. Workspace crates compile on Rust 2024 with additive feature flags.
 2. Public APIs have English Rustdoc and tests for success, failure, boundary,
    and feature-flag behavior where applicable.
@@ -164,9 +172,12 @@ Defer out of `0.1.0`:
 
 ### `0.3.0` - Codec Helpers
 
-- Add base encoders and small text/binary codec helpers.
-- Keep codec APIs explicit about allocation and error contracts.
-- Add examples and benchmarks only after the API shape is stable.
+- Implemented as `bluetape-rs-codec` with strict hex, Base64 standard,
+  Base64 URL-safe, Bitcoin Base58, byte-oriented Base62, and UTF-8 text
+  boundary helpers.
+- Kept codec APIs explicit about allocation and typed decode error contracts.
+- Added crate-boundary examples and tests; benchmarks remain deferred until
+  usage patterns justify a stable measurement surface.
 
 ### `0.4.0` - Compression Helpers
 
@@ -290,7 +301,9 @@ Defer out of `0.1.0`:
 
 - Keep `README.md` and `README.ko.md` synchronized when package scope, roadmap,
   install guidance, or development commands change.
-- Use `develop` as the integration branch.
+- Use `develop` as the integration branch and default branch.
+- Use `main` as the latest stable release branch; promote `develop` to `main`
+  before tagging stable releases.
 - Use `bluetape-rs-*` as Cargo package names and accept the Rust import form
   `bluetape_rs_*` for library targets.
 - Keep public APIs Rust-native: `Result`, `Option`, ownership-aware builders,

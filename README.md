@@ -14,10 +14,10 @@ integration tests matter.
 
 ## Current Status
 
-The current package scope is the `0.2.0` collections and async/concurrency
-release line.
+The current package scope includes the released `0.2.0` collections and
+async/concurrency line plus the release-ready `0.3.0` codec line.
 
-Completed foundation and `0.2.0` work stays narrow:
+Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 
 - define the workspace layout and release policy
 - add general helper functions for typed validation errors, strings, and small
@@ -28,12 +28,16 @@ Completed foundation and `0.2.0` work stays narrow:
   `SuspendedJobTester`, and temporary resource cleanup
 - add focused collection helpers and Tokio-first bounded task helpers for the
   `0.2.0` line
+- add strict hex, Base64, Base58, Base62, and UTF-8 text boundary helpers for
+  the `0.3.0` codec line
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
-`0.2.0` does not include codec, compression, serialization, Testcontainers,
-SQL, resilience, or leader election packages. Those tracks remain separate
-milestones so their dependency and runtime costs stay explicit.
+The `0.3.0` line adds the explicit `bluetape-rs-codec` boundary for hex,
+Base64, Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary
+helpers. Compression, serialization, Testcontainers, SQL, resilience, and
+leader election remain separate milestones so their dependency and runtime
+costs stay explicit.
 
 ## Intended Package Families
 
@@ -85,14 +89,14 @@ dependency surface.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.1.1", features = ["logging"] }
+bluetape-rs = { version = "0.1.1", features = ["logging", "codec"] }
 
 [dev-dependencies]
 bluetape-rs = { version = "0.1.1", features = ["test"] }
 ```
 
 ```rust
-use bluetape_rs::{core, logging};
+use bluetape_rs::{codec, core, logging};
 ```
 
 Focused crates use underscore import names:
@@ -102,6 +106,7 @@ Focused crates use underscore import names:
 bluetape-rs-core = "0.1.1"
 bluetape-rs-logging = "0.1.1"
 bluetape-rs-collections = "0.2.0"
+bluetape-rs-codec = "0.3.0"
 
 [dev-dependencies]
 bluetape-rs-test = "0.1.1"
@@ -111,6 +116,9 @@ bluetape-rs-test = "0.1.1"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
+use bluetape_rs_codec::{decode_hex, encode_hex_lower};
+use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
+use bluetape_rs_codec::{decode_base58, encode_base58};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -152,6 +160,96 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
+For codec helpers:
+
+```toml
+[dependencies]
+bluetape-rs-codec = "0.3.0"
+```
+
+`bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64,
+Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
+Compression remains deferred to `0.4.0`, and serde-oriented serialization
+remains deferred to `0.5.0`.
+
+```rust
+use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
+
+let bytes = [0x00, 0xab, 0xff];
+
+assert_eq!(encode_hex_lower(bytes), "00abff");
+assert_eq!(encode_hex_upper(bytes), "00ABFF");
+assert_eq!(
+    decode_hex("00abFF").expect("valid hex"),
+    vec![0x00, 0xab, 0xff]
+);
+```
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64, decode_base64_url_unpadded, encode_base64, encode_base64_url_unpadded,
+};
+
+assert_eq!(encode_base64(b"fo"), "Zm8=");
+assert_eq!(decode_base64("Zm8=").expect("valid Base64"), b"fo");
+
+let token = encode_base64_url_unpadded([0xfb, 0xff]);
+assert_eq!(token, "-_8");
+assert_eq!(
+    decode_base64_url_unpadded(token).expect("valid URL-safe Base64"),
+    vec![0xfb, 0xff]
+);
+```
+
+Standard helpers use the `+` and `/` alphabet. URL-safe helpers use `-` and
+`_`. Function names ending in `_unpadded` reject `=` padding during decode.
+
+```rust
+use bluetape_rs_codec::{decode_base58, decode_base62, encode_base58, encode_base62};
+
+assert_eq!(encode_base58(b"Hello, World!"), "72k1xXWG59fYdzSNoA");
+assert_eq!(
+    decode_base58("72k1xXWG59fYdzSNoA").expect("valid Base58"),
+    b"Hello, World!"
+);
+
+assert_eq!(encode_base62(b"Hello, World!"), "1wJfrzvdbtXUOlUjUf");
+assert_eq!(
+    decode_base62("1wJfrzvdbtXUOlUjUf").expect("valid Base62"),
+    b"Hello, World!"
+);
+```
+
+Base58 uses the Bitcoin alphabet and preserves leading zero bytes as `1`.
+Base62 uses `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+and preserves leading zero bytes as `0`. This Base62 API is byte-oriented;
+integer and UUID rendering can build on top of it later.
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64_url_unpadded, decode_utf8_text, decode_utf8_text_lossy,
+    encode_base64_url_unpadded, encode_utf8_text,
+};
+
+let token = encode_base64_url_unpadded(encode_utf8_text("blue테이프"));
+assert_eq!(token, "Ymx1Ze2FjOydtO2UhA");
+
+let bytes = decode_base64_url_unpadded(token).expect("valid URL-safe Base64");
+assert_eq!(decode_utf8_text(bytes).expect("valid UTF-8"), "blue테이프");
+
+assert_eq!(decode_utf8_text_lossy([b'a', 0xff, b'z']), "a\u{fffd}z");
+```
+
+`decode_utf8_text` rejects invalid UTF-8 with typed byte-position diagnostics.
+Lossy replacement is available only through the explicitly named
+`decode_utf8_text_lossy` helper. General string utilities, normalization,
+compression registries, and serde-oriented serialization remain outside the
+codec crate.
+
+Codec public API tests live under `crates/codec/tests/` so examples exercise
+the same crate boundary that downstream users call. Source-local tests stay
+limited to private implementation details.
+
 ## Development
 
 ```bash
@@ -164,6 +262,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 ## Project Management
 
 - [Current WIP](WIP.md)
+- [Release guide](docs/release/release-guide.md)
 - [Research index](docs/research/README.md)
 - [Backend library feasibility](docs/research/2026-06-08-backend-library-feasibility.md)
 
