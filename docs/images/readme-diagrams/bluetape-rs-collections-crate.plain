@@ -1,0 +1,25 @@
+graph 1 8.7222 5.7986
+node input 0.95486 3.4462 1.9097 2.3715 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Inputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">iterators</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">slices</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">HashMap values</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">materialized pages</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node crate 4.5521 3.4462 4.1597 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8E0FF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">bluetape-rs-collections</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">named collection patterns</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">typed collection errors</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">modules: iter | slice | map | page | error</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node output 7.9549 3.4462 1.5347 2.3715 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Outputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">chunks/windows</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">grouped values</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">mapped HashMap</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">Page metadata</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node legend 4.5521 0.75521 2.7535 1.5104 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#F2F4F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Route meaning</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">left edge: caller input</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">right edge: returned output</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+edge input crate 4 1.9094 3.4444 1.9094 3.4444 2.3155 3.4444 2.3155 3.4444 solid #9AA4B2
+edge crate output 4 6.6295 3.4444 6.6295 3.4444 7.0329 3.4444 7.0329 3.4444 solid #9AA4B2
+edge crate legend 4 4.5521 2.4785 4.5521 2.4785 4.5521 1.6651 4.5521 1.6651 invis #9AA4B2
+stop

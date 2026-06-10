@@ -1,0 +1,25 @@
+graph 1 8.5243 5.7986
+node input 0.95486 3.4462 1.9097 2.3715 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Inputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">caller field names</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">strings</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">numbers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">hex text</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node crate 4.3576 3.4462 3.7847 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#DDEBFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">bluetape-rs-core</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">typed validation errors</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">Result-first helper contracts</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">modules: error | string | number | hex</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node output 7.6632 3.4462 1.7222 2.3715 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Outputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">validated values</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">ValidationError</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">safe fallbacks</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">UTF-8 truncation</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node legend 4.3576 0.75521 2.7535 1.5104 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#F2F4F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Route meaning</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">left edge: caller input</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">right edge: returned output</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+edge input crate 4 1.9072 3.4444 1.9072 3.4444 2.311 3.4444 2.311 3.4444 solid #9AA4B2
+edge crate output 4 6.247 3.4444 6.247 3.4444 6.6467 3.4444 6.6467 3.4444 solid #9AA4B2
+edge crate legend 4 4.3576 2.4785 4.3576 2.4785 4.3576 1.6651 4.3576 1.6651 invis #9AA4B2
+stop

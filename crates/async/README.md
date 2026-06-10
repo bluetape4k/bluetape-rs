@@ -2,10 +2,12 @@
 
 Tokio-first async task helpers for bluetape-rs.
 
+![bluetape-rs-async crate overview](../../docs/images/readme-diagrams/bluetape-rs-async-crate.png)
+
 This crate starts as the `0.2.0` async/concurrency boundary. It provides small
-helpers for bounded task execution and explicit failure behavior. It does not
-replace Tokio primitives and does not define service shutdown, timeout, or
-deadline policy; those are separate milestone tasks.
+helpers for bounded task execution and explicit failure behavior. It wraps
+common task lifecycle policies without replacing Tokio primitives or
+service-specific shutdown, timeout, and deadline policy.
 
 ## Scope
 

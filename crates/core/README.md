@@ -2,6 +2,8 @@
 
 Small Rust-native helpers shared by bluetape-rs crates.
 
+![bluetape-rs-core crate overview](../../docs/images/readme-diagrams/bluetape-rs-core-crate.png)
+
 The crate intentionally stays narrow. Prefer `std`, `Option`, and `Result`
 combinators when they already express the operation clearly.
 
@@ -16,7 +18,7 @@ combinators when they already express the operation clearly.
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.1.0"
+bluetape-rs-core = "0.1.1"
 ```
 
 ```rust
