@@ -6,6 +6,8 @@
 
 #[cfg(feature = "async")]
 pub use bluetape_rs_async as async_utils;
+#[cfg(feature = "codec")]
+pub use bluetape_rs_codec as codec;
 #[cfg(feature = "collections")]
 pub use bluetape_rs_collections as collections;
 #[cfg(feature = "core")]

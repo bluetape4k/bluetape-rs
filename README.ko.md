@@ -95,6 +95,7 @@ Focused crate는 import name에서 hyphen 대신 underscore를 사용합니다.
 bluetape-rs-core = "0.1.1"
 bluetape-rs-logging = "0.1.1"
 bluetape-rs-collections = "0.2.0"
+bluetape-rs-codec = "0.3.0"
 
 [dev-dependencies]
 bluetape-rs-test = "0.1.1"
@@ -104,6 +105,7 @@ bluetape-rs-test = "0.1.1"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
+// bluetape_rs_codec는 0.3.0 line에서 focused encoder API를 노출합니다.
 use bluetape_rs_test::TempDir;
 ```
 
@@ -144,6 +146,17 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+Codec helper를 사용할 때:
+
+```toml
+[dependencies]
+bluetape-rs-codec = "0.3.0"
+```
+
+`bluetape-rs-codec`는 strict hex, Base64, URL-safe encoding helper를 위한
+`0.3.0` crate boundary입니다. Compression은 `0.4.0`, serde-oriented
+serialization은 `0.5.0`으로 계속 분리합니다.
 
 ## 개발
 

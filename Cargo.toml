@@ -13,6 +13,7 @@ categories = ["development-tools", "asynchronous"]
 [workspace]
 members = [
     "crates/async",
+    "crates/codec",
     "crates/collections",
     "crates/core",
     "crates/logging",
@@ -27,6 +28,7 @@ license = "MIT"
 repository = "https://github.com/bluetape4k/bluetape-rs"
 
 [workspace.dependencies]
+bluetape-rs-codec = { path = "crates/codec", version = "0.3.0" }
 bluetape-rs-collections = { path = "crates/collections", version = "0.2.0" }
 bluetape-rs-async = { path = "crates/async", version = "0.2.0" }
 bluetape-rs-core = { path = "crates/core", version = "0.1.1" }
@@ -42,6 +44,7 @@ path = "src/lib.rs"
 
 [features]
 default = ["core"]
+codec = ["dep:bluetape-rs-codec"]
 collections = ["dep:bluetape-rs-collections"]
 async = ["dep:bluetape-rs-async"]
 core = ["dep:bluetape-rs-core"]
@@ -49,6 +52,7 @@ logging = ["dep:bluetape-rs-logging"]
 test = ["dep:bluetape-rs-test"]
 
 [dependencies]
+bluetape-rs-codec = { workspace = true, optional = true }
 bluetape-rs-collections = { workspace = true, optional = true }
 bluetape-rs-async = { workspace = true, optional = true }
 bluetape-rs-core = { workspace = true, optional = true }

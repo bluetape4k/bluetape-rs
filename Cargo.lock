@@ -16,6 +16,7 @@ name = "bluetape-rs"
 version = "0.1.1"
 dependencies = [
  "bluetape-rs-async",
+ "bluetape-rs-codec",
  "bluetape-rs-collections",
  "bluetape-rs-core",
  "bluetape-rs-logging",
@@ -29,6 +30,10 @@ dependencies = [
  "bluetape-rs-test",
  "tokio",
 ]
+
+[[package]]
+name = "bluetape-rs-codec"
+version = "0.3.0"
 
 [[package]]
 name = "bluetape-rs-collections"
