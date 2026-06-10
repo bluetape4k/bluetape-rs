@@ -243,6 +243,10 @@ Lossy replacement is available only through the explicitly named
 compression registries, and serde-oriented serialization remain outside the
 codec crate.
 
+Codec public API tests live under `crates/codec/tests/` so examples exercise
+the same crate boundary that downstream users call. Source-local tests stay
+limited to private implementation details.
+
 ## Development
 
 ```bash

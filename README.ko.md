@@ -238,6 +238,10 @@ assert_eq!(decode_utf8_text_lossy([b'a', 0xff, b'z']), "a\u{fffd}z");
 명시적으로 호출할 때만 사용합니다. 일반 string utility, normalization,
 compression registry, serde-oriented serialization은 codec crate 밖에 둡니다.
 
+Codec public API test는 `crates/codec/tests/` 아래에 두어 downstream user가
+호출하는 crate boundary와 같은 경로로 검증합니다. Source-local test는 private
+implementation detail에만 남깁니다.
+
 ## 개발
 
 ```bash
