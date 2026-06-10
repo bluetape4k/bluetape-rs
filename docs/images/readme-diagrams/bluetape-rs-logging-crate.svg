@@ -1,55 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="997" viewBox="0 0 1254 997" role="img" aria-label="bluetape-rs-logging">
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="490" viewBox="0 0 1100 490" role="img" aria-label="bluetape-rs-logging">
 <defs>
-  <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#1f2937" flood-opacity="0.10"/></filter>
+  <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1f2937" flood-opacity="0.10"/></filter>
   <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#758297"/></marker>
   <style>
-    .canvas{fill:#f7f9fc}.frame{fill:#fff;stroke:#d8e0ea;stroke-width:1.5}
-    .body{fill:#fbfcff;stroke:#e5eaf1;stroke-width:1.2}.footer{fill:#f8fafc;stroke:#d8e0ea;stroke-width:1.2}
-    .title{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:40px;font-weight:400;fill:#102033}
-    .subtitle,.footerText{font-family:"Comic Mono",monospace;font-size:15px;font-weight:400;fill:#536273}
-    .label{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:23px;font-weight:400;fill:#102033}
+    .canvas{fill:#f7f9fc}.frame{fill:#fff;stroke:#d8e0ea;stroke-width:1.5}.body{fill:#fbfcff;stroke:#e5eaf1;stroke-width:1.2}.footer{fill:#f8fafc;stroke:#d8e0ea;stroke-width:1.2}
+    .title{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:38px;font-weight:400;fill:#102033}
+    .subtitle,.footerText{font-family:"Comic Mono",monospace;font-size:14px;font-weight:400;fill:#536273}
+    .label{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:22px;font-weight:400;fill:#102033}
     .small{font-family:"Comic Mono",monospace;font-size:13px;font-weight:400;fill:#536273}
-    .card{stroke-width:2.0;filter:url(#shadow)}.line{stroke:#758297;stroke-width:2.1;fill:none;marker-end:url(#arrow)}
+    .card{stroke-width:2;filter:url(#shadow)}.route{stroke:#758297;stroke-width:2.1;fill:none;marker-end:url(#arrow)}
   </style>
 </defs>
-<rect class="canvas" width="1254" height="997"/>
-<rect class="frame" x="28" y="24" width="1198" height="949" rx="28"/>
-<text class="title" x="58" y="70">bluetape-rs-logging</text>
-<text class="subtitle" x="62" y="101">Graphviz-derived tracing helper boundary</text>
-<rect class="body" x="54" y="142" width="1146.078" height="743.4292" rx="18"/>
-<g>
-<path class="line" d="M 293.5 447.2 L 293.5 447.2 L 343.1 447.2 L 343.1 447.2"/>
-<path class="line" d="M 880.5 447.2 L 880.5 447.2 L 930.3 447.2 L 930.3 447.2"/>
-<g transform="translate(72.0,302.3)">
-  <rect class="card" x="0" y="0" width="221.6" height="289.3" rx="14" fill="#FFFFFF" stroke="#CBD5E1"/>
-  <text class="label" x="110.8" y="42.0" text-anchor="middle">Inputs</text>
-  <text class="small" x="110.8" y="72.0" text-anchor="middle">filter directives</text>
-  <text class="small" x="110.8" y="97.0" text-anchor="middle">writers</text>
-  <text class="small" x="110.8" y="122.0" text-anchor="middle">request IDs</text>
-  <text class="small" x="110.8" y="147.0" text-anchor="middle">test scope</text>
-</g>
-<g transform="translate(362.2,328.6)">
-  <rect class="card" x="0" y="0" width="518.9" height="236.8" rx="14" fill="#DCF7EA" stroke="#58A978"/>
-  <text class="label" x="259.5" y="42.0" text-anchor="middle">bluetape-rs-logging</text>
-  <text class="small" x="259.5" y="72.0" text-anchor="middle">subscriber builders</text>
-  <text class="small" x="259.5" y="97.0" text-anchor="middle">correlation ID boundary</text>
-  <text class="small" x="259.5" y="122.0" text-anchor="middle">modules: subscriber | capture | correlation</text>
-</g>
-<g transform="translate(949.1,302.3)">
-  <rect class="card" x="0" y="0" width="233.0" height="289.3" rx="14" fill="#FFFFFF" stroke="#CBD5E1"/>
-  <text class="label" x="116.5" y="42.0" text-anchor="middle">Outputs</text>
-  <text class="small" x="116.5" y="72.0" text-anchor="middle">Layered subscriber</text>
-  <text class="small" x="116.5" y="97.0" text-anchor="middle">CapturedLogs</text>
-  <text class="small" x="116.5" y="122.0" text-anchor="middle">CorrelationId</text>
-  <text class="small" x="116.5" y="147.0" text-anchor="middle">field names</text>
-</g>
-<g transform="translate(453.7,683.2)">
-  <rect class="card" x="0" y="0" width="335.9" height="184.3" rx="14" fill="#F2F4F7" stroke="#8CA0B8"/>
-  <text class="label" x="168.0" y="42.0" text-anchor="middle">Route meaning</text>
-  <text class="small" x="168.0" y="72.0" text-anchor="middle">left edge: caller input</text>
-  <text class="small" x="168.0" y="97.0" text-anchor="middle">right edge: returned output</text>
-</g>
-</g>
-<rect class="footer" x="54" y="903.4292" width="1146.078" height="36" rx="12"/>
-<text class="footerText" x="627" y="927.4292" text-anchor="middle">Applications own global subscriber installation; library code returns configured pieces.</text>
+<rect class="canvas" width="1100" height="490"/>
+<rect class="frame" x="24" y="22" width="1052" height="446" rx="26"/>
+<text class="title" x="54" y="66">bluetape-rs-logging</text>
+<text class="subtitle" x="58" y="94">Graphviz-derived tracing helper boundary</text>
+<rect class="body" x="42" y="122" width="1016" height="300" rx="18"/><path class="route" d="M 280 277 L 370 277"/><path class="route" d="M 730 277 L 820 277"/><g><rect class="card" x="90" y="212" width="190" height="130" rx="13" fill="#FFFFFF" stroke="#CBD5E1"/><text class="label" x="185" y="233.0" text-anchor="middle">Inputs</text><text class="small" x="185" y="261.0" text-anchor="middle">filter directives</text><text class="small" x="185" y="284.0" text-anchor="middle">writers</text><text class="small" x="185" y="307.0" text-anchor="middle">request IDs</text><text class="small" x="185" y="330.0" text-anchor="middle">test scope</text></g><g><rect class="card" x="370" y="212" width="360" height="130" rx="13" fill="#DCF7EA" stroke="#58A978"/><text class="label" x="550" y="244.5" text-anchor="middle">bluetape-rs-logging</text><text class="small" x="550" y="272.5" text-anchor="middle">subscriber builders</text><text class="small" x="550" y="295.5" text-anchor="middle">correlation ID boundary</text><text class="small" x="550" y="318.5" text-anchor="middle">modules: subscriber | capture | correlation</text></g><g><rect class="card" x="820" y="212" width="190" height="130" rx="13" fill="#FFFFFF" stroke="#CBD5E1"/><text class="label" x="915" y="233.0" text-anchor="middle">Outputs</text><text class="small" x="915" y="261.0" text-anchor="middle">Layered subscriber</text><text class="small" x="915" y="284.0" text-anchor="middle">CapturedLogs</text><text class="small" x="915" y="307.0" text-anchor="middle">CorrelationId</text><text class="small" x="915" y="330.0" text-anchor="middle">field names</text></g>
+<rect class="footer" x="42" y="426" width="1016" height="34" rx="10"/>
+<text class="footerText" x="550" y="448" text-anchor="middle">Applications own global subscriber installation; library code returns configured pieces.</text>
 </svg>

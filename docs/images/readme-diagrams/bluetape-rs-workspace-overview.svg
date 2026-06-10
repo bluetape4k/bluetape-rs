@@ -1,77 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1273" viewBox="0 0 1480 1273" role="img" aria-label="bluetape-rs Workspace">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="690" viewBox="0 0 1280 690" role="img" aria-label="bluetape-rs Workspace">
 <defs>
-  <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#1f2937" flood-opacity="0.10"/></filter>
+  <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1f2937" flood-opacity="0.10"/></filter>
   <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#758297"/></marker>
   <style>
-    .canvas{fill:#f7f9fc}.frame{fill:#fff;stroke:#d8e0ea;stroke-width:1.5}
-    .body{fill:#fbfcff;stroke:#e5eaf1;stroke-width:1.2}.footer{fill:#f8fafc;stroke:#d8e0ea;stroke-width:1.2}
-    .title{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:40px;font-weight:400;fill:#102033}
-    .subtitle,.footerText{font-family:"Comic Mono",monospace;font-size:15px;font-weight:400;fill:#536273}
-    .label{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:23px;font-weight:400;fill:#102033}
+    .canvas{fill:#f7f9fc}.frame{fill:#fff;stroke:#d8e0ea;stroke-width:1.5}.body{fill:#fbfcff;stroke:#e5eaf1;stroke-width:1.2}.footer{fill:#f8fafc;stroke:#d8e0ea;stroke-width:1.2}
+    .title{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:38px;font-weight:400;fill:#102033}
+    .subtitle,.footerText{font-family:"Comic Mono",monospace;font-size:14px;font-weight:400;fill:#536273}
+    .label{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:22px;font-weight:400;fill:#102033}
     .small{font-family:"Comic Mono",monospace;font-size:13px;font-weight:400;fill:#536273}
-    .card{stroke-width:2.0;filter:url(#shadow)}.line{stroke:#758297;stroke-width:2.1;fill:none;marker-end:url(#arrow)}
+    .card{stroke-width:2;filter:url(#shadow)}.route{stroke:#758297;stroke-width:2.1;fill:none;marker-end:url(#arrow)}
   </style>
 </defs>
-<rect class="canvas" width="1480" height="1273"/>
-<rect class="frame" x="28" y="24" width="1424" height="1225" rx="28"/>
-<text class="title" x="58" y="70">bluetape-rs Workspace</text>
-<text class="subtitle" x="62" y="101">Graphviz-derived feature facade and focused crate layout</text>
-<rect class="body" x="54" y="142" width="1371.656" height="1019.1979999999999" rx="18"/>
-<g>
-<path class="line" d="M 582.5 421.4 L 412.7 421.4 L 182.8 421.4 L 182.8 421.4 L 182.8 421.4 L 182.8 611.5 L 182.8 611.5"/>
-<path class="line" d="M 610.1 539.0 L 610.1 632.9 L 610.1 748.4 L 610.1 748.4 L 610.1 748.4 L 589.8 748.4 L 589.8 748.4"/>
-<path class="line" d="M 760.6 538.8 L 760.6 538.8 L 760.6 611.7 L 760.6 611.7"/>
-<path class="line" d="M 911.1 539.0 L 911.1 632.9 L 911.1 748.4 L 911.1 748.4 L 911.1 748.4 L 931.8 748.4 L 931.8 748.4"/>
-<path class="line" d="M 939.0 421.4 L 1102.7 421.4 L 1319.7 421.4 L 1319.7 421.4 L 1319.7 421.4 L 1319.7 611.5 L 1319.7 611.5"/>
-<g transform="translate(581.8,302.3)">
-  <rect class="card" x="0" y="0" width="357.5" height="236.8" rx="14" fill="#E8F7F7" stroke="#4CA7A8"/>
-  <text class="label" x="178.8" y="42.0" text-anchor="middle">bluetape-rs facade</text>
-  <text class="small" x="178.8" y="72.0" text-anchor="middle">default core feature</text>
-  <text class="small" x="178.8" y="97.0" text-anchor="middle">opt-in crate re-exports</text>
-  <text class="small" x="178.8" y="122.0" text-anchor="middle">edges mean feature exposure</text>
-</g>
-<g transform="translate(72.0,630.6)">
-  <rect class="card" x="0" y="0" width="221.6" height="236.8" rx="14" fill="#DDEBFF" stroke="#5B8DEF"/>
-  <text class="label" x="110.8" y="42.0" text-anchor="middle">Core</text>
-  <text class="small" x="110.8" y="72.0" text-anchor="middle">validation errors</text>
-  <text class="small" x="110.8" y="97.0" text-anchor="middle">string helpers</text>
-  <text class="small" x="110.8" y="122.0" text-anchor="middle">numeric checks</text>
-</g>
-<g transform="translate(360.7,630.6)">
-  <rect class="card" x="0" y="0" width="210.1" height="236.8" rx="14" fill="#DCF7EA" stroke="#58A978"/>
-  <text class="label" x="105.1" y="42.0" text-anchor="middle">Logging</text>
-  <text class="small" x="105.1" y="72.0" text-anchor="middle">tracing builders</text>
-  <text class="small" x="105.1" y="97.0" text-anchor="middle">correlation IDs</text>
-  <text class="small" x="105.1" y="122.0" text-anchor="middle">test capture</text>
-</g>
-<g transform="translate(638.4,630.6)">
-  <rect class="card" x="0" y="0" width="244.4" height="236.8" rx="14" fill="#FFF0C9" stroke="#D6A441"/>
-  <text class="label" x="122.2" y="42.0" text-anchor="middle">Test</text>
-  <text class="small" x="122.2" y="72.0" text-anchor="middle">async assertions</text>
-  <text class="small" x="122.2" y="97.0" text-anchor="middle">concurrency testers</text>
-  <text class="small" x="122.2" y="122.0" text-anchor="middle">temp resources</text>
-</g>
-<g transform="translate(950.8,630.6)">
-  <rect class="card" x="0" y="0" width="212.7" height="236.8" rx="14" fill="#E8E0FF" stroke="#8A72D6"/>
-  <text class="label" x="106.3" y="42.0" text-anchor="middle">Collections</text>
-  <text class="small" x="106.3" y="72.0" text-anchor="middle">iterator helpers</text>
-  <text class="small" x="106.3" y="97.0" text-anchor="middle">map transforms</text>
-  <text class="small" x="106.3" y="122.0" text-anchor="middle">page values</text>
-</g>
-<g transform="translate(1231.8,630.6)">
-  <rect class="card" x="0" y="0" width="175.8" height="236.8" rx="14" fill="#FFE1DF" stroke="#DC6B82"/>
-  <text class="label" x="87.9" y="42.0" text-anchor="middle">Async</text>
-  <text class="small" x="87.9" y="72.0" text-anchor="middle">bounded tasks</text>
-  <text class="small" x="87.9" y="97.0" text-anchor="middle">timeouts</text>
-  <text class="small" x="87.9" y="122.0" text-anchor="middle">shutdown</text>
-</g>
-<g transform="translate(381.0,958.9)">
-  <rect class="card" x="0" y="0" width="759.1" height="184.3" rx="14" fill="#F2F4F7" stroke="#8CA0B8"/>
-  <text class="label" x="379.6" y="42.0" text-anchor="middle">Deferred package families</text>
-  <text class="small" x="379.6" y="72.0" text-anchor="middle">codec, compression, serde, testcontainers</text>
-  <text class="small" x="379.6" y="97.0" text-anchor="middle">SQL, SQLx, resilience, leader, AWS, audit, graph, text, workshop</text>
-</g>
-</g>
-<rect class="footer" x="54" y="1179.1979999999999" width="1371.656" height="36" rx="12"/>
-<text class="footerText" x="740" y="1203.1979999999999" text-anchor="middle">Current 0.2.0 line: collections plus Tokio-first async/concurrency helpers</text>
+<rect class="canvas" width="1280" height="690"/>
+<rect class="frame" x="24" y="22" width="1232" height="646" rx="26"/>
+<text class="title" x="54" y="66">bluetape-rs Workspace</text>
+<text class="subtitle" x="58" y="94">Graphviz-derived feature facade and focused crate layout</text>
+<rect class="body" x="42" y="122" width="1196" height="500" rx="18"/><path class="route" d="M 650 268 L 650 298 L 168 298 L 168 332"/><path class="route" d="M 650 268 L 650 298 L 386 298 L 386 332"/><path class="route" d="M 650 268 L 650 298 L 604 298 L 604 332"/><path class="route" d="M 650 268 L 650 298 L 827 298 L 827 332"/><path class="route" d="M 650 268 L 650 298 L 1050 298 L 1050 332"/><g><rect class="card" x="510" y="164" width="280" height="104" rx="13" fill="#E8F7F7" stroke="#4CA7A8"/><text class="label" x="650" y="195.0" text-anchor="middle">bluetape-rs facade</text><text class="small" x="650" y="223.0" text-anchor="middle">default core feature</text><text class="small" x="650" y="246.0" text-anchor="middle">opt-in crate re-exports</text></g><g><rect class="card" x="88" y="332" width="160" height="105" rx="13" fill="#DDEBFF" stroke="#5B8DEF"/><text class="label" x="168" y="352.0" text-anchor="middle">Core</text><text class="small" x="168" y="380.0" text-anchor="middle">validation errors</text><text class="small" x="168" y="403.0" text-anchor="middle">string helpers</text><text class="small" x="168" y="426.0" text-anchor="middle">numeric checks</text></g><g><rect class="card" x="306" y="332" width="160" height="105" rx="13" fill="#DCF7EA" stroke="#58A978"/><text class="label" x="386" y="352.0" text-anchor="middle">Logging</text><text class="small" x="386" y="380.0" text-anchor="middle">tracing builders</text><text class="small" x="386" y="403.0" text-anchor="middle">correlation IDs</text><text class="small" x="386" y="426.0" text-anchor="middle">test capture</text></g><g><rect class="card" x="524" y="332" width="160" height="105" rx="13" fill="#FFF0C9" stroke="#D6A441"/><text class="label" x="604" y="352.0" text-anchor="middle">Test</text><text class="small" x="604" y="380.0" text-anchor="middle">async assertions</text><text class="small" x="604" y="403.0" text-anchor="middle">concurrency testers</text><text class="small" x="604" y="426.0" text-anchor="middle">temp resources</text></g><g><rect class="card" x="742" y="332" width="170" height="105" rx="13" fill="#E8E0FF" stroke="#8A72D6"/><text class="label" x="827" y="352.0" text-anchor="middle">Collections</text><text class="small" x="827" y="380.0" text-anchor="middle">iterator helpers</text><text class="small" x="827" y="403.0" text-anchor="middle">map transforms</text><text class="small" x="827" y="426.0" text-anchor="middle">page values</text></g><g><rect class="card" x="970" y="332" width="160" height="105" rx="13" fill="#FFE1DF" stroke="#DC6B82"/><text class="label" x="1050" y="352.0" text-anchor="middle">Async</text><text class="small" x="1050" y="380.0" text-anchor="middle">bounded tasks</text><text class="small" x="1050" y="403.0" text-anchor="middle">timeouts</text><text class="small" x="1050" y="426.0" text-anchor="middle">shutdown</text></g><g><rect class="card" x="292" y="482" width="690" height="80" rx="13" fill="#F2F4F7" stroke="#8CA0B8"/><text class="label" x="637" y="501.0" text-anchor="middle">Deferred package families</text><text class="small" x="637" y="529.0" text-anchor="middle">codec, compression, serde, testcontainers</text><text class="small" x="637" y="552.0" text-anchor="middle">SQL, SQLx, resilience, leader, AWS, audit, graph, text, workshop</text></g>
+<rect class="footer" x="42" y="626" width="1196" height="34" rx="10"/>
+<text class="footerText" x="640" y="648" text-anchor="middle">Current 0.2.0 line: collections plus Tokio-first async/concurrency helpers</text>
 </svg>
