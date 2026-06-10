@@ -10,6 +10,9 @@
 //! // Helper APIs will be added under these focused namespaces.
 //! ```
 
+pub mod error;
 pub mod iter;
 pub mod map;
 pub mod slice;
+
+pub use error::CollectionError;
