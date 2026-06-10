@@ -15,7 +15,7 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 
 현재 package scope는 `0.2.0` collections 및 async/concurrency release line입니다.
 
-첫 작업 범위는 작게 유지합니다.
+완료된 foundation 및 `0.2.0` 작업 범위는 작게 유지합니다.
 
 - workspace layout과 release policy 정의
 - typed validation error, string, 작은 numeric check를 위한 일반 helper 함수 추가
@@ -25,6 +25,10 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
   cleanup을 위한 재사용 test helper 추가
 - `0.2.0` line을 위한 focused collection helper와 Tokio-first bounded task helper 추가
 - Kotlin extension API나 Go package shape를 복사하지 않는 Rust-native API 유지
+
+`0.2.0`에는 codec, compression, serialization, Testcontainers, SQL,
+resilience, leader election package가 포함되지 않습니다. 이 트랙들은 dependency
+및 runtime 비용을 명시적으로 다루기 위해 별도 milestone에 남겨둡니다.
 
 ## 계획 패키지군
 
@@ -90,6 +94,7 @@ Focused crate는 import name에서 hyphen 대신 underscore를 사용합니다.
 [dependencies]
 bluetape-rs-core = "0.1.1"
 bluetape-rs-logging = "0.1.1"
+bluetape-rs-collections = "0.2.0"
 
 [dev-dependencies]
 bluetape-rs-test = "0.1.1"
@@ -98,10 +103,23 @@ bluetape-rs-test = "0.1.1"
 ```rust
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
+use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_test::TempDir;
 ```
 
-Tokio task helper를 사용할 때:
+Collection helper를 사용할 때:
+
+```rust
+use bluetape_rs_collections::{Page, iter};
+
+let page = Page::with_meta(vec!["a", "b"], 0, 2, 5).unwrap();
+assert_eq!(page.total_pages(), 3);
+
+let chunks: Vec<_> = iter::chunks(1..=5, 2).unwrap().collect();
+assert_eq!(chunks, vec![vec![1, 2], vec![3, 4], vec![5]]);
+```
+
+Tokio task 및 control helper를 사용할 때:
 
 ```toml
 [dependencies]
@@ -109,7 +127,22 @@ bluetape-rs-async = "0.2.0"
 ```
 
 ```rust
+use std::time::Duration;
+
 use bluetape_rs_async::{try_map_bounded, with_timeout};
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let doubled = try_map_bounded([1, 2, 3], 2, |value| async move {
+        Ok::<_, &'static str>(value * 2)
+    })
+    .await?;
+
+    assert_eq!(doubled, vec![2, 4, 6]);
+
+    let value = with_timeout(Duration::from_millis(50), async { 42 }).await?;
+    assert_eq!(value, 42);
+    Ok(())
+}
 ```
 
 ## 개발
