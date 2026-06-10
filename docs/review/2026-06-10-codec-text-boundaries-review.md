@@ -22,10 +22,10 @@ Define and implement the minimal binary/text helper boundary for
 | 1. Public API / Contract | PASS | `encode_utf8_text`, `decode_utf8_text`, and `decode_utf8_text_lossy` expose only UTF-8 text/byte boundary behavior. Non-lossy decode returns `Result<String, TextDecodeError>`. |
 | 2. Architecture / Boundary | PASS | The change stays inside `crates/codec` and README/review docs. General string utilities, normalization, compression, serialization, encryption, signing, checksums, random strings, and database bind encoding remain out of scope. |
 | 3. Rust API Shape | PASS | APIs use owned `Vec<u8>` / `String` outputs, `impl AsRef` or `impl Into<Vec<u8>>` inputs, `#[must_use]` on pure conversions, and a non-exhaustive public error enum. |
-| 4. Tests | PASS | Unit tests cover empty/non-ASCII text encoding, post-Base64 decode text conversion, invalid UTF-8 rejection, incomplete UTF-8 diagnostics, explicit lossy replacement, and error formatting. |
+| 4. Tests | PASS | Public API tests live under `crates/codec/tests/text.rs` and cover empty/non-ASCII text encoding, post-Base64 decode text conversion, invalid UTF-8 rejection, incomplete UTF-8 diagnostics, explicit lossy replacement, and error formatting. |
 | 5. Static / Docs | PASS | Rustdoc examples compile. README.md, README.ko.md, and `crates/codec/README.md` document UTF-8 and lossy/non-lossy behavior. |
 | 6. Release / Cargo | PASS | No Cargo metadata or dependency changes. No broad utility-bag module was introduced. |
-| 7. Evidence Integrity | PASS | Codegraph review context reported low risk, 7 changed files, 0 impacted nodes, and 0 test gaps against `origin/develop`. Local validation ran after correcting the Base64 UTF-8 example vector. |
+| 7. Evidence Integrity | PASS | Codegraph review context reported low risk, 7 source/doc changed files, 0 impacted nodes, and 0 test gaps against `origin/develop`; `git diff --cached --name-only` includes the added integration test file. Local validation ran after correcting the Base64 UTF-8 example vector. |
 
 ## P0/P1 Gate
 
@@ -39,7 +39,7 @@ completed locally with code-review-graph context and full workspace validation.
 
 ## Validation
 
-- `cargo test -p bluetape-rs-codec --all-features --locked`: PASS, 47 unit tests + 18 doctests
+- `cargo test -p bluetape-rs-codec --all-features --locked`: PASS, 41 unit tests + 6 integration tests + 18 doctests
 - `git diff --check`: PASS
 - `cargo fmt --all --check`: PASS
 - `cargo test --workspace --all-features --locked`: PASS
