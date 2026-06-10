@@ -2,6 +2,16 @@
 //!
 //! Prefer the Rust standard library when it already expresses the operation
 //! clearly. This crate is for small repeated backend-service patterns.
+//!
+//! ```
+//! use bluetape_rs_core::{require_in_range, require_not_blank};
+//!
+//! let name = require_not_blank("name", "bluetape").expect("name");
+//! let port = require_in_range("port", 8080, 1, 65_535).expect("port");
+//!
+//! assert_eq!(name, "bluetape");
+//! assert_eq!(port, 8080);
+//! ```
 
 use std::error::Error;
 use std::fmt::{self, Display};
