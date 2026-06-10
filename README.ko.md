@@ -32,7 +32,7 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 | Logging | `bluetape-rs-logging` | Tracing setup helper, structured field, bounded correlation ID, scoped test capture. |
 | Testing | `bluetape-rs-test` | Async assertion, `MultithreadingTester`, `SuspendedJobTester`, temporary resource, 향후 Testcontainers 경계. |
 | Collections | `bluetape-rs-collections` | Iterator, slice, map, grouping, chunking, error-aware transform helper. |
-| Async | `bluetape-rs-async` | 명시적 cancellation 및 result aggregation 동작을 가진 Tokio-first bounded task execution helper. |
+| Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, shutdown helper. |
 | Encoding | `bluetape-rs-codec` | Base encoder, hex, URL-safe codec, 작은 binary/text codec helper. |
 | Compression | `bluetape-rs-compression` | Opt-in compression helper와 registry-style codec selection. |
 | Serialization | `bluetape-rs-serde` | serde-compatible format을 위한 안전한 serializer/deserializer interface와 test helper. |
@@ -107,7 +107,7 @@ bluetape-rs-async = "0.2.0"
 ```
 
 ```rust
-use bluetape_rs_async::try_map_bounded;
+use bluetape_rs_async::{try_map_bounded, with_timeout};
 ```
 
 ## 개발

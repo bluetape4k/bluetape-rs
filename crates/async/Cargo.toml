@@ -15,7 +15,7 @@ name = "bluetape_rs_async"
 path = "src/lib.rs"
 
 [dependencies]
-tokio = { workspace = true, features = ["rt"] }
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
