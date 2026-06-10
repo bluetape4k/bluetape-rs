@@ -1,11 +1,11 @@
 # WIP
 
-Snapshot: 2026-06-09 KST
-Scope: bootstrap roadmap and `0.1.0` general-purpose foundation.
+Snapshot: 2026-06-10 KST
+Scope: `0.2.0` collections and async/concurrency helpers.
 
 ## Current Target Release
 
-`v0.1.0` - General-purpose Rust helper foundation for backend services.
+`v0.2.0` - Collections and async/concurrency helpers for backend services.
 
 The first release should prove that this repository can deliver small,
 inspectable, well-tested Rust crates instead of mechanically porting the
@@ -13,16 +13,18 @@ Kotlin/JVM `bluetape4k` APIs or copying the `bluetape-go` package shapes.
 
 ## Current State
 
-- The repository is now a Rust 2024 workspace with root facade crate
-  `bluetape-rs` plus `bluetape-rs-core`, `bluetape-rs-logging`, and
-  `bluetape-rs-test`.
-- The root crate and foundation crates are versioned as `0.1.0`.
+- The repository is a Rust 2024 workspace with root facade crate
+  `bluetape-rs` plus focused crates for core, logging, test support,
+  collections, and async helpers.
+- The root crate and foundation crates are versioned as `0.1.1`; `0.2.0`
+  crates use the `0.2.0` line.
 - Feasibility research exists under
   `docs/research/2026-06-08-backend-library-feasibility.md`.
-- GitHub milestone `0.1.0` tracks epic #8 and child issues #2, #4, #5, #6,
-  and #7.
-- The first useful package line should stay very general: core helpers,
-  logging/tracing support, and test support that later backend crates can share.
+- GitHub milestone `0.2.0` tracks epic #18 and child issues for collections,
+  Tokio task helpers, cancellation/deadline helpers, deterministic tests, and
+  docs parity.
+- The `0.2.0` package line stays focused on collection helpers and
+  async/concurrency primitives that later backend crates can share.
 
 ## `0.1.0` Scope
 
@@ -138,7 +140,9 @@ Defer out of `0.1.0`:
 
 - Add focused collection helpers only where `std`, `itertools`, or existing
   crates do not already provide the obvious answer.
-- Add Tokio-first task group and bounded concurrency helpers.
+- Add Tokio-first task group and bounded concurrency helpers. Implemented
+  initially as `bluetape-rs-async` with `try_map_bounded` and
+  `map_bounded_collect`.
 - Add cancellation, timeout, shutdown, and deadline helpers.
 - Add deterministic async test patterns using `bluetape-rs-test`.
 - Prove no task leaks or unbounded resource growth in tests.

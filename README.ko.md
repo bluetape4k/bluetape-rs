@@ -11,7 +11,7 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 
 ## 현재 상태
 
-현재 package scope는 `0.1.0` foundation release입니다.
+현재 package scope는 `0.2.0` collections 및 async/concurrency release line입니다.
 
 첫 작업 범위는 작게 유지합니다.
 
@@ -21,6 +21,7 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
   test capture helper 추가
 - async assertion, `MultithreadingTester`, `SuspendedJobTester`, temporary resource
   cleanup을 위한 재사용 test helper 추가
+- `0.2.0` line을 위한 focused collection helper와 Tokio-first bounded task helper 추가
 - Kotlin extension API나 Go package shape를 복사하지 않는 Rust-native API 유지
 
 ## 계획 패키지군
@@ -31,6 +32,7 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 | Logging | `bluetape-rs-logging` | Tracing setup helper, structured field, bounded correlation ID, scoped test capture. |
 | Testing | `bluetape-rs-test` | Async assertion, `MultithreadingTester`, `SuspendedJobTester`, temporary resource, 향후 Testcontainers 경계. |
 | Collections | `bluetape-rs-collections` | Iterator, slice, map, grouping, chunking, error-aware transform helper. |
+| Async | `bluetape-rs-async` | 명시적 cancellation 및 result aggregation 동작을 가진 Tokio-first bounded task execution helper. |
 | Encoding | `bluetape-rs-codec` | Base encoder, hex, URL-safe codec, 작은 binary/text codec helper. |
 | Compression | `bluetape-rs-compression` | Opt-in compression helper와 registry-style codec selection. |
 | Serialization | `bluetape-rs-serde` | serde-compatible format을 위한 안전한 serializer/deserializer interface와 test helper. |
@@ -95,6 +97,17 @@ bluetape-rs-test = "0.1.0"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_test::TempDir;
+```
+
+Tokio task helper를 사용할 때:
+
+```toml
+[dependencies]
+bluetape-rs-async = "0.2.0"
+```
+
+```rust
+use bluetape_rs_async::try_map_bounded;
 ```
 
 ## 개발
