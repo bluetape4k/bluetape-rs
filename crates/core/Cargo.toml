@@ -1,0 +1,17 @@
+[package]
+name = "bluetape-rs-core"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Core validation, string, and numeric helpers for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["validation", "helpers", "backend"]
+categories = ["development-tools"]
+
+[lib]
+name = "bluetape_rs_core"
+path = "src/lib.rs"
+
+[dependencies]

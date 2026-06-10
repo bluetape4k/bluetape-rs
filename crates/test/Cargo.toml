@@ -1,0 +1,21 @@
+[package]
+name = "bluetape-rs-test"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Reusable test support helpers for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["testing", "async", "helpers"]
+categories = ["development-tools::testing"]
+
+[lib]
+name = "bluetape_rs_test"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["time", "rt"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["time", "fs", "macros", "rt", "test-util"] }
