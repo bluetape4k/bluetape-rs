@@ -2,7 +2,42 @@
 
 All notable changes to this project are documented in this file.
 
+## [v0.3.1] - 2026-06-10
+
+### Changed
+
+- Corrected the `0.3.0` milestone release by aligning every workspace package
+  to `0.3.1`.
+- Published the root facade and all focused crates under one workspace release
+  version:
+  - `bluetape-rs`
+  - `bluetape-rs-core`
+  - `bluetape-rs-logging`
+  - `bluetape-rs-test`
+  - `bluetape-rs-collections`
+  - `bluetape-rs-async`
+  - `bluetape-rs-codec`
+- Updated README installation examples so downstream users can depend on the
+  workspace crates with a consistent `0.3.1` version.
+
+### Release Correction
+
+- `v0.3.0` remains immutable because `bluetape-rs-codec@0.3.0` was already
+  published to crates.io.
+- Use `v0.3.1` for the complete `0.3.x` workspace release.
+
+### Validation
+
+- `cargo fmt --all --check`
+- `git diff --check`
+- `cargo test --workspace --all-features --locked`
+- `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked`
+- `cargo publish --workspace --dry-run --locked`
+
 ## [v0.3.0] - 2026-06-10
+
+Superseded by `v0.3.1` for the complete workspace release.
 
 ### Added
 

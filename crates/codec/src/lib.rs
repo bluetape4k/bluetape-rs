@@ -1,6 +1,6 @@
 //! Codec and encoding helpers for bluetape-rs.
 //!
-//! This crate is the `0.3.0` codec boundary. It starts with strict hexadecimal
+//! This crate is part of the `0.3.1` workspace release. It provides strict hexadecimal
 //! encoding and decoding plus focused Base64, Base58, and Base62 helpers, then
 //! grows into additional binary/text helpers in follow-up issues.
 //!
@@ -17,7 +17,7 @@
 //!
 //! ```text
 //! // Enable the root facade when a single dependency is more convenient:
-//! // bluetape-rs = { version = "0.1.1", features = ["codec"] }
+//! // bluetape-rs = { version = "0.3.1", features = ["codec"] }
 //! ```
 
 mod base58;
@@ -42,6 +42,6 @@ mod tests {
     #[test]
     fn crate_metadata_matches_codec_boundary() {
         assert_eq!(env!("CARGO_PKG_NAME"), "bluetape-rs-codec");
-        assert_eq!(env!("CARGO_PKG_VERSION"), "0.3.0");
+        assert_eq!(env!("CARGO_PKG_VERSION"), "0.3.1");
     }
 }
