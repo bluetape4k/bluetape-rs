@@ -13,10 +13,11 @@
 | Workflow scope | Pass | README and diagram work is isolated from the #42 async code split. |
 | Source truth | Pass | Cargo workspace and crate `lib.rs` files were read before generating diagrams. |
 | Graphviz layout | Pass | Every diagram has `.dot`, `.plain`, `.graphviz.svg`, and `.graphviz.png` evidence under `docs/images/readme-diagrams/`. |
-| Rendered assets | Pass | Every README PNG has a matching SVG source and a Graphviz-rendered PNG evidence file. |
+| Rendered assets | Pass | Every README PNG has a matching decorated SVG source and a Graphviz-rendered PNG evidence file. |
+| Decorator baseline | Pass | Final SVG/PNG assets use a bluetape4k-style outer frame, title/subtitle header, inner body panel, pastel cards with shadows, and footer callout. |
 | README embeds | Pass | README files embed `.png` assets only. |
 | CI trigger | Pass | `pull_request.paths-ignore` was removed so PR CI runs for docs-only changes, matching the bluetape-go PR trigger shape. |
-| Visual review | Pass | Contact sheet and workspace PNG were inspected; no blank, clipped, or overlapping primary content was found. |
+| Visual review | Pass | Decorated contact sheet plus workspace and async PNGs were inspected; no blank, clipped, or overlapping primary content was found. |
 | Risk | Low | Documentation-only change with no Rust source changes. |
 
 ## Findings
@@ -32,6 +33,7 @@
 - Pass: README image references point to committed `.png` files.
 - Pass: every `.png` has a matching `.svg`.
 - Pass: committed SVG files do not contain `Inter`, `Arial`, `Helvetica`, or stale arrowhead marker sizes.
+- Pass: decorated final SVGs preserve Graphviz node positions and routed edge paths from `.plain` evidence.
 - Pass: `cargo fmt --all --check`
 - Pass: `cargo test --workspace --all-features --locked`
 - Pass: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
