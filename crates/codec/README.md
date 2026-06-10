@@ -2,9 +2,9 @@
 
 Codec and encoding helpers for bluetape-rs.
 
-This crate starts the `0.3.0` codec milestone as a focused crate boundary. The
-bootstrap change registers the crate in the workspace and root facade before
-the first encoder APIs are added in follow-up issues.
+This crate starts the `0.3.0` codec milestone with strict hexadecimal encoding
+and decoding primitives. Base64 and URL-safe helpers are planned as focused
+follow-up work.
 
 ## Scope
 
@@ -33,3 +33,23 @@ Or enable the optional root facade:
 [dependencies]
 bluetape-rs = { version = "0.1.1", features = ["codec"] }
 ```
+
+## Hex
+
+```rust
+use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
+
+let bytes = [0x00, 0xab, 0xff];
+
+assert_eq!(encode_hex_lower(bytes), "00abff");
+assert_eq!(encode_hex_upper(bytes), "00ABFF");
+assert_eq!(
+    decode_hex("00abFF").expect("valid hex"),
+    vec![0x00, 0xab, 0xff]
+);
+```
+
+The decoder is intentionally strict. It accepts uppercase and lowercase ASCII
+hexadecimal digits, but rejects odd-length input, prefixes such as `0x`,
+whitespace, separators, and non-ASCII digits with typed errors that include the
+input byte position when available.

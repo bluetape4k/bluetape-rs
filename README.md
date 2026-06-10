@@ -112,7 +112,7 @@ bluetape-rs-test = "0.1.1"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
-// bluetape_rs_codec will expose focused encoder APIs during the 0.3.0 line.
+use bluetape_rs_codec::{decode_hex, encode_hex_lower};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -164,6 +164,19 @@ bluetape-rs-codec = "0.3.0"
 `bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64, and
 URL-safe encoding helpers. Compression remains deferred to `0.4.0`, and
 serde-oriented serialization remains deferred to `0.5.0`.
+
+```rust
+use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
+
+let bytes = [0x00, 0xab, 0xff];
+
+assert_eq!(encode_hex_lower(bytes), "00abff");
+assert_eq!(encode_hex_upper(bytes), "00ABFF");
+assert_eq!(
+    decode_hex("00abFF").expect("valid hex"),
+    vec![0x00, 0xab, 0xff]
+);
+```
 
 ## Development
 
