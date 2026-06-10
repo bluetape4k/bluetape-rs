@@ -18,7 +18,7 @@ combinators when they already express the operation clearly.
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.1.1"
+bluetape-rs-core = "0.3.1"
 ```
 
 ```rust

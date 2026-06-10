@@ -19,7 +19,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "bluetape-rs"
-version = "0.1.1"
+version = "0.3.1"
 dependencies = [
  "bluetape-rs-async",
  "bluetape-rs-codec",
@@ -31,7 +31,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-async"
-version = "0.2.0"
+version = "0.3.1"
 dependencies = [
  "bluetape-rs-test",
  "tokio",
@@ -39,22 +39,22 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-codec"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "base64",
 ]
 
 [[package]]
 name = "bluetape-rs-collections"
-version = "0.2.0"
+version = "0.3.1"
 
 [[package]]
 name = "bluetape-rs-core"
-version = "0.1.1"
+version = "0.3.1"
 
 [[package]]
 name = "bluetape-rs-logging"
-version = "0.1.1"
+version = "0.3.1"
 dependencies = [
  "tracing",
  "tracing-subscriber",
@@ -62,7 +62,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-test"
-version = "0.1.1"
+version = "0.3.1"
 dependencies = [
  "tokio",
 ]

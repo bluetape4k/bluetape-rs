@@ -13,7 +13,7 @@ milestone.
 
 ```toml
 [dev-dependencies]
-bluetape-rs-test = "0.1.1"
+bluetape-rs-test = "0.3.1"
 ```
 
 ```rust
