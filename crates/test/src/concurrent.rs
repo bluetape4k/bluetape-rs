@@ -18,6 +18,20 @@ type SyncTestBlock<E> = Arc<dyn Fn() -> Result<(), E> + Send + Sync + 'static>;
 type AsyncTestBlock<E> =
     Arc<dyn Fn() -> Pin<Box<dyn Future<Output = Result<(), E>> + Send>> + Send + Sync + 'static>;
 /// Configuration for bounded concurrent test execution.
+///
+/// The total number of operation attempts is `workers * iterations_per_worker`.
+/// Use this for small deterministic stress checks in tests, not for production
+/// scheduling.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_test::ConcurrentConfig;
+///
+/// let config = ConcurrentConfig::new(8, 25);
+/// assert_eq!(config.workers, 8);
+/// assert_eq!(config.iterations_per_worker, 25);
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct ConcurrentConfig {
@@ -29,6 +43,18 @@ pub struct ConcurrentConfig {
 
 impl ConcurrentConfig {
     /// Creates a bounded concurrent execution config.
+    ///
+    /// Validation is performed by [`run_concurrently`], so construction stays
+    /// cheap and infallible.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::ConcurrentConfig;
+    ///
+    /// let config = ConcurrentConfig::new(4, 10);
+    /// assert_eq!(config.workers * config.iterations_per_worker, 40);
+    /// ```
     #[must_use]
     pub const fn new(workers: usize, iterations_per_worker: usize) -> Self {
         Self {
@@ -39,6 +65,19 @@ impl ConcurrentConfig {
 }
 
 /// Error returned by concurrent test execution.
+///
+/// Worker, round, block, and iteration indexes are zero-based so failed
+/// concurrent checks can be reproduced with a smaller targeted test.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_test::ConcurrentAssertError;
+///
+/// let error: ConcurrentAssertError<&'static str> =
+///     ConcurrentAssertError::InvalidWorkers { workers: 0 };
+/// assert!(error.to_string().contains("workers"));
+/// ```
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum ConcurrentAssertError<E> {
@@ -208,6 +247,33 @@ where
 }
 
 /// Runs registered synchronous blocks on bounded OS worker threads.
+///
+/// The tester is useful for exercising thread-safe synchronous code paths. Each
+/// registered block is selected repeatedly across worker threads until the
+/// configured number of rounds has completed or the first failure is observed.
+///
+/// # Examples
+///
+/// ```
+/// use std::sync::Arc;
+/// use std::sync::atomic::{AtomicUsize, Ordering};
+/// use bluetape_rs_test::MultithreadingTester;
+///
+/// let calls = Arc::new(AtomicUsize::new(0));
+/// let observed = Arc::clone(&calls);
+///
+/// MultithreadingTester::new()
+///     .workers(2)
+///     .rounds(4)
+///     .add(move || {
+///         observed.fetch_add(1, Ordering::SeqCst);
+///         Ok::<(), &'static str>(())
+///     })
+///     .run()?;
+///
+/// assert_eq!(calls.load(Ordering::SeqCst), 8);
+/// # Ok::<(), bluetape_rs_test::ConcurrentAssertError<&'static str>>(())
+/// ```
 #[derive(Clone)]
 pub struct MultithreadingTester<E> {
     workers: usize,
@@ -227,12 +293,29 @@ impl<E> Default for MultithreadingTester<E> {
 
 impl<E> MultithreadingTester<E> {
     /// Creates a tester with the default worker and round counts.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::MultithreadingTester;
+    ///
+    /// let tester = MultithreadingTester::<&'static str>::new();
+    /// let _tester = tester.workers(2).rounds(2);
+    /// ```
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Sets the number of OS worker threads.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::MultithreadingTester;
+    ///
+    /// let _tester = MultithreadingTester::<&'static str>::new().workers(4);
+    /// ```
     #[must_use]
     pub fn workers(mut self, workers: usize) -> Self {
         self.workers = workers;
@@ -240,6 +323,14 @@ impl<E> MultithreadingTester<E> {
     }
 
     /// Sets the number of rounds per worker.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::MultithreadingTester;
+    ///
+    /// let _tester = MultithreadingTester::<&'static str>::new().rounds(10);
+    /// ```
     #[must_use]
     pub fn rounds(mut self, rounds: usize) -> Self {
         self.rounds = rounds;
@@ -247,6 +338,16 @@ impl<E> MultithreadingTester<E> {
     }
 
     /// Registers a synchronous test block.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::MultithreadingTester;
+    ///
+    /// let tester = MultithreadingTester::new().add(|| Ok::<(), &'static str>(()));
+    /// tester.workers(1).rounds(1).run()?;
+    /// # Ok::<(), bluetape_rs_test::ConcurrentAssertError<&'static str>>(())
+    /// ```
     #[must_use]
     #[allow(clippy::should_implement_trait)]
     pub fn add<F>(mut self, block: F) -> Self
@@ -258,6 +359,14 @@ impl<E> MultithreadingTester<E> {
     }
 
     /// Runs all registered blocks on bounded OS worker threads.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ConcurrentAssertError::NoBlocks`] when no block is registered,
+    /// [`ConcurrentAssertError::InvalidWorkers`] or
+    /// [`ConcurrentAssertError::InvalidRounds`] when bounds are invalid,
+    /// [`ConcurrentAssertError::TooFewWorkers`] when there are fewer workers
+    /// than registered blocks, or the first block/thread failure observed.
     pub fn run(self) -> Result<(), ConcurrentAssertError<E>>
     where
         E: Send + 'static,
@@ -349,6 +458,39 @@ impl<E> MultithreadingTester<E> {
 }
 
 /// Runs registered async blocks on bounded Tokio worker tasks.
+///
+/// This tester mirrors [`MultithreadingTester`] for async code. Blocks are run
+/// on Tokio tasks and remaining tasks are aborted after the first observed
+/// failure.
+///
+/// # Examples
+///
+/// ```
+/// use std::sync::Arc;
+/// use std::sync::atomic::{AtomicUsize, Ordering};
+/// use bluetape_rs_test::SuspendedJobTester;
+///
+/// # async fn demo() -> Result<(), bluetape_rs_test::ConcurrentAssertError<&'static str>> {
+/// let calls = Arc::new(AtomicUsize::new(0));
+/// let observed = Arc::clone(&calls);
+///
+/// SuspendedJobTester::new()
+///     .workers(2)
+///     .rounds(3)
+///     .add(move || {
+///         let observed = Arc::clone(&observed);
+///         async move {
+///             observed.fetch_add(1, Ordering::SeqCst);
+///             Ok::<(), &'static str>(())
+///         }
+///     })
+///     .run()
+///     .await?;
+///
+/// assert_eq!(calls.load(Ordering::SeqCst), 6);
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Clone)]
 pub struct SuspendedJobTester<E> {
     workers: usize,
@@ -368,12 +510,29 @@ impl<E> Default for SuspendedJobTester<E> {
 
 impl<E> SuspendedJobTester<E> {
     /// Creates a tester with the default worker and round counts.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::SuspendedJobTester;
+    ///
+    /// let tester = SuspendedJobTester::<&'static str>::new();
+    /// let _tester = tester.workers(2).rounds(2);
+    /// ```
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Sets the number of Tokio worker tasks.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::SuspendedJobTester;
+    ///
+    /// let _tester = SuspendedJobTester::<&'static str>::new().workers(4);
+    /// ```
     #[must_use]
     pub fn workers(mut self, workers: usize) -> Self {
         self.workers = workers;
@@ -381,6 +540,14 @@ impl<E> SuspendedJobTester<E> {
     }
 
     /// Sets the number of rounds per worker.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::SuspendedJobTester;
+    ///
+    /// let _tester = SuspendedJobTester::<&'static str>::new().rounds(10);
+    /// ```
     #[must_use]
     pub fn rounds(mut self, rounds: usize) -> Self {
         self.rounds = rounds;
@@ -388,6 +555,22 @@ impl<E> SuspendedJobTester<E> {
     }
 
     /// Registers an async test block.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::SuspendedJobTester;
+    ///
+    /// # async fn demo() -> Result<(), bluetape_rs_test::ConcurrentAssertError<&'static str>> {
+    /// SuspendedJobTester::new()
+    ///     .workers(1)
+    ///     .rounds(1)
+    ///     .add(|| async { Ok::<(), &'static str>(()) })
+    ///     .run()
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     #[must_use]
     #[allow(clippy::should_implement_trait)]
     pub fn add<F, Fut>(mut self, block: F) -> Self
@@ -400,6 +583,13 @@ impl<E> SuspendedJobTester<E> {
     }
 
     /// Runs all registered async blocks on bounded Tokio worker tasks.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ConcurrentAssertError::NoBlocks`] when no block is registered,
+    /// [`ConcurrentAssertError::InvalidWorkers`] or
+    /// [`ConcurrentAssertError::InvalidRounds`] when bounds are invalid, or the
+    /// first async block/task failure observed.
     pub async fn run(self) -> Result<(), ConcurrentAssertError<E>>
     where
         E: Send + 'static,
@@ -515,6 +705,40 @@ fn validate_tester_config<E>(
 /// `operation` receives `(worker_index, iteration_index)`. The helper returns
 /// after all workers finish, or after the first operation/join failure observed
 /// while collecting worker results.
+///
+/// # Examples
+///
+/// ```
+/// use std::sync::Arc;
+/// use std::sync::atomic::{AtomicUsize, Ordering};
+/// use bluetape_rs_test::{ConcurrentConfig, run_concurrently};
+///
+/// # async fn demo() -> Result<(), bluetape_rs_test::ConcurrentAssertError<&'static str>> {
+/// let calls = Arc::new(AtomicUsize::new(0));
+/// let observed = Arc::clone(&calls);
+///
+/// run_concurrently(ConcurrentConfig::new(2, 5), move |_worker, _iteration| {
+///     let observed = Arc::clone(&observed);
+///     async move {
+///         observed.fetch_add(1, Ordering::SeqCst);
+///         Ok::<(), &'static str>(())
+///     }
+/// }).await?;
+///
+/// assert_eq!(calls.load(Ordering::SeqCst), 10);
+/// # Ok(())
+/// # }
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ConcurrentAssertError::ZeroWorkers`],
+/// [`ConcurrentAssertError::ZeroIterations`],
+/// [`ConcurrentAssertError::InvalidWorkers`], or
+/// [`ConcurrentAssertError::InvalidRounds`] for invalid config values. Returns
+/// [`ConcurrentAssertError::OperationFailed`] for the first operation error, or
+/// [`ConcurrentAssertError::WorkerJoinFailed`] when a Tokio worker task cannot
+/// be joined.
 pub async fn run_concurrently<F, Fut, E>(
     config: ConcurrentConfig,
     operation: F,

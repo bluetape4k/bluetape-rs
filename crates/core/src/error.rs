@@ -2,6 +2,20 @@ use std::error::Error;
 use std::fmt::{self, Display};
 
 /// Error returned when caller-owned input violates a validation contract.
+///
+/// The variants preserve the caller-facing field name and string-rendered
+/// values so failures can be reported without losing the original validation
+/// context.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::{ValidationError, require_positive};
+///
+/// let error = require_positive("workers", 0).unwrap_err();
+/// assert!(matches!(error, ValidationError::NotPositive { .. }));
+/// assert_eq!(error.to_string(), "workers[0] must be positive");
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum ValidationError {
@@ -70,6 +84,15 @@ pub enum ValidationError {
 }
 
 /// Range boundary semantics for validation errors.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::RangeKind;
+///
+/// assert_eq!(RangeKind::Inclusive.to_string(), "inclusive");
+/// assert_eq!(RangeKind::HalfOpen.to_string(), "half-open");
+/// ```
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum RangeKind {
