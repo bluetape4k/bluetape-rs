@@ -37,7 +37,7 @@ The first useful work should stay narrow:
 | Logging | `bluetape-rs-logging` | Tracing setup helpers, structured fields, bounded correlation IDs, and scoped test capture. |
 | Testing | `bluetape-rs-test` | Async assertions, `MultithreadingTester`, `SuspendedJobTester`, temporary resources, and future Testcontainers boundaries. |
 | Collections | `bluetape-rs-collections` | Focused iterator, slice, map, grouping, chunking, and error-aware transform helpers. |
-| Async | `bluetape-rs-async` | Tokio-first bounded task execution helpers with explicit cancellation and result aggregation behavior. |
+| Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, and shutdown helpers. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | Compression | `bluetape-rs-compression` | Opt-in compression helpers and registry-style codec selection. |
 | Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
@@ -114,7 +114,7 @@ bluetape-rs-async = "0.2.0"
 ```
 
 ```rust
-use bluetape_rs_async::try_map_bounded;
+use bluetape_rs_async::{try_map_bounded, with_timeout};
 ```
 
 ## Development

@@ -143,7 +143,10 @@ Defer out of `0.1.0`:
 - Add Tokio-first task group and bounded concurrency helpers. Implemented
   initially as `bluetape-rs-async` with `try_map_bounded` and
   `map_bounded_collect`.
-- Add cancellation, timeout, shutdown, and deadline helpers.
+- Add cancellation, timeout, shutdown, and deadline helpers. Implemented as
+  `with_timeout`, `with_deadline`, `run_until_cancelled`,
+  `with_timeout_or_cancel`, `CancellationSource`, `CancellationToken`, and
+  shutdown signal pairs.
 - Add deterministic async test patterns using `bluetape-rs-test`.
 - Prove no task leaks or unbounded resource growth in tests.
 
