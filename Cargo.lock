@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bluetape-rs-core",
  "bluetape-rs-logging",
@@ -22,11 +22,11 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-core"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "bluetape-rs-logging"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "tracing",
  "tracing-subscriber",
@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-test"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "tokio",
 ]
