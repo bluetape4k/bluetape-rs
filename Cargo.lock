@@ -26,6 +26,7 @@ dependencies = [
 name = "bluetape-rs-async"
 version = "0.2.0"
 dependencies = [
+ "bluetape-rs-test",
  "tokio",
 ]
 
