@@ -3,6 +3,14 @@
 //! This crate never installs a process-global subscriber. Applications can use
 //! the returned subscriber with `tracing::subscriber::set_global_default` or
 //! `tracing::subscriber::with_default`.
+//!
+//! ```
+//! use bluetape_rs_logging::{CorrelationId, CORRELATION_ID_FIELD};
+//!
+//! let id = CorrelationId::new("request-1").expect("correlation id");
+//! assert_eq!(id.as_str(), "request-1");
+//! assert_eq!(CORRELATION_ID_FIELD, "correlation.id");
+//! ```
 
 use std::fmt::{self, Display};
 use std::io::{self, Write};

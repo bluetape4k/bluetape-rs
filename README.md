@@ -12,14 +12,17 @@ integration tests matter.
 
 ## Current Status
 
-This repository is in bootstrap state.
+The current package scope is the `0.1.0` foundation release.
 
 The first useful work should stay narrow:
 
-- define the crate layout and release policy
-- prototype a SQL DSL/repository layer backed by SQLx
-- prototype Redis/SQL leader election with fencing tokens
-- add Testcontainers-backed PostgreSQL and Redis smoke tests
+- define the workspace layout and release policy
+- add general helper functions for typed validation errors, strings, and small
+  numeric checks
+- add logging and tracing support without forcing a global subscriber from
+  library code, including scoped test capture helpers
+- add reusable test helpers for async assertions, `MultithreadingTester`,
+  `SuspendedJobTester`, and temporary resource cleanup
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
@@ -27,16 +30,23 @@ The first useful work should stay narrow:
 
 | Area | Working name | Purpose |
 |---|---|---|
-| Core | `bt-rs-core` | Errors, validation, IDs, time, configuration, and small typed helpers. |
-| SQL | `bt-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
-| SQLx | `bt-rs-sqlx` | SQLx executor, pool, transaction, migration, and repository adapters. |
-| Resilience | `bt-rs-resilience` | Retry, timeout, circuit breaker, bulkhead, backoff, and service policies. |
-| Leader | `bt-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
-| AWS | `bt-rs-aws` | Thin helpers around the official AWS SDK for Rust. |
-| Audit | `bt-rs-audit` | Snapshot, diff, outbox, and event-stream primitives inspired by audit workloads. |
-| Graph | `bt-rs-graph` | Graph model, bulk I/O, and backend adapters where Rust drivers are mature enough. |
-| Text | `bt-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrappers, and language detection. |
-| Workshop | `bt-rs-workshop` | Runnable axum, Tokio, SQLx, Redis, AWS, graph, and text examples. |
+| Core | `bluetape-rs-core` | Typed validation errors, validation helpers, string helpers, and small numeric checks. |
+| Logging | `bluetape-rs-logging` | Tracing setup helpers, structured fields, bounded correlation IDs, and scoped test capture. |
+| Testing | `bluetape-rs-test` | Async assertions, `MultithreadingTester`, `SuspendedJobTester`, temporary resources, and future Testcontainers boundaries. |
+| Collections | `bluetape-rs-collections` | Focused iterator, slice, map, grouping, chunking, and error-aware transform helpers. |
+| Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
+| Compression | `bluetape-rs-compression` | Opt-in compression helpers and registry-style codec selection. |
+| Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
+| Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
+| Leader | `bluetape-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
+| SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
+| SQLx | `bluetape-rs-sqlx` | SQLx executor, pool, transaction, migration, and repository adapters. |
+| Resilience | `bluetape-rs-resilience` | Retry, timeout, circuit breaker, bulkhead, backoff, and service policies. |
+| AWS | `bluetape-rs-aws` | Thin helpers around the official AWS SDK for Rust. |
+| Audit | `bluetape-rs-audit` | Snapshot, diff, outbox, and event-stream primitives inspired by audit workloads. |
+| Graph | `bluetape-rs-graph` | Graph model, bulk I/O, and backend adapters where Rust drivers are mature enough. |
+| Text | `bluetape-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrappers, and language detection. |
+| Workshop | `bluetape-rs-workshop` | Runnable axum, Tokio, SQLx, Redis, AWS, graph, and text examples. |
 
 ## Design Position
 
@@ -49,21 +59,63 @@ Rust should provide a different value proposition from the existing libraries:
 - low runtime overhead and small deployable binaries
 - Testcontainers-backed tests for infrastructure-facing packages
 
-The SQL DSL is expected to be the first representative feature. The initial
-shape should be an inspectable SQL AST plus SQLx execution adapter, not a full
-ORM.
+The first release should stay boring and broadly reusable: helpers, logging, and
+test support. Codec, compression, serialization, Testcontainers, and leader
+election should be split into separate milestones. Relational SQL should come
+after Testcontainers and before resilience. Leader election should come after
+SQL and resilience because Redis, RDB, etcd, and Kubernetes Lease support make it
+a larger multi-backend track. When SQL starts, its initial shape should be an
+inspectable SQL AST plus SQLx execution adapter, not a full ORM.
+
+## Using The Crates
+
+The root facade enables only `core` by default. Enable optional facade modules
+explicitly, or depend on the focused crates directly when you want a smaller
+dependency surface.
+
+```toml
+[dependencies]
+bluetape-rs = { version = "0.1.0", features = ["logging"] }
+
+[dev-dependencies]
+bluetape-rs = { version = "0.1.0", features = ["test"] }
+```
+
+```rust
+use bluetape_rs::{core, logging};
+```
+
+Focused crates use underscore import names:
+
+```toml
+[dependencies]
+bluetape-rs-core = "0.1.0"
+bluetape-rs-logging = "0.1.0"
+
+[dev-dependencies]
+bluetape-rs-test = "0.1.0"
+```
+
+```rust
+use bluetape_rs_core::require_not_blank;
+use bluetape_rs_logging::CorrelationId;
+use bluetape_rs_test::TempDir;
+```
 
 ## Development
 
 ```bash
 cargo fmt --all
 cargo test --workspace
+cargo test --workspace --all-features
+cargo clippy --workspace --all-targets --all-features -- -D warnings
 ```
 
 ## Project Management
 
 - [Current WIP](WIP.md)
-- [Research note](../bluetape4k-wiki/research/2026-06-08-bluetape-rs-backend-library-feasibility.md)
+- [Research index](docs/research/README.md)
+- [Backend library feasibility](docs/research/2026-06-08-backend-library-feasibility.md)
 
 ## Project Rules
 
