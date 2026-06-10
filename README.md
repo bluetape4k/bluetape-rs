@@ -14,8 +14,9 @@ integration tests matter.
 
 ## Current Status
 
-The current package scope includes the released `0.2.0` collections and
-async/concurrency line plus the release-ready `0.3.0` codec line.
+The current package scope is the corrective `0.3.1` workspace release. It
+publishes the root facade and all focused foundation, collections, async, and
+codec crates under the same version.
 
 Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 
@@ -33,7 +34,8 @@ Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
-The `0.3.0` line adds the explicit `bluetape-rs-codec` boundary for hex,
+The `0.3.1` line publishes the whole current workspace. The codec scope adds
+the explicit `bluetape-rs-codec` boundary for hex,
 Base64, Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary
 helpers. Compression, serialization, Testcontainers, SQL, resilience, and
 leader election remain separate milestones so their dependency and runtime
@@ -89,10 +91,10 @@ dependency surface.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.1.1", features = ["logging", "codec"] }
+bluetape-rs = { version = "0.3.1", features = ["logging", "codec"] }
 
 [dev-dependencies]
-bluetape-rs = { version = "0.1.1", features = ["test"] }
+bluetape-rs = { version = "0.3.1", features = ["test"] }
 ```
 
 ```rust
@@ -103,13 +105,14 @@ Focused crates use underscore import names:
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.1.1"
-bluetape-rs-logging = "0.1.1"
-bluetape-rs-collections = "0.2.0"
-bluetape-rs-codec = "0.3.0"
+bluetape-rs-core = "0.3.1"
+bluetape-rs-logging = "0.3.1"
+bluetape-rs-collections = "0.3.1"
+bluetape-rs-async = "0.3.1"
+bluetape-rs-codec = "0.3.1"
 
 [dev-dependencies]
-bluetape-rs-test = "0.1.1"
+bluetape-rs-test = "0.3.1"
 ```
 
 ```rust
@@ -138,7 +141,7 @@ For Tokio task and control helpers:
 
 ```toml
 [dependencies]
-bluetape-rs-async = "0.2.0"
+bluetape-rs-async = "0.3.1"
 ```
 
 ```rust
@@ -164,10 +167,10 @@ For codec helpers:
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.0"
+bluetape-rs-codec = "0.3.1"
 ```
 
-`bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64,
+`bluetape-rs-codec` is the `0.3.1` crate boundary for strict hex, Base64,
 Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
 Compression remains deferred to `0.4.0`, and serde-oriented serialization
 remains deferred to `0.5.0`.

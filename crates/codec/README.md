@@ -2,9 +2,9 @@
 
 Codec and encoding helpers for bluetape-rs.
 
-This crate starts the `0.3.0` codec milestone with strict hexadecimal encoding
-and decoding primitives plus focused Base64, Base58, Base62, and UTF-8
-text/byte boundary helpers.
+This crate is part of the `0.3.1` workspace release. It provides strict
+hexadecimal encoding and decoding primitives plus focused Base64, Base58,
+Base62, and UTF-8 text/byte boundary helpers.
 
 ## Scope
 
@@ -26,14 +26,14 @@ text/byte boundary helpers.
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.0"
+bluetape-rs-codec = "0.3.1"
 ```
 
 Or enable the optional root facade:
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.1.1", features = ["codec"] }
+bluetape-rs = { version = "0.3.1", features = ["codec"] }
 ```
 
 ## Hex
