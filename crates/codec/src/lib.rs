@@ -1,0 +1,47 @@
+//! Codec and encoding helpers for bluetape-rs.
+//!
+//! This crate is the `0.3.0` codec boundary. It starts with strict hexadecimal
+//! encoding and decoding plus focused Base64, Base58, and Base62 helpers, then
+//! grows into additional binary/text helpers in follow-up issues.
+//!
+//! Planned APIs stay small and Rust-native:
+//!
+//! - strict hex encoding and decoding
+//! - Base64 standard and URL-safe variants
+//! - Base58 and byte-oriented Base62 variants
+//! - typed errors for caller-owned invalid encoded input
+//! - UTF-8 text/byte boundary helpers for codec call sites
+//!
+//! Compression belongs to `0.4.0`, and serde-oriented serialization belongs to
+//! `0.5.0`. This crate does not provide those APIs.
+//!
+//! ```text
+//! // Enable the root facade when a single dependency is more convenient:
+//! // bluetape-rs = { version = "0.1.1", features = ["codec"] }
+//! ```
+
+mod base58;
+mod base62;
+mod base64;
+mod base_n;
+mod hex;
+mod text;
+
+pub use base58::{Base58DecodeError, decode_base58, encode_base58};
+pub use base62::{Base62DecodeError, decode_base62, encode_base62};
+pub use base64::{
+    Base64DecodeError, decode_base64, decode_base64_unpadded, decode_base64_url,
+    decode_base64_url_unpadded, encode_base64, encode_base64_unpadded, encode_base64_url,
+    encode_base64_url_unpadded,
+};
+pub use hex::{HexDecodeError, decode_hex, encode_hex_lower, encode_hex_upper};
+pub use text::{TextDecodeError, decode_utf8_text, decode_utf8_text_lossy, encode_utf8_text};
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn crate_metadata_matches_codec_boundary() {
+        assert_eq!(env!("CARGO_PKG_NAME"), "bluetape-rs-codec");
+        assert_eq!(env!("CARGO_PKG_VERSION"), "0.3.0");
+    }
+}
