@@ -3,6 +3,19 @@ use std::fmt::Display;
 use crate::error::{RangeKind, ValidationError};
 
 /// Numeric types accepted by validation helpers.
+///
+/// Integer types are always valid. Floating-point values are accepted only when
+/// they are finite, so `NaN`, positive infinity, and negative infinity are
+/// rejected by the public validation helpers.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::Number;
+///
+/// assert!(42_i32.is_valid_number());
+/// assert!(!f64::NAN.is_valid_number());
+/// ```
 pub trait Number: Copy + PartialOrd + Display {
     /// Returns whether this value can be compared reliably by validation helpers.
     fn is_valid_number(self) -> bool;
@@ -37,6 +50,23 @@ impl Number for f64 {
 }
 
 /// Returns `Ok(value)` when it is inside the inclusive `[lower, upper]` range.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::require_in_range;
+///
+/// let port = require_in_range("port", 8080_u16, 1, 65_535)?;
+/// assert_eq!(port, 8080);
+/// # Ok::<(), bluetape_rs_core::ValidationError>(())
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ValidationError::InvalidRange`] when `lower > upper`,
+/// [`ValidationError::OutOfRange`] when `value` is outside the inclusive
+/// bounds, or [`ValidationError::NonFinite`] when any floating-point input is
+/// not finite.
 pub fn require_in_range<T>(
     name: impl Into<String>,
     value: T,
@@ -66,6 +96,23 @@ where
 }
 
 /// Returns `Ok(value)` when it is inside the half-open `[lower, upper)` range.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::require_in_half_open_range;
+///
+/// assert_eq!(require_in_half_open_range("index", 3, 0, 10)?, 3);
+/// assert!(require_in_half_open_range("index", 10, 0, 10).is_err());
+/// # Ok::<(), bluetape_rs_core::ValidationError>(())
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ValidationError::InvalidRange`] when `lower >= upper`,
+/// [`ValidationError::OutOfRange`] when `value` is outside the half-open
+/// bounds, or [`ValidationError::NonFinite`] when any floating-point input is
+/// not finite.
 pub fn require_in_half_open_range<T>(
     name: impl Into<String>,
     value: T,
@@ -89,6 +136,21 @@ where
 }
 
 /// Returns `Ok(value)` when it is greater than zero.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::require_positive;
+///
+/// assert_eq!(require_positive("workers", 4)?, 4);
+/// assert!(require_positive("workers", 0).is_err());
+/// # Ok::<(), bluetape_rs_core::ValidationError>(())
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ValidationError::NotPositive`] when `value <= 0`, or
+/// [`ValidationError::NonFinite`] when a floating-point value is not finite.
 pub fn require_positive<T>(name: impl Into<String>, value: T) -> Result<T, ValidationError>
 where
     T: Number + Default,
@@ -106,6 +168,21 @@ where
 }
 
 /// Returns `Ok(value)` when it is greater than or equal to zero.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::require_non_negative;
+///
+/// assert_eq!(require_non_negative("retries", 0)?, 0);
+/// assert!(require_non_negative("retries", -1).is_err());
+/// # Ok::<(), bluetape_rs_core::ValidationError>(())
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ValidationError::Negative`] when `value < 0`, or
+/// [`ValidationError::NonFinite`] when a floating-point value is not finite.
 pub fn require_non_negative<T>(name: impl Into<String>, value: T) -> Result<T, ValidationError>
 where
     T: Number + Default,
@@ -123,6 +200,22 @@ where
 }
 
 /// Returns `value` constrained to the inclusive `[lower, upper]` range.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_core::clamp;
+///
+/// assert_eq!(clamp(120, 0, 100)?, 100);
+/// assert_eq!(clamp(-1, 0, 100)?, 0);
+/// assert_eq!(clamp(42, 0, 100)?, 42);
+/// # Ok::<(), bluetape_rs_core::ValidationError>(())
+/// ```
+///
+/// # Errors
+///
+/// Returns [`ValidationError::InvalidRange`] when `lower > upper`, or
+/// [`ValidationError::NonFinite`] when any floating-point input is not finite.
 pub fn clamp<T>(value: T, lower: T, upper: T) -> Result<T, ValidationError>
 where
     T: Number,

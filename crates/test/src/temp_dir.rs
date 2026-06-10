@@ -5,6 +5,20 @@ use std::time::{SystemTime, UNIX_EPOCH};
 static NEXT_TEMP_ID: AtomicU64 = AtomicU64::new(0);
 
 /// Temporary directory removed on drop.
+///
+/// The directory is created under [`std::env::temp_dir`] with a process-local
+/// unique suffix. On Unix platforms it is created with `0o700` permissions.
+///
+/// # Examples
+///
+/// ```
+/// use bluetape_rs_test::TempDir;
+///
+/// let temp = TempDir::new("bluetape-rs")?;
+/// assert!(temp.path().is_dir());
+/// temp.close()?;
+/// # Ok::<(), std::io::Error>(())
+/// ```
 #[derive(Debug)]
 pub struct TempDir {
     path: PathBuf,
@@ -12,6 +26,26 @@ pub struct TempDir {
 
 impl TempDir {
     /// Creates a temporary directory under the process temp directory.
+    ///
+    /// `prefix` must be a single relative path segment. Empty prefixes,
+    /// absolute paths, and values containing path separators are rejected.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::TempDir;
+    ///
+    /// let temp = TempDir::new("cache-test")?;
+    /// assert!(temp.path().exists());
+    /// temp.close()?;
+    /// # Ok::<(), std::io::Error>(())
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`std::io::ErrorKind::InvalidInput`] when `prefix` is not a
+    /// single relative path segment. Also returns any filesystem error raised
+    /// while creating the directory.
     pub fn new(prefix: impl AsRef<str>) -> std::io::Result<Self> {
         let prefix = prefix.as_ref();
         validate_temp_prefix(prefix)?;
@@ -27,11 +61,39 @@ impl TempDir {
     }
 
     /// Returns the temporary directory path.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::TempDir;
+    ///
+    /// let temp = TempDir::new("path-test")?;
+    /// assert!(temp.path().ends_with(temp.path().file_name().unwrap()));
+    /// temp.close()?;
+    /// # Ok::<(), std::io::Error>(())
+    /// ```
     pub fn path(&self) -> &Path {
         &self.path
     }
 
     /// Removes the directory now and prevents duplicate cleanup in `Drop`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bluetape_rs_test::TempDir;
+    ///
+    /// let temp = TempDir::new("close-test")?;
+    /// let path = temp.path().to_path_buf();
+    /// temp.close()?;
+    /// assert!(!path.exists());
+    /// # Ok::<(), std::io::Error>(())
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns any filesystem error raised while recursively removing the
+    /// temporary directory.
     pub fn close(mut self) -> std::io::Result<()> {
         close_path(&mut self.path, |path| std::fs::remove_dir_all(path))
     }
