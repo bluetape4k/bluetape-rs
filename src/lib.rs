@@ -6,3 +6,7 @@
 
 #[cfg(feature = "core")]
 pub use bluetape_rs_core as core;
+#[cfg(feature = "logging")]
+pub use bluetape_rs_logging as logging;
+#[cfg(feature = "test")]
+pub use bluetape_rs_test as test;
