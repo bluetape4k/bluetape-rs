@@ -1,4 +1,5 @@
 use crate::*;
+use std::error::Error;
 use tracing::info;
 
 #[test]
@@ -40,6 +41,22 @@ fn rejects_control_or_oversized_correlation_ids_with_typed_errors() {
         Err(CorrelationIdError::UnsafeCharacter { ch: '\u{061c}' })
     );
     assert_eq!(
+        CorrelationId::new("request\u{200e}forged"),
+        Err(CorrelationIdError::UnsafeCharacter { ch: '\u{200e}' })
+    );
+    assert_eq!(
+        CorrelationId::new("request\u{200f}forged"),
+        Err(CorrelationIdError::UnsafeCharacter { ch: '\u{200f}' })
+    );
+    assert_eq!(
+        CorrelationId::new("request\u{202a}forged"),
+        Err(CorrelationIdError::UnsafeCharacter { ch: '\u{202a}' })
+    );
+    assert_eq!(
+        CorrelationId::new("request\u{2066}forged"),
+        Err(CorrelationIdError::UnsafeCharacter { ch: '\u{2066}' })
+    );
+    assert_eq!(
         CorrelationId::new("x".repeat(MAX_CORRELATION_ID_LEN + 1)),
         Err(CorrelationIdError::TooLong {
             len: MAX_CORRELATION_ID_LEN + 1,
@@ -47,6 +64,29 @@ fn rejects_control_or_oversized_correlation_ids_with_typed_errors() {
         })
     );
     assert!(CorrelationId::new("x".repeat(MAX_CORRELATION_ID_LEN)).is_ok());
+}
+
+#[test]
+fn correlation_id_error_formats_public_messages() {
+    let blank = CorrelationIdError::Blank;
+    let too_long = CorrelationIdError::TooLong { len: 257, max: 256 };
+    let unsafe_character = CorrelationIdError::UnsafeCharacter { ch: '\u{202e}' };
+
+    assert_eq!(
+        blank.to_string(),
+        "correlation id must contain visible text"
+    );
+    assert_eq!(
+        too_long.to_string(),
+        "correlation id is 257 bytes, exceeding the 256 byte limit"
+    );
+    assert_eq!(
+        unsafe_character.to_string(),
+        "correlation id contains unsafe character U+202E"
+    );
+    assert!(blank.source().is_none());
+    assert!(too_long.source().is_none());
+    assert!(unsafe_character.source().is_none());
 }
 
 #[test]

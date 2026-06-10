@@ -116,3 +116,85 @@ fn validation_error_implements_std_error() {
     assert_error(&error);
     assert_eq!(error.to_string(), "name must not be blank");
 }
+
+#[test]
+fn validation_error_formats_every_public_variant() {
+    let cases = [
+        (
+            ValidationError::Empty {
+                name: "name".to_owned(),
+            },
+            "name must not be empty",
+        ),
+        (
+            ValidationError::Blank {
+                name: "name".to_owned(),
+            },
+            "name must not be blank",
+        ),
+        (
+            ValidationError::InvalidRange {
+                name: "port".to_owned(),
+                lower: "10".to_owned(),
+                upper: "1".to_owned(),
+                kind: RangeKind::Inclusive,
+            },
+            "port inclusive range is invalid: lower 10 must be less than upper 1",
+        ),
+        (
+            ValidationError::OutOfRange {
+                name: "port".to_owned(),
+                value: "11".to_owned(),
+                lower: "1".to_owned(),
+                upper: "10".to_owned(),
+                kind: RangeKind::Inclusive,
+            },
+            "port[11] must be in range [1, 10]",
+        ),
+        (
+            ValidationError::OutOfRange {
+                name: "index".to_owned(),
+                value: "10".to_owned(),
+                lower: "0".to_owned(),
+                upper: "10".to_owned(),
+                kind: RangeKind::HalfOpen,
+            },
+            "index[10] must be in range [0, 10)",
+        ),
+        (
+            ValidationError::NotPositive {
+                name: "workers".to_owned(),
+                value: "0".to_owned(),
+            },
+            "workers[0] must be positive",
+        ),
+        (
+            ValidationError::Negative {
+                name: "count".to_owned(),
+                value: "-1".to_owned(),
+            },
+            "count[-1] must be non-negative",
+        ),
+        (
+            ValidationError::NonFinite {
+                name: "ratio".to_owned(),
+                value: "NaN".to_owned(),
+            },
+            "ratio[NaN] must be finite",
+        ),
+        (
+            ValidationError::NegativeLimit {
+                name: "max_bytes".to_owned(),
+                value: -1,
+            },
+            "max_bytes[-1] must be non-negative",
+        ),
+    ];
+
+    for (error, expected) in cases {
+        assert_eq!(error.to_string(), expected);
+        assert!(error.source().is_none());
+    }
+    assert_eq!(RangeKind::Inclusive.to_string(), "inclusive");
+    assert_eq!(RangeKind::HalfOpen.to_string(), "half-open");
+}

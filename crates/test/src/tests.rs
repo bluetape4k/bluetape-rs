@@ -7,6 +7,17 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::Duration;
 
+#[derive(Debug)]
+struct TestSourceError(&'static str);
+
+impl std::fmt::Display for TestSourceError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str(self.0)
+    }
+}
+
+impl Error for TestSourceError {}
+
 #[tokio::test(start_paused = true)]
 async fn eventually_succeeds_after_retries() {
     let attempts = Arc::new(AtomicUsize::new(0));
@@ -97,6 +108,47 @@ fn async_assert_error_exposes_typed_source() {
 
     let error = AsyncAssertError::BecameUnstable { error: SourceError };
     assert!(error.source().is_some());
+}
+
+#[test]
+fn async_assert_error_formats_every_public_variant() {
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    struct SourceError(&'static str);
+
+    impl std::fmt::Display for SourceError {
+        fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str(self.0)
+        }
+    }
+
+    impl Error for SourceError {}
+
+    let timeout_without_error = AsyncAssertError::<SourceError>::Timeout { last_error: None };
+    let timeout_with_error = AsyncAssertError::Timeout {
+        last_error: Some(SourceError("not ready")),
+    };
+    let unstable = AsyncAssertError::BecameUnstable {
+        error: SourceError("changed"),
+    };
+
+    assert_eq!(
+        timeout_without_error.to_string(),
+        "condition did not succeed before timeout"
+    );
+    assert_eq!(
+        timeout_with_error.to_string(),
+        "condition did not succeed before timeout: not ready"
+    );
+    assert_eq!(unstable.to_string(), "condition became unstable: changed");
+    assert!(timeout_without_error.source().is_none());
+    assert_eq!(
+        timeout_with_error.source().map(ToString::to_string),
+        Some("not ready".to_owned())
+    );
+    assert_eq!(
+        unstable.source().map(ToString::to_string),
+        Some("changed".to_owned())
+    );
 }
 
 #[tokio::test(start_paused = true)]
@@ -214,6 +266,28 @@ fn multithreading_tester_rejects_invalid_configuration() {
             blocks: 2
         }
     ));
+
+    let invalid_workers = MultithreadingTester::new()
+        .workers(MAX_WORKERS + 1)
+        .rounds(1)
+        .add(|| Ok::<(), &'static str>(()))
+        .run()
+        .expect_err("invalid workers");
+    assert!(matches!(
+        invalid_workers,
+        ConcurrentAssertError::InvalidWorkers { workers } if workers == MAX_WORKERS + 1
+    ));
+
+    let invalid_rounds = MultithreadingTester::new()
+        .workers(1)
+        .rounds(MAX_ROUNDS + 1)
+        .add(|| Ok::<(), &'static str>(()))
+        .run()
+        .expect_err("invalid rounds");
+    assert!(matches!(
+        invalid_rounds,
+        ConcurrentAssertError::InvalidRounds { rounds } if rounds == MAX_ROUNDS + 1
+    ));
 }
 
 #[tokio::test]
@@ -280,9 +354,48 @@ async fn suspended_job_tester_reports_task_panic() {
         ConcurrentAssertError::WorkerJoinFailed { worker, source } => {
             assert_eq!(worker, None);
             assert!(source.is_panic());
+            let error =
+                ConcurrentAssertError::<TestSourceError>::WorkerJoinFailed { worker, source };
+            assert!(error.to_string().starts_with("worker failed to join:"));
+            assert!(error.source().is_some());
         }
         other => panic!("unexpected error: {other:?}"),
     }
+}
+
+#[tokio::test]
+async fn suspended_job_tester_rejects_invalid_configuration() {
+    let no_blocks = SuspendedJobTester::<&'static str>::new()
+        .workers(1)
+        .rounds(1)
+        .run()
+        .await
+        .expect_err("no blocks");
+    assert!(matches!(no_blocks, ConcurrentAssertError::NoBlocks));
+
+    let invalid_workers = SuspendedJobTester::new()
+        .workers(MAX_WORKERS + 1)
+        .rounds(1)
+        .add(|| async { Ok::<(), &'static str>(()) })
+        .run()
+        .await
+        .expect_err("invalid workers");
+    assert!(matches!(
+        invalid_workers,
+        ConcurrentAssertError::InvalidWorkers { workers } if workers == MAX_WORKERS + 1
+    ));
+
+    let invalid_rounds = SuspendedJobTester::new()
+        .workers(1)
+        .rounds(MAX_ROUNDS + 1)
+        .add(|| async { Ok::<(), &'static str>(()) })
+        .run()
+        .await
+        .expect_err("invalid rounds");
+    assert!(matches!(
+        invalid_rounds,
+        ConcurrentAssertError::InvalidRounds { rounds } if rounds == MAX_ROUNDS + 1
+    ));
 }
 
 #[tokio::test]
@@ -466,8 +579,108 @@ async fn run_concurrently_reports_worker_panic() {
         ConcurrentAssertError::WorkerJoinFailed { worker, source } => {
             assert_eq!(worker, None);
             assert!(source.is_panic());
+            let error =
+                ConcurrentAssertError::<TestSourceError>::WorkerJoinFailed { worker, source };
+            assert!(error.to_string().starts_with("worker failed to join:"));
+            assert!(error.source().is_some());
         }
         other => panic!("unexpected error: {other:?}"),
+    }
+}
+
+#[test]
+fn concurrent_assert_error_formats_public_messages_and_sources() {
+    #[derive(Debug)]
+    struct SourceError(&'static str);
+
+    impl std::fmt::Display for SourceError {
+        fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str(self.0)
+        }
+    }
+
+    impl Error for SourceError {}
+
+    let cases = [
+        (
+            ConcurrentAssertError::<SourceError>::NoBlocks,
+            "no test blocks were registered",
+            false,
+        ),
+        (
+            ConcurrentAssertError::InvalidWorkers { workers: 0 },
+            "workers must be in 1..=2000, got 0",
+            false,
+        ),
+        (
+            ConcurrentAssertError::InvalidRounds { rounds: 0 },
+            "rounds must be in 1..=1000000, got 0",
+            false,
+        ),
+        (
+            ConcurrentAssertError::ZeroWorkers,
+            "workers must be greater than zero",
+            false,
+        ),
+        (
+            ConcurrentAssertError::ZeroIterations,
+            "iterations_per_worker must be greater than zero",
+            false,
+        ),
+        (
+            ConcurrentAssertError::TooFewWorkers {
+                workers: 1,
+                blocks: 2,
+            },
+            "workers (1) must be greater than or equal to registered blocks (2)",
+            false,
+        ),
+        (
+            ConcurrentAssertError::TestBlockFailed {
+                worker: 1,
+                round: 2,
+                block: 3,
+                error: SourceError("block failed"),
+            },
+            "test block 3 failed at worker 1, round 2: block failed",
+            true,
+        ),
+        (
+            ConcurrentAssertError::TestBlockPanicked {
+                worker: 1,
+                round: 2,
+                block: 3,
+            },
+            "test block 3 panicked at worker 1, round 2",
+            false,
+        ),
+        (
+            ConcurrentAssertError::OperationFailed {
+                worker: 1,
+                iteration: 2,
+                error: SourceError("operation failed"),
+            },
+            "concurrent operation failed at worker 1, iteration 2: operation failed",
+            true,
+        ),
+        (
+            ConcurrentAssertError::WorkerThreadSpawnFailed {
+                worker: 1,
+                source: std::io::Error::new(std::io::ErrorKind::PermissionDenied, "no threads"),
+            },
+            "worker thread 1 failed to spawn: no threads",
+            true,
+        ),
+        (
+            ConcurrentAssertError::WorkerThreadPanicked { worker: 1 },
+            "worker thread 1 panicked",
+            false,
+        ),
+    ];
+
+    for (error, expected, has_source) in cases {
+        assert_eq!(error.to_string(), expected);
+        assert_eq!(error.source().is_some(), has_source);
     }
 }
 
