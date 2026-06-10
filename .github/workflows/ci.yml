@@ -14,6 +14,15 @@ on:
       - ".claude/**"
   pull_request:
     branches: [develop, main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".gitignore"
+      - ".editorconfig"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - ".omx/**"
+      - ".claude/**"
   workflow_dispatch:
 
 permissions:

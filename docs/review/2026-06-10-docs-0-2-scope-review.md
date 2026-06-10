@@ -16,6 +16,7 @@
 | Out-of-scope clarity | Pass | Codec, compression, serialization, Testcontainers, SQL, resilience, and leader election remain deferred. |
 | Runtime caveats | Pass | Async helper examples keep Tokio explicit and README points to focused crate usage. |
 | Coverage reporting | Pass | CI now runs `cargo llvm-cov`, writes coverage to the GitHub step summary, and uploads `coverage-rust`. |
+| CI trigger scope | Pass | `pull_request.paths-ignore` skips Markdown/docs-only changes while workflow/source changes still trigger CI. |
 | Scope control | Pass | Documentation and CI reporting only; no Rust source behavior changes. |
 | Risk | Low | Workflow adds one independent coverage job and does not change existing check/test/clippy/rustdoc jobs. |
 
@@ -35,6 +36,7 @@
   - `bluetape-rs-collections`: 97.21% (349/359)
   - `bluetape-rs-async`: 88.15% (424/481)
 - Pass: `actionlint .github/workflows/ci.yml`
+- Pass: CI trigger review confirms Markdown/docs-only pull requests are ignored by `ci.yml`
 - Pass: `cargo fmt --all --check`
 - Pass: `cargo test --workspace --all-features --locked`
 - Pass: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
