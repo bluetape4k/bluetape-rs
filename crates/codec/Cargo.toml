@@ -1,0 +1,17 @@
+[package]
+name = "bluetape-rs-codec"
+version = "0.3.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Codec and encoding helpers for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["codec", "encoding", "hex", "base64"]
+categories = ["encoding", "development-tools"]
+
+[lib]
+name = "bluetape_rs_codec"
+path = "src/lib.rs"
+
+[dependencies]

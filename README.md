@@ -102,6 +102,7 @@ Focused crates use underscore import names:
 bluetape-rs-core = "0.1.1"
 bluetape-rs-logging = "0.1.1"
 bluetape-rs-collections = "0.2.0"
+bluetape-rs-codec = "0.3.0"
 
 [dev-dependencies]
 bluetape-rs-test = "0.1.1"
@@ -111,6 +112,7 @@ bluetape-rs-test = "0.1.1"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
+// bluetape_rs_codec will expose focused encoder APIs during the 0.3.0 line.
 use bluetape_rs_test::TempDir;
 ```
 
@@ -151,6 +153,17 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+For codec helpers:
+
+```toml
+[dependencies]
+bluetape-rs-codec = "0.3.0"
+```
+
+`bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64, and
+URL-safe encoding helpers. Compression remains deferred to `0.4.0`, and
+serde-oriented serialization remains deferred to `0.5.0`.
 
 ## Development
 
