@@ -172,9 +172,12 @@ Defer out of `0.1.0`:
 
 ### `0.3.0` - Codec Helpers
 
-- Add base encoders and small text/binary codec helpers.
-- Keep codec APIs explicit about allocation and error contracts.
-- Add examples and benchmarks only after the API shape is stable.
+- Implemented as `bluetape-rs-codec` with strict hex, Base64 standard,
+  Base64 URL-safe, Bitcoin Base58, byte-oriented Base62, and UTF-8 text
+  boundary helpers.
+- Kept codec APIs explicit about allocation and typed decode error contracts.
+- Added crate-boundary examples and tests; benchmarks remain deferred until
+  usage patterns justify a stable measurement surface.
 
 ### `0.4.0` - Compression Helpers
 
