@@ -8,9 +8,10 @@ more expressive than standard library iterator, slice, and map methods.
 
 ## Scope
 
-- iterator helpers under `iter`
-- map helpers under `map`
-- slice helpers under `slice`
+- iterator helpers under `iter`: owned chunks, sliding windows, predicate
+  chunking, grouping, frequency counts, and `Result` partitioning
+- map helpers under `map`: value transforms for `HashMap`
+- slice helpers under `slice` when borrowing can add value beyond `std`
 - error-aware transforms when they improve `Result`-based flows
 
 ## Usage
@@ -21,7 +22,16 @@ bluetape-rs-collections = "0.2.0"
 ```
 
 ```rust
-use bluetape_rs_collections::{iter, map, slice};
+use std::collections::HashMap;
 
-// Helper APIs will be added under these focused namespaces.
+use bluetape_rs_collections::{iter, map};
+
+let windows: Vec<_> = iter::sliding_windows([1, 2, 3, 4], 3, true)
+    .unwrap()
+    .collect();
+assert_eq!(windows, vec![vec![1, 2, 3], vec![2, 3, 4], vec![3, 4], vec![4]]);
+
+let values = HashMap::from([("a", 1), ("b", 2)]);
+let doubled = map::map_values(values, |value| value * 2);
+assert_eq!(doubled.get("a"), Some(&2));
 ```
