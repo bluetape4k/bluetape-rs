@@ -1,13 +1,14 @@
 //! Codec and encoding helpers for bluetape-rs.
 //!
 //! This crate is the `0.3.0` codec boundary. It starts with strict hexadecimal
-//! encoding and decoding plus focused Base64 helpers, then grows into
-//! additional base-family helpers in follow-up issues.
+//! encoding and decoding plus focused Base64, Base58, and Base62 helpers, then
+//! grows into additional binary/text helpers in follow-up issues.
 //!
 //! Planned APIs stay small and Rust-native:
 //!
 //! - strict hex encoding and decoding
 //! - Base64 standard and URL-safe variants
+//! - Base58 and byte-oriented Base62 variants
 //! - typed errors for caller-owned invalid encoded input
 //! - small binary/text helpers only when they make codec call sites clearer
 //!
@@ -19,9 +20,14 @@
 //! // bluetape-rs = { version = "0.1.1", features = ["codec"] }
 //! ```
 
+mod base58;
+mod base62;
 mod base64;
+mod base_n;
 mod hex;
 
+pub use base58::{Base58DecodeError, decode_base58, encode_base58};
+pub use base62::{Base62DecodeError, decode_base62, encode_base62};
 pub use base64::{
     Base64DecodeError, decode_base64, decode_base64_unpadded, decode_base64_url,
     decode_base64_url_unpadded, encode_base64, encode_base64_unpadded, encode_base64_url,

@@ -3,13 +3,15 @@
 Codec and encoding helpers for bluetape-rs.
 
 This crate starts the `0.3.0` codec milestone with strict hexadecimal encoding
-and decoding primitives plus focused Base64 helpers. Base58, Base62, and small
+and decoding primitives plus focused Base64, Base58, and Base62 helpers. Small
 binary/text helpers are tracked as separate follow-up issues.
 
 ## Scope
 
 - strict hex encoding and decoding
 - Base64 standard and URL-safe variants
+- Bitcoin Base58 byte encoding
+- byte-oriented Base62 encoding
 - typed errors for caller-owned invalid encoded input
 - small binary/text helpers when they make codec call sites clearer
 
@@ -80,3 +82,29 @@ assert_eq!(
 
 Standard helpers use the `+` and `/` alphabet. URL-safe helpers use `-` and
 `_`. Function names ending in `_unpadded` reject `=` padding during decode.
+
+## Base58 And Base62
+
+```rust
+use bluetape_rs_codec::{decode_base58, decode_base62, encode_base58, encode_base62};
+
+assert_eq!(encode_base58(b"Hello, World!"), "72k1xXWG59fYdzSNoA");
+assert_eq!(
+    decode_base58("72k1xXWG59fYdzSNoA").expect("valid Base58"),
+    b"Hello, World!"
+);
+
+assert_eq!(encode_base62(b"Hello, World!"), "1wJfrzvdbtXUOlUjUf");
+assert_eq!(
+    decode_base62("1wJfrzvdbtXUOlUjUf").expect("valid Base62"),
+    b"Hello, World!"
+);
+```
+
+Base58 uses the Bitcoin alphabet
+`123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz` and preserves
+leading zero bytes as `1`. Base62 uses the bluetape alphabet
+`0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz` and preserves
+leading zero bytes as `0`. The current Base62 primitive is byte-oriented;
+integer, UUID, and ID-generator rendering APIs remain separate higher-level
+scope.

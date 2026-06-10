@@ -13,7 +13,8 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 
 ## 현재 상태
 
-현재 package scope는 `0.2.0` collections 및 async/concurrency release line입니다.
+현재 package scope는 release된 `0.2.0` collections/async/concurrency line과
+진행 중인 `0.3.0` codec line을 포함합니다.
 
 완료된 foundation 및 `0.2.0` 작업 범위는 작게 유지합니다.
 
@@ -26,9 +27,10 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 - `0.2.0` line을 위한 focused collection helper와 Tokio-first bounded task helper 추가
 - Kotlin extension API나 Go package shape를 복사하지 않는 Rust-native API 유지
 
-`0.2.0`에는 codec, compression, serialization, Testcontainers, SQL,
-resilience, leader election package가 포함되지 않습니다. 이 트랙들은 dependency
-및 runtime 비용을 명시적으로 다루기 위해 별도 milestone에 남겨둡니다.
+`0.3.0` line은 hex, Base64, Base58, Base62 helper를 위한 명시적
+`bluetape-rs-codec` boundary를 추가합니다. Compression, serialization,
+Testcontainers, SQL, resilience, leader election package는 dependency 및 runtime
+비용을 명시적으로 다루기 위해 별도 milestone에 남겨둡니다.
 
 ## 계획 패키지군
 
@@ -107,6 +109,7 @@ use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_codec::{decode_hex, encode_hex_lower};
 use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
+use bluetape_rs_codec::{decode_base58, encode_base58};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -155,9 +158,9 @@ Codec helper를 사용할 때:
 bluetape-rs-codec = "0.3.0"
 ```
 
-`bluetape-rs-codec`는 strict hex, Base64, URL-safe encoding helper를 위한
-`0.3.0` crate boundary입니다. Compression은 `0.4.0`, serde-oriented
-serialization은 `0.5.0`으로 계속 분리합니다.
+`bluetape-rs-codec`는 strict hex, Base64, Base58, Base62, URL-safe encoding
+helper를 위한 `0.3.0` crate boundary입니다. Compression은 `0.4.0`,
+serde-oriented serialization은 `0.5.0`으로 계속 분리합니다.
 
 ```rust
 use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
@@ -191,6 +194,28 @@ assert_eq!(
 Standard helper는 `+`와 `/` alphabet을 사용하고, URL-safe helper는 `-`와
 `_`를 사용합니다. 이름이 `_unpadded`로 끝나는 함수는 decode 시 `=` padding을
 거부합니다.
+
+```rust
+use bluetape_rs_codec::{decode_base58, decode_base62, encode_base58, encode_base62};
+
+assert_eq!(encode_base58(b"Hello, World!"), "72k1xXWG59fYdzSNoA");
+assert_eq!(
+    decode_base58("72k1xXWG59fYdzSNoA").expect("valid Base58"),
+    b"Hello, World!"
+);
+
+assert_eq!(encode_base62(b"Hello, World!"), "1wJfrzvdbtXUOlUjUf");
+assert_eq!(
+    decode_base62("1wJfrzvdbtXUOlUjUf").expect("valid Base62"),
+    b"Hello, World!"
+);
+```
+
+Base58은 Bitcoin alphabet을 사용하고 leading zero byte를 `1`로 보존합니다.
+Base62는 `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`를
+사용하고 leading zero byte를 `0`으로 보존합니다. 이번 Base62 API는
+byte-oriented primitive이며, integer/UUID rendering은 이후 상위 API에서
+다룰 수 있습니다.
 
 ## 개발
 

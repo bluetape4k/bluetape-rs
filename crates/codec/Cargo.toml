@@ -7,7 +7,7 @@ description = "Codec and encoding helpers for bluetape-rs."
 license.workspace = true
 repository.workspace = true
 readme = "README.md"
-keywords = ["codec", "encoding", "hex", "base64"]
+keywords = ["codec", "encoding", "hex", "base64", "base58"]
 categories = ["encoding", "development-tools"]
 
 [lib]
