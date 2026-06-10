@@ -131,3 +131,16 @@ valid byte prefix when the decoded bytes are not valid UTF-8. Lossy replacement
 is only available through the explicitly named `decode_utf8_text_lossy` helper.
 General string utilities, normalization, compression registries, and
 serde-oriented serialization stay outside this crate.
+
+## Test Layout
+
+Public codec behavior is tested from the crate boundary under `tests/`:
+
+- `tests/hex.rs`
+- `tests/base64.rs`
+- `tests/base58.rs`
+- `tests/base62.rs`
+- `tests/text.rs`
+
+Source-local tests are reserved for private implementation details, such as the
+shared internal base-N converter.
