@@ -1,6 +1,6 @@
 [package]
 name = "bluetape-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.85"
 description = "Rust backend primitives for the bluetape ecosystem."
@@ -25,9 +25,9 @@ license = "MIT"
 repository = "https://github.com/bluetape4k/bluetape-rs"
 
 [workspace.dependencies]
-bluetape-rs-core = { path = "crates/core", version = "0.1.0" }
-bluetape-rs-logging = { path = "crates/logging", version = "0.1.0" }
-bluetape-rs-test = { path = "crates/test", version = "0.1.0" }
+bluetape-rs-core = { path = "crates/core", version = "0.1.1" }
+bluetape-rs-logging = { path = "crates/logging", version = "0.1.1" }
+bluetape-rs-test = { path = "crates/test", version = "0.1.1" }
 tokio = { version = "1.48.0", default-features = false }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", default-features = false }
