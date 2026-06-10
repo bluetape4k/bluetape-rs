@@ -10,7 +10,7 @@
 //! - Base64 standard and URL-safe variants
 //! - Base58 and byte-oriented Base62 variants
 //! - typed errors for caller-owned invalid encoded input
-//! - small binary/text helpers only when they make codec call sites clearer
+//! - UTF-8 text/byte boundary helpers for codec call sites
 //!
 //! Compression belongs to `0.4.0`, and serde-oriented serialization belongs to
 //! `0.5.0`. This crate does not provide those APIs.
@@ -25,6 +25,7 @@ mod base62;
 mod base64;
 mod base_n;
 mod hex;
+mod text;
 
 pub use base58::{Base58DecodeError, decode_base58, encode_base58};
 pub use base62::{Base62DecodeError, decode_base62, encode_base62};
@@ -34,6 +35,7 @@ pub use base64::{
     encode_base64_url_unpadded,
 };
 pub use hex::{HexDecodeError, decode_hex, encode_hex_lower, encode_hex_upper};
+pub use text::{TextDecodeError, decode_utf8_text, decode_utf8_text_lossy, encode_utf8_text};
 
 #[cfg(test)]
 mod tests {
