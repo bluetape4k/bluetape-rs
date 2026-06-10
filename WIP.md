@@ -7,9 +7,8 @@ Scope: `0.2.0` collections and async/concurrency helpers.
 
 `v0.2.0` - Collections and async/concurrency helpers for backend services.
 
-The first release should prove that this repository can deliver small,
-inspectable, well-tested Rust crates instead of mechanically porting the
-Kotlin/JVM `bluetape4k` APIs or copying the `bluetape-go` package shapes.
+This release proves that the repository can add focused Rust-native crates after
+the foundation line without turning into a catch-all utility package.
 
 ## Current State
 
@@ -25,6 +24,12 @@ Kotlin/JVM `bluetape4k` APIs or copying the `bluetape-go` package shapes.
   docs parity.
 - The `0.2.0` package line stays focused on collection helpers and
   async/concurrency primitives that later backend crates can share.
+- Completed `0.2.0` child issues:
+  - #20 collection iterator/map helpers
+  - #21 Tokio task group and bounded concurrency helpers
+  - #22 cancellation, timeout, deadline, and shutdown helpers
+  - #23 deterministic async/concurrency test coverage
+  - #24 README and WIP parity
 
 ## `0.1.0` Scope
 
@@ -60,7 +65,7 @@ Kotlin/JVM `bluetape4k` APIs or copying the `bluetape-go` package shapes.
 
 This roadmap follows the broad shape of `bluetape-go` while keeping package
 contracts Rust-native. GitHub milestones should be opened only when the next
-release window is ready; for now only `0.1.0` exists in GitHub.
+release window is ready; `0.2.0` is the active milestone in GitHub.
 
 | Milestone | Theme | Notes |
 |---|---|---|
@@ -139,7 +144,8 @@ Defer out of `0.1.0`:
 ### `0.2.0` - Collections and Async/Concurrency Helpers
 
 - Add focused collection helpers only where `std`, `itertools`, or existing
-  crates do not already provide the obvious answer.
+  crates do not already provide the obvious answer. Implemented as
+  `bluetape-rs-collections` with iterator, map, slice, and page value helpers.
 - Add Tokio-first task group and bounded concurrency helpers. Implemented
   initially as `bluetape-rs-async` with `try_map_bounded` and
   `map_bounded_collect`.
@@ -147,8 +153,14 @@ Defer out of `0.1.0`:
   `with_timeout`, `with_deadline`, `run_until_cancelled`,
   `with_timeout_or_cancel`, `CancellationSource`, `CancellationToken`, and
   shutdown signal pairs.
-- Add deterministic async test patterns using `bluetape-rs-test`.
-- Prove no task leaks or unbounded resource growth in tests.
+- Add deterministic async test patterns using `bluetape-rs-test`. Implemented
+  integration coverage with paused time, bounded stress, and eventual/consistent
+  assertions.
+- Prove no task leaks or unbounded resource growth in tests. Implemented
+  abort/drain and drop-counter checks for started sibling futures.
+- Deferred from `0.2.0`: codec, compression, serialization, Testcontainers,
+  SQL, resilience, leader election, cache/coordination, AWS, text, audit, graph,
+  and rule-engine work.
 
 ### `0.3.0` - Codec Helpers
 
