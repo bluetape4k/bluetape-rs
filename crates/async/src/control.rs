@@ -30,6 +30,11 @@ impl fmt::Display for AsyncControlError {
 impl Error for AsyncControlError {}
 
 /// Handle used to request cancellation for one or more [`CancellationToken`]s.
+///
+/// Cloning the source creates another owner that can request cancellation.
+/// Dropping every source without calling [`CancellationSource::cancel`] also
+/// wakes tokens; receivers treat a source-less channel as cancelled because no
+/// owner remains able to make a later positive decision.
 #[derive(Debug, Clone)]
 pub struct CancellationSource {
     sender: watch::Sender<bool>,
@@ -55,6 +60,9 @@ impl CancellationSource {
     }
 
     /// Creates another token linked to this source.
+    ///
+    /// Tokens are independent receivers over the same cancellation state. A
+    /// late token observes an already-cancelled source immediately.
     #[must_use]
     pub fn token(&self) -> CancellationToken {
         CancellationToken {
@@ -78,6 +86,9 @@ impl CancellationSource {
 }
 
 /// Receiver-side cancellation token.
+///
+/// A token is a listener, not an owner. Dropping a token never cancels sibling
+/// tokens; only [`CancellationSource::cancel`] or dropping all sources does.
 #[derive(Debug, Clone)]
 pub struct CancellationToken {
     receiver: watch::Receiver<bool>,
@@ -93,7 +104,9 @@ impl CancellationToken {
     /// Waits until cancellation is requested or the source is dropped.
     ///
     /// Dropping the source is treated as cancellation because no owner remains
-    /// able to make a later positive shutdown decision.
+    /// able to make a later positive shutdown decision. In that source-drop
+    /// case [`CancellationToken::is_cancelled`] still reflects the last observed
+    /// boolean state, which can remain `false`.
     pub async fn cancelled(&mut self) {
         if *self.receiver.borrow() {
             return;
@@ -111,6 +124,9 @@ impl CancellationToken {
 }
 
 /// Trigger side of a shutdown signal pair.
+///
+/// This is a domain-named wrapper around [`CancellationSource`] for graceful
+/// shutdown flows.
 #[derive(Debug, Clone)]
 pub struct ShutdownTrigger {
     source: CancellationSource,
@@ -138,6 +154,9 @@ impl ShutdownTrigger {
 }
 
 /// Listener side of a shutdown signal pair.
+///
+/// Dropping all triggers wakes listeners the same way an explicit shutdown
+/// request does, because no owner remains able to keep the service running.
 #[derive(Debug, Clone)]
 pub struct ShutdownSignal {
     token: CancellationToken,
@@ -203,6 +222,7 @@ where
 ///
 /// Dropping this wrapper future does not convert caller cancellation into
 /// [`AsyncControlError::Cancelled`]; the inner future is dropped normally.
+/// Dropping every source for `token` is treated the same as cancellation.
 ///
 /// # Errors
 ///
@@ -224,6 +244,7 @@ where
 /// Runs a future until it completes, times out, or cancellation is requested.
 ///
 /// Cancellation wins when the token and timeout are both ready.
+/// Dropping every source for `token` is treated the same as cancellation.
 ///
 /// # Errors
 ///
@@ -248,6 +269,7 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::future::pending;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -264,6 +286,20 @@ mod tests {
         fn drop(&mut self) {
             self.counter.fetch_add(1, Ordering::SeqCst);
         }
+    }
+
+    #[test]
+    fn async_control_error_formats_public_error_messages() {
+        assert_eq!(
+            AsyncControlError::TimedOut.to_string(),
+            "operation timed out"
+        );
+        assert_eq!(
+            AsyncControlError::Cancelled.to_string(),
+            "operation was cancelled"
+        );
+        assert!(AsyncControlError::TimedOut.source().is_none());
+        assert!(AsyncControlError::Cancelled.source().is_none());
     }
 
     #[tokio::test]
@@ -296,6 +332,19 @@ mod tests {
         assert_eq!(actual, Err(AsyncControlError::TimedOut));
     }
 
+    #[tokio::test(start_paused = true)]
+    async fn with_timeout_or_cancel_reports_timeout_when_token_is_idle() {
+        let (_source, token) = CancellationSource::new();
+
+        let actual = with_timeout_or_cancel(Duration::from_millis(10), token, async {
+            sleep(Duration::from_secs(1)).await;
+            7
+        })
+        .await;
+
+        assert_eq!(actual, Err(AsyncControlError::TimedOut));
+    }
+
     #[tokio::test]
     async fn run_until_cancelled_returns_value_before_cancellation() {
         let (_source, token) = CancellationSource::new();
@@ -303,6 +352,26 @@ mod tests {
         let actual = run_until_cancelled(token, async { 7 }).await;
 
         assert_eq!(actual, Ok(7));
+    }
+
+    #[tokio::test]
+    async fn cancellation_token_completes_when_all_sources_are_dropped() {
+        let (source, mut token) = CancellationSource::new();
+
+        drop(source);
+        token.cancelled().await;
+
+        assert!(!token.is_cancelled());
+    }
+
+    #[tokio::test]
+    async fn run_until_cancelled_reports_cancelled_when_source_is_dropped() {
+        let (source, token) = CancellationSource::new();
+
+        drop(source);
+        let actual = run_until_cancelled(token, pending::<()>()).await;
+
+        assert_eq!(actual, Err(AsyncControlError::Cancelled));
     }
 
     #[tokio::test]
@@ -318,7 +387,7 @@ mod tests {
                 run_until_cancelled(token, async move {
                     let _guard = DropCounter { counter: dropped };
                     started.notify_one();
-                    sleep(Duration::from_secs(60)).await;
+                    pending::<()>().await;
                     7
                 })
                 .await
@@ -348,6 +417,16 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn with_timeout_or_cancel_reports_cancelled_when_source_is_dropped() {
+        let (source, token) = CancellationSource::new();
+
+        drop(source);
+        let actual = with_timeout_or_cancel(Duration::from_secs(1), token, pending::<()>()).await;
+
+        assert_eq!(actual, Err(AsyncControlError::Cancelled));
+    }
+
+    #[tokio::test]
     async fn shutdown_signal_notifies_all_listeners() {
         let (trigger, mut signal) = shutdown_signal();
         let mut second = trigger.signal();
@@ -366,5 +445,15 @@ mod tests {
         assert!(first_task.await.unwrap());
         assert!(second_task.await.unwrap());
         assert!(trigger.is_shutdown_requested());
+    }
+
+    #[tokio::test]
+    async fn shutdown_signal_waits_until_trigger_is_dropped() {
+        let (trigger, mut signal) = shutdown_signal();
+
+        drop(trigger);
+        signal.wait().await;
+
+        assert!(!signal.is_shutdown_requested());
     }
 }

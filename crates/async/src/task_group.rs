@@ -17,6 +17,11 @@ pub const DEFAULT_MAX_CONCURRENCY: usize = 16;
 pub const MAX_CONCURRENCY: usize = 10_000;
 
 /// Error returned by bounded task helpers.
+///
+/// Operation errors preserve the caller-provided error as [`std::error::Error`]
+/// source when `E` implements `Error`. Tokio join failures expose the original
+/// [`JoinError`] as the source so callers can distinguish panics from external
+/// task cancellation.
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum TaskGroupError<E> {
@@ -39,6 +44,11 @@ pub enum TaskGroupError<E> {
     /// A spawned Tokio task failed to join.
     TaskJoinFailed {
         /// Zero-based input index when the failed task reported it.
+        ///
+        /// Current helper implementations return `None` for Tokio join failures
+        /// because [`JoinSet`] reports panics and runtime cancellation without
+        /// the task's input index. Future helper variants may use `Some` if they
+        /// can preserve that association.
         index: Option<usize>,
         /// Tokio join error.
         source: JoinError,
@@ -110,6 +120,10 @@ pub struct TaskFailure<E> {
 }
 
 /// Operation results captured by [`map_bounded_collect`].
+///
+/// Successes and failures are sorted by input index before the report is
+/// returned. This keeps result inspection deterministic even though tasks
+/// complete concurrently.
 #[derive(Debug, Clone, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct TaskGroupReport<T, E> {
@@ -148,6 +162,27 @@ enum TaskOutcome<T, E> {
 ///
 /// Results are returned in input order. On the first operation or join failure,
 /// all sibling tasks are aborted and drained before the error is returned.
+/// This helper is first-error oriented; use [`map_bounded_collect`] when every
+/// operation should be allowed to finish and operation errors should be
+/// collected instead of cancelling siblings.
+/// Dropping the returned future aborts all in-flight tasks through Tokio
+/// [`JoinSet`] drop semantics.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn demo() -> Result<(), bluetape_rs_async::TaskGroupError<&'static str>> {
+/// use bluetape_rs_async::try_map_bounded;
+///
+/// let doubled = try_map_bounded([1, 2, 3], 2, |value| async move {
+///     Ok::<_, &'static str>(value * 2)
+/// })
+/// .await?;
+///
+/// assert_eq!(doubled, vec![2, 4, 6]);
+/// # Ok(())
+/// # }
+/// ```
 ///
 /// # Errors
 ///
@@ -218,6 +253,29 @@ where
 /// Operation errors are stored in the returned [`TaskGroupReport`] instead of
 /// cancelling sibling tasks. Tokio join failures still abort and drain remaining
 /// tasks because they indicate a task panic or runtime-level cancellation.
+/// Dropping the returned future aborts all in-flight tasks through Tokio
+/// [`JoinSet`] drop semantics.
+///
+/// # Examples
+///
+/// ```no_run
+/// # async fn demo() -> Result<(), bluetape_rs_async::TaskGroupError<&'static str>> {
+/// use bluetape_rs_async::map_bounded_collect;
+///
+/// let report = map_bounded_collect([1, 2, 3], 2, |value| async move {
+///     if value % 2 == 0 {
+///         Ok(value)
+///     } else {
+///         Err("odd")
+///     }
+/// })
+/// .await?;
+///
+/// assert_eq!(report.successes.len(), 1);
+/// assert_eq!(report.failures.len(), 2);
+/// # Ok(())
+/// # }
+/// ```
 ///
 /// # Errors
 ///
@@ -347,11 +405,14 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::future::pending;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::{error, fmt};
 
     use tokio::sync::Notify;
-    use tokio::time::{Duration, sleep};
+    use tokio::task::yield_now;
+    use tokio::time::{Duration, sleep, timeout};
 
     use super::*;
 
@@ -363,6 +424,55 @@ mod tests {
         fn drop(&mut self) {
             self.counter.fetch_add(1, Ordering::SeqCst);
         }
+    }
+
+    #[derive(Debug, Eq, PartialEq)]
+    struct StaticError(&'static str);
+
+    impl fmt::Display for StaticError {
+        fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+            formatter.write_str(self.0)
+        }
+    }
+
+    impl error::Error for StaticError {}
+
+    #[test]
+    fn task_group_error_formats_validation_failures() {
+        let zero = TaskGroupError::<StaticError>::ZeroConcurrency;
+        let excessive = TaskGroupError::<StaticError>::ExcessiveConcurrency {
+            max_concurrency: MAX_CONCURRENCY + 1,
+            upper_bound: MAX_CONCURRENCY,
+        };
+
+        assert_eq!(
+            zero.to_string(),
+            "max_concurrency must be greater than zero"
+        );
+        assert_eq!(
+            excessive.to_string(),
+            format!(
+                "max_concurrency must be less than or equal to {}, got {}",
+                MAX_CONCURRENCY,
+                MAX_CONCURRENCY + 1
+            )
+        );
+        assert!(zero.source().is_none());
+        assert!(excessive.source().is_none());
+    }
+
+    #[test]
+    fn task_group_error_preserves_operation_error_source() {
+        let error = TaskGroupError::TaskFailed {
+            index: 3,
+            error: StaticError("operation failed"),
+        };
+
+        assert_eq!(error.to_string(), "task 3 failed: operation failed");
+        assert_eq!(
+            error.source().map(ToString::to_string),
+            Some("operation failed".to_owned())
+        );
     }
 
     #[tokio::test]
@@ -423,7 +533,7 @@ mod tests {
 
                     let _guard = DropCounter { counter: dropped };
                     started.notify_one();
-                    sleep(Duration::from_secs(60)).await;
+                    pending::<()>().await;
                     Ok::<_, &'static str>(value)
                 }
             }
@@ -478,6 +588,38 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn map_bounded_collect_reports_empty_input() {
+        let report = map_bounded_collect(Vec::<i32>::new(), 4, |value| async move {
+            Ok::<_, StaticError>(value)
+        })
+        .await
+        .unwrap();
+
+        assert!(report.is_success());
+        assert_eq!(report.len(), 0);
+        assert!(report.is_empty());
+    }
+
+    #[tokio::test]
+    async fn map_bounded_collect_rejects_invalid_concurrency() {
+        let zero =
+            map_bounded_collect([1], 0, |value| async move { Ok::<_, StaticError>(value) }).await;
+        let excessive = map_bounded_collect([1], MAX_CONCURRENCY + 1, |value| async move {
+            Ok::<_, StaticError>(value)
+        })
+        .await;
+
+        assert!(matches!(zero, Err(TaskGroupError::ZeroConcurrency)));
+        assert!(matches!(
+            excessive,
+            Err(TaskGroupError::ExcessiveConcurrency {
+                max_concurrency,
+                upper_bound: MAX_CONCURRENCY
+            }) if max_concurrency == MAX_CONCURRENCY + 1
+        ));
+    }
+
+    #[tokio::test]
     async fn rejects_zero_concurrency() {
         let actual =
             try_map_bounded([1], 0, |value| async move { Ok::<_, &'static str>(value) }).await;
@@ -503,19 +645,24 @@ mod tests {
 
     #[tokio::test]
     async fn reports_join_failure_and_drains_remaining_tasks() {
+        let sibling_started = Arc::new(Notify::new());
         let dropped = Arc::new(AtomicUsize::new(0));
 
         let actual = try_map_bounded(0..2, 2, {
+            let sibling_started = Arc::clone(&sibling_started);
             let dropped = Arc::clone(&dropped);
             move |value| {
+                let sibling_started = Arc::clone(&sibling_started);
                 let dropped = Arc::clone(&dropped);
                 async move {
                     if value == 0 {
+                        sibling_started.notified().await;
                         panic!("task panic");
                     }
 
                     let _guard = DropCounter { counter: dropped };
-                    sleep(Duration::from_secs(60)).await;
+                    sibling_started.notify_one();
+                    pending::<()>().await;
                     Ok::<_, &'static str>(value)
                 }
             }
@@ -524,8 +671,146 @@ mod tests {
 
         assert!(matches!(
             actual,
-            Err(TaskGroupError::TaskJoinFailed { source, .. }) if source.is_panic()
+            Err(TaskGroupError::TaskJoinFailed {
+                index: None,
+                source,
+            }) if source.is_panic()
         ));
         assert_eq!(dropped.load(Ordering::SeqCst), 1);
+    }
+
+    #[tokio::test]
+    async fn join_failure_formats_and_exposes_source() {
+        let actual = try_map_bounded([1], 1, |_| async move {
+            panic!("task panic");
+            #[allow(unreachable_code)]
+            Ok::<_, StaticError>(())
+        })
+        .await;
+
+        let Err(TaskGroupError::TaskJoinFailed {
+            index: None,
+            source,
+        }) = actual
+        else {
+            panic!("expected join failure");
+        };
+        let error = TaskGroupError::<StaticError>::TaskJoinFailed {
+            index: Some(7),
+            source,
+        };
+
+        assert!(error.to_string().starts_with("task 7 failed to join:"));
+        assert!(error.source().is_some());
+    }
+
+    #[tokio::test]
+    async fn map_bounded_collect_join_failure_drains_remaining_tasks() {
+        let sibling_started = Arc::new(Notify::new());
+        let dropped = Arc::new(AtomicUsize::new(0));
+
+        let actual = map_bounded_collect(0..2, 2, {
+            let sibling_started = Arc::clone(&sibling_started);
+            let dropped = Arc::clone(&dropped);
+            move |value| {
+                let sibling_started = Arc::clone(&sibling_started);
+                let dropped = Arc::clone(&dropped);
+                async move {
+                    if value == 0 {
+                        sibling_started.notified().await;
+                        panic!("task panic");
+                    }
+
+                    let _guard = DropCounter { counter: dropped };
+                    sibling_started.notify_one();
+                    pending::<()>().await;
+                    Ok::<_, StaticError>(value)
+                }
+            }
+        })
+        .await;
+
+        assert!(matches!(
+            actual,
+            Err(TaskGroupError::TaskJoinFailed {
+                index: None,
+                source,
+            }) if source.is_panic()
+        ));
+        assert_eq!(dropped.load(Ordering::SeqCst), 1);
+    }
+
+    #[tokio::test]
+    async fn dropping_try_map_bounded_future_aborts_started_tasks() {
+        let started = Arc::new(AtomicUsize::new(0));
+        let dropped = Arc::new(AtomicUsize::new(0));
+
+        let task = tokio::spawn(try_map_bounded(0..4, 4, {
+            let started = Arc::clone(&started);
+            let dropped = Arc::clone(&dropped);
+            move |value| {
+                let started = Arc::clone(&started);
+                let dropped = Arc::clone(&dropped);
+                async move {
+                    let _guard = DropCounter { counter: dropped };
+                    started.fetch_add(1, Ordering::SeqCst);
+                    pending::<()>().await;
+                    Ok::<_, StaticError>(value)
+                }
+            }
+        }));
+
+        while started.load(Ordering::SeqCst) < 4 {
+            yield_now().await;
+        }
+
+        task.abort();
+        assert!(task.await.unwrap_err().is_cancelled());
+        timeout(Duration::from_secs(1), async {
+            while dropped.load(Ordering::SeqCst) < 4 {
+                yield_now().await;
+            }
+        })
+        .await
+        .unwrap();
+
+        assert_eq!(dropped.load(Ordering::SeqCst), 4);
+    }
+
+    #[tokio::test]
+    async fn dropping_map_bounded_collect_future_aborts_started_tasks() {
+        let started = Arc::new(AtomicUsize::new(0));
+        let dropped = Arc::new(AtomicUsize::new(0));
+
+        let task = tokio::spawn(map_bounded_collect(0..4, 4, {
+            let started = Arc::clone(&started);
+            let dropped = Arc::clone(&dropped);
+            move |value| {
+                let started = Arc::clone(&started);
+                let dropped = Arc::clone(&dropped);
+                async move {
+                    let _guard = DropCounter { counter: dropped };
+                    started.fetch_add(1, Ordering::SeqCst);
+                    pending::<()>().await;
+                    Ok::<_, StaticError>(value)
+                }
+            }
+        }));
+
+        while started.load(Ordering::SeqCst) < 4 {
+            yield_now().await;
+        }
+
+        task.abort();
+        assert!(task.await.unwrap_err().is_cancelled());
+        timeout(Duration::from_secs(1), async {
+            while dropped.load(Ordering::SeqCst) < 4 {
+                yield_now().await;
+            }
+        })
+        .await
+        .unwrap();
+
+        assert_eq!(dropped.load(Ordering::SeqCst), 4);
     }
 }

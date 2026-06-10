@@ -41,11 +41,15 @@ where
 ///
 /// Keys and the original hasher are preserved for all values transformed before
 /// an error occurs. The partially transformed map is discarded when an error is
-/// returned.
+/// returned. Because [`HashMap`] iteration order is intentionally unspecified,
+/// "first error" means the first error observed in that map's iteration order,
+/// not insertion order or key order.
 ///
 /// # Errors
 ///
-/// Returns the first error produced by `transform`.
+/// Returns the first error produced by `transform` in [`HashMap`] iteration
+/// order. `transform` may already have run for entries visited before that
+/// error.
 ///
 /// # Examples
 ///

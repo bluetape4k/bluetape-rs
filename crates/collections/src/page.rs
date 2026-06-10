@@ -36,7 +36,9 @@ impl Error for PageError {}
 /// A materialized page of items with page-number metadata.
 ///
 /// Page numbers are zero-based. `total_items` is the total number of matching
-/// items across all pages, not the number of items in this page.
+/// items across all pages, not the number of items in this page. Constructors
+/// validate only that `page_size` is positive; callers are responsible for
+/// supplying metadata consistent with their storage/query layer.
 ///
 /// # Examples
 ///
@@ -69,6 +71,11 @@ impl<T> Page<T> {
     }
 
     /// Creates a page with explicit page-number metadata.
+    ///
+    /// This constructor intentionally preserves caller-supplied metadata as-is.
+    /// It does not reject an item count larger than `page_size`, a page number
+    /// beyond `total_pages`, or a `total_items` value smaller than the materialized
+    /// item count.
     ///
     /// # Errors
     ///
@@ -190,6 +197,25 @@ mod tests {
         let actual = Page::with_meta(vec![1], 0, 0, 1);
 
         assert_eq!(actual, Err(PageError::InvalidPageSize { value: 0 }));
+    }
+
+    #[test]
+    fn with_meta_preserves_caller_supplied_inconsistent_metadata() {
+        let page = Page::with_meta(vec![1, 2, 3], 9, 2, 1).unwrap();
+
+        assert_eq!(page.items(), &[1, 2, 3]);
+        assert_eq!(page.page_number(), 9);
+        assert_eq!(page.page_size(), 2);
+        assert_eq!(page.total_items(), 1);
+        assert_eq!(page.total_pages(), 1);
+    }
+
+    #[test]
+    fn page_error_formats_public_error_message() {
+        let error = PageError::InvalidPageSize { value: 0 };
+
+        assert_eq!(error.to_string(), "page_size must be positive, got 0");
+        assert!(error.source().is_none());
     }
 
     #[test]

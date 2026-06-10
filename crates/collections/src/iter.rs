@@ -209,7 +209,9 @@ where
 /// Splits an iterable whenever `predicate` marks the next chunk's first item.
 ///
 /// The matching item is retained as the first item in the new chunk, matching
-/// bluetape4k-core's `chunkedBy` behavior.
+/// bluetape4k-core's `chunkedBy` behavior. Empty input returns no chunks. If
+/// the first item matches the predicate, it starts the first chunk; no empty
+/// leading chunk is emitted.
 ///
 /// # Examples
 ///
@@ -246,7 +248,8 @@ where
 /// Counts occurrences of each item.
 ///
 /// Rust's standard library exposes the building blocks for this via
-/// [`Iterator::fold`], but not a named frequency helper.
+/// [`Iterator::fold`], but not a named frequency helper. The returned
+/// [`HashMap`] has unspecified iteration order.
 ///
 /// # Examples
 ///
@@ -273,7 +276,9 @@ where
 /// Groups items by a key derived from each item.
 ///
 /// Rust's standard library has the primitives for this through `entry`, but no
-/// built-in `group_by` collector for owned iterators.
+/// built-in `group_by` collector for owned iterators. Items within each group
+/// retain input order, while the returned [`HashMap`] has unspecified key
+/// iteration order.
 ///
 /// # Examples
 ///
@@ -398,6 +403,12 @@ mod tests {
     fn chunked_by_returns_empty_for_empty_input() {
         let actual = chunked_by(Vec::<i32>::new(), |_| true);
         assert!(actual.is_empty());
+    }
+
+    #[test]
+    fn chunked_by_does_not_emit_empty_leading_chunk() {
+        let actual = chunked_by([1, 2, 3], |value| *value == 1);
+        assert_eq!(actual, vec![vec![1, 2, 3]]);
     }
 
     #[test]
