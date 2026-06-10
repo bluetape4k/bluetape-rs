@@ -31,6 +31,8 @@ collection types rather than focused Rust backend helpers.
 | `mapCatching`, `mapIfSuccess`, `forEachCatching` | Rust uses explicit `Result`; `collect::<Result<Vec<_>, _>>()` covers fail-fast collection | Implement only `partition_results` for collect-all successes/errors |
 | map value transform | Standard APIs require manual loop or collect pattern | Implement `map_values` and `try_map_values` |
 | `PaginatedList` | Domain model, not a collection helper | Defer to a pagination/domain crate decision |
+| `safeSubList` follow-up | Standard slices offer checked access, but not signed bound clamping | Implement borrowed `clamped_subslice` |
+| `padTo` follow-up | `Vec::resize` covers owned mutation, not borrowed zero-copy no-op padding | Implement `pad_to` returning `Cow<[T]>` |
 
 ## Implemented 0.2.0 Surface
 
@@ -43,6 +45,8 @@ collection types rather than focused Rust backend helpers.
 - `iter::partition_results`: unwrap `Result` items into `(Vec<T>, Vec<E>)`.
 - `map::map_values`: transform `HashMap` values while preserving keys and hasher.
 - `map::try_map_values`: fallible value transform with fail-fast `Result`.
+- `slice::clamped_subslice`: borrowed clamped slice view for signed bounds.
+- `slice::pad_to`: `Cow` padding helper that borrows when no padding is needed.
 
 ## Rationale
 
@@ -55,5 +59,5 @@ Kotlin/JVM exception-catching helpers because Rust callers should keep typed
 ## Follow-up Issues
 
 - #32: focused slice and list boundary helpers for clamped slicing and owned
-  padding decisions.
+  padding decisions. Implemented as `clamped_subslice` and `pad_to`.
 - #33: Rust-native pagination value types, separated from collection helpers.
