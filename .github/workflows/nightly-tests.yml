@@ -1,0 +1,184 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 19 * * 1-6" # Daily smoke, UTC 19:00 (KST 04:00) Mon-Sat
+    - cron: "0 19 * * 0" # Weekly full, UTC 19:00 (KST 04:00) Sunday
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Nightly scope to run"
+        required: true
+        type: choice
+        default: full
+        options:
+          - smoke
+          - full
+          - docs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-tests
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  RUST_VERSION: "1.85.0"
+
+jobs:
+  plan:
+    name: Plan Nightly Scope
+    runs-on: ubuntu-latest
+    outputs:
+      scope: ${{ steps.plan.outputs.scope }}
+      run_smoke: ${{ steps.plan.outputs.run_smoke }}
+      run_full: ${{ steps.plan.outputs.run_full }}
+      run_docs: ${{ steps.plan.outputs.run_docs }}
+    steps:
+      - id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            scope="${{ inputs.scope }}"
+          elif [[ "${{ github.event.schedule }}" == "0 19 * * 0" ]]; then
+            scope="full"
+          else
+            scope="smoke"
+          fi
+
+          case "$scope" in
+            smoke)
+              run_smoke="true"
+              run_full="false"
+              run_docs="false"
+              ;;
+            full)
+              run_smoke="true"
+              run_full="true"
+              run_docs="true"
+              ;;
+            docs)
+              run_smoke="false"
+              run_full="false"
+              run_docs="true"
+              ;;
+            *)
+              echo "Unsupported scope: $scope" >&2
+              exit 1
+              ;;
+          esac
+
+          {
+            echo "scope=$scope"
+            echo "run_smoke=$run_smoke"
+            echo "run_full=$run_full"
+            echo "run_docs=$run_docs"
+          } >> "$GITHUB_OUTPUT"
+
+  smoke:
+    name: Smoke / fmt, check, clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: plan
+    if: ${{ needs.plan.outputs.run_smoke == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component rustfmt,clippy
+          rustup default "$RUST_VERSION"
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-nightly-smoke-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-nightly-smoke-
+            ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      - name: Check workspace
+        run: cargo check --workspace --all-targets --all-features --locked
+
+      - name: Run clippy
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+  full:
+    name: Full / test workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: plan
+    if: ${{ needs.plan.outputs.run_full == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal
+          rustup default "$RUST_VERSION"
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-nightly-full-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-nightly-full-
+            ${{ runner.os }}-cargo-
+
+      - name: Test workspace
+        run: |
+          for attempt in 1 2 3; do
+            cargo test --workspace --all-features --locked && break
+            echo "Attempt $attempt failed"
+            [ "$attempt" -lt 3 ] && sleep 10 || exit 1
+          done
+
+  docs:
+    name: Docs / rustdoc warnings
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: plan
+    if: ${{ needs.plan.outputs.run_docs == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal
+          rustup default "$RUST_VERSION"
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-nightly-docs-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-nightly-docs-
+            ${{ runner.os }}-cargo-
+
+      - name: Build docs with warnings denied
+        env:
+          RUSTDOCFLAGS: "-D warnings"
+        run: cargo doc --workspace --no-deps --locked
