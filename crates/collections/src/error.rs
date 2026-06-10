@@ -27,3 +27,19 @@ impl fmt::Display for CollectionError {
 }
 
 impl Error for CollectionError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn invalid_size_formats_public_error_message() {
+        let error = CollectionError::InvalidSize {
+            parameter: "window_size",
+            value: 0,
+        };
+
+        assert_eq!(error.to_string(), "window_size must be positive, got 0");
+        assert!(error.source().is_none());
+    }
+}
