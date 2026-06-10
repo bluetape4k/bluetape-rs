@@ -4,6 +4,8 @@
 //! shipped in the first release. Use the focused crates directly when a smaller
 //! dependency surface is preferred.
 
+#[cfg(feature = "collections")]
+pub use bluetape_rs_collections as collections;
 #[cfg(feature = "core")]
 pub use bluetape_rs_core as core;
 #[cfg(feature = "logging")]
