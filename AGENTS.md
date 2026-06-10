@@ -47,6 +47,25 @@ for Rust work in this repo.
   traits, feature flags, typed builders, and compile-fail tests where useful.
 - Favor small crates with clear backend service value over broad utility bags.
 
+## Rust Ecosystem Conventions
+
+- Assume contributors may be new to Rust; preserve Rust ecosystem standards and
+  conventions instead of optimizing for familiarity with Kotlin/JVM or Go.
+- Prefer idiomatic Rust API shapes over mechanical ports: ownership-aware
+  types, explicit lifetimes only when needed, `Result`/`Option` contracts,
+  traits for behavior, typed configuration structs, and additive feature flags.
+- Public APIs should have Rustdoc that teaches the intended usage: concise
+  explanation, compile-friendly `# Examples`, `# Errors` for `Result` APIs,
+  `# Panics` only when the public contract can panic, and `# Safety` only for
+  unsafe functions or unsafe trait contracts.
+- Prefer explicit error enums and standard ecosystem crates only when they fit
+  the local crate boundary; do not add dependencies just to mimic another
+  bluetape language line.
+- For async infrastructure work, follow `tokio` and Rust structured-concurrency
+  conventions unless a concrete compatibility issue requires another runtime.
+- Treat `cargo fmt`, `cargo test`, `cargo clippy -D warnings`, and `cargo doc`
+  as the ordinary quality bar for public API or documentation changes.
+
 ## Rust Standards
 
 - Use Rust 2024 edition unless a concrete compatibility issue requires a
