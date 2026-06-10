@@ -5,14 +5,17 @@
 //! patterns that benefit from a named helper and typed error behavior.
 //!
 //! ```
-//! use bluetape_rs_collections::{iter, map, slice};
+//! use bluetape_rs_collections::{iter, map, slice, Page};
 //!
-//! // Helper APIs will be added under these focused namespaces.
+//! let page = Page::new(vec![1, 2, 3], 3).unwrap();
+//! assert_eq!(page.total_pages(), 1);
 //! ```
 
 pub mod error;
 pub mod iter;
 pub mod map;
+pub mod page;
 pub mod slice;
 
 pub use error::CollectionError;
+pub use page::{DEFAULT_PAGE_SIZE, Page, PageError};
