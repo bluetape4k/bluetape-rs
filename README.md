@@ -15,9 +15,9 @@ integration tests matter.
 ## Current Status
 
 The current package scope includes the released `0.2.0` collections and
-async/concurrency line plus the in-progress `0.3.0` codec line.
+async/concurrency line plus the release-ready `0.3.0` codec line.
 
-Completed foundation and `0.2.0` work stays narrow:
+Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 
 - define the workspace layout and release policy
 - add general helper functions for typed validation errors, strings, and small
@@ -28,13 +28,16 @@ Completed foundation and `0.2.0` work stays narrow:
   `SuspendedJobTester`, and temporary resource cleanup
 - add focused collection helpers and Tokio-first bounded task helpers for the
   `0.2.0` line
+- add strict hex, Base64, Base58, Base62, and UTF-8 text boundary helpers for
+  the `0.3.0` codec line
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
 The `0.3.0` line adds the explicit `bluetape-rs-codec` boundary for hex,
-Base64, Base58, and Base62 helpers. Compression, serialization,
-Testcontainers, SQL, resilience, and leader election remain separate milestones
-so their dependency and runtime costs stay explicit.
+Base64, Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary
+helpers. Compression, serialization, Testcontainers, SQL, resilience, and
+leader election remain separate milestones so their dependency and runtime
+costs stay explicit.
 
 ## Intended Package Families
 
@@ -86,14 +89,14 @@ dependency surface.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.1.1", features = ["logging"] }
+bluetape-rs = { version = "0.1.1", features = ["logging", "codec"] }
 
 [dev-dependencies]
 bluetape-rs = { version = "0.1.1", features = ["test"] }
 ```
 
 ```rust
-use bluetape_rs::{core, logging};
+use bluetape_rs::{codec, core, logging};
 ```
 
 Focused crates use underscore import names:

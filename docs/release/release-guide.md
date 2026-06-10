@@ -37,15 +37,25 @@ Do not use `main` for ordinary development. Open normal work against `develop`.
 9. Sync local `develop` and `main`, prune stale worktrees/branches, and record
    final release evidence.
 
-## Current Baseline
+## Current Stable Baseline
 
 `main` was created from the `v0.2.0` release commit:
 
 - `v0.2.0^{}`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
 - `origin/main`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
-- `origin/develop`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
 
 GitHub's default branch remains `develop`.
+
+## Current Development Baseline
+
+As of the `0.3.0` codec release-readiness pass, `develop` has advanced beyond
+the stable `main` branch:
+
+- `origin/develop`: `639b030559b20960e0f3d79a8e3b1cf5060994dd`
+- `origin/main`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
+
+Recheck these references before release promotion. Stable release tags still
+belong on `main` after the verified `develop` tree is promoted.
 
 ## Guardrails
 
