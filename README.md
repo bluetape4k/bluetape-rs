@@ -164,6 +164,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 ## Project Management
 
 - [Current WIP](WIP.md)
+- [Release guide](docs/release/release-guide.md)
 - [Research index](docs/research/README.md)
 - [Backend library feasibility](docs/research/2026-06-08-backend-library-feasibility.md)
 
