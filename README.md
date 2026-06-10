@@ -165,9 +165,9 @@ bluetape-rs-codec = "0.3.0"
 ```
 
 `bluetape-rs-codec` is the `0.3.0` crate boundary for strict hex, Base64,
-Base58, Base62, and URL-safe encoding helpers. Compression remains deferred to
-`0.4.0`, and
-serde-oriented serialization remains deferred to `0.5.0`.
+Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
+Compression remains deferred to `0.4.0`, and serde-oriented serialization
+remains deferred to `0.5.0`.
 
 ```rust
 use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
@@ -221,6 +221,27 @@ Base58 uses the Bitcoin alphabet and preserves leading zero bytes as `1`.
 Base62 uses `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
 and preserves leading zero bytes as `0`. This Base62 API is byte-oriented;
 integer and UUID rendering can build on top of it later.
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64_url_unpadded, decode_utf8_text, decode_utf8_text_lossy,
+    encode_base64_url_unpadded, encode_utf8_text,
+};
+
+let token = encode_base64_url_unpadded(encode_utf8_text("blue테이프"));
+assert_eq!(token, "Ymx1Ze2FjOydtO2UhA");
+
+let bytes = decode_base64_url_unpadded(token).expect("valid URL-safe Base64");
+assert_eq!(decode_utf8_text(bytes).expect("valid UTF-8"), "blue테이프");
+
+assert_eq!(decode_utf8_text_lossy([b'a', 0xff, b'z']), "a\u{fffd}z");
+```
+
+`decode_utf8_text` rejects invalid UTF-8 with typed byte-position diagnostics.
+Lossy replacement is available only through the explicitly named
+`decode_utf8_text_lossy` helper. General string utilities, normalization,
+compression registries, and serde-oriented serialization remain outside the
+codec crate.
 
 ## Development
 

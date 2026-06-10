@@ -3,8 +3,8 @@
 Codec and encoding helpers for bluetape-rs.
 
 This crate starts the `0.3.0` codec milestone with strict hexadecimal encoding
-and decoding primitives plus focused Base64, Base58, and Base62 helpers. Small
-binary/text helpers are tracked as separate follow-up issues.
+and decoding primitives plus focused Base64, Base58, Base62, and UTF-8
+text/byte boundary helpers.
 
 ## Scope
 
@@ -13,14 +13,14 @@ binary/text helpers are tracked as separate follow-up issues.
 - Bitcoin Base58 byte encoding
 - byte-oriented Base62 encoding
 - typed errors for caller-owned invalid encoded input
-- small binary/text helpers when they make codec call sites clearer
+- UTF-8 text/byte boundary helpers for codec call sites
 
 ## Out Of Scope
 
 - compression helpers; those belong to `0.4.0`
 - serde-oriented serialization interfaces; those belong to `0.5.0`
-- encryption, signing, checksums, database bind encoding, and broad text
-  normalization
+- encryption, signing, checksums, database bind encoding, random string helpers,
+  and broad text normalization
 
 ## Usage
 
@@ -108,3 +108,26 @@ leading zero bytes as `1`. Base62 uses the bluetape alphabet
 leading zero bytes as `0`. The current Base62 primitive is byte-oriented;
 integer, UUID, and ID-generator rendering APIs remain separate higher-level
 scope.
+
+## UTF-8 Text Boundaries
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64_url_unpadded, decode_utf8_text, decode_utf8_text_lossy,
+    encode_base64_url_unpadded, encode_utf8_text,
+};
+
+let token = encode_base64_url_unpadded(encode_utf8_text("blue테이프"));
+assert_eq!(token, "Ymx1Ze2FjOydtO2UhA");
+
+let bytes = decode_base64_url_unpadded(token).expect("valid URL-safe Base64");
+assert_eq!(decode_utf8_text(bytes).expect("valid UTF-8"), "blue테이프");
+
+assert_eq!(decode_utf8_text_lossy([b'a', 0xff, b'z']), "a\u{fffd}z");
+```
+
+`decode_utf8_text` is non-lossy and returns a typed [`TextDecodeError`] with the
+valid byte prefix when the decoded bytes are not valid UTF-8. Lossy replacement
+is only available through the explicitly named `decode_utf8_text_lossy` helper.
+General string utilities, normalization, compression registries, and
+serde-oriented serialization stay outside this crate.

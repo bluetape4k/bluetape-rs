@@ -158,9 +158,10 @@ Codec helper를 사용할 때:
 bluetape-rs-codec = "0.3.0"
 ```
 
-`bluetape-rs-codec`는 strict hex, Base64, Base58, Base62, URL-safe encoding
-helper를 위한 `0.3.0` crate boundary입니다. Compression은 `0.4.0`,
-serde-oriented serialization은 `0.5.0`으로 계속 분리합니다.
+`bluetape-rs-codec`는 strict hex, Base64, Base58, Base62, URL-safe encoding,
+UTF-8 text/byte boundary helper를 위한 `0.3.0` crate boundary입니다.
+Compression은 `0.4.0`, serde-oriented serialization은 `0.5.0`으로 계속
+분리합니다.
 
 ```rust
 use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
@@ -216,6 +217,26 @@ Base62는 `0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`를
 사용하고 leading zero byte를 `0`으로 보존합니다. 이번 Base62 API는
 byte-oriented primitive이며, integer/UUID rendering은 이후 상위 API에서
 다룰 수 있습니다.
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64_url_unpadded, decode_utf8_text, decode_utf8_text_lossy,
+    encode_base64_url_unpadded, encode_utf8_text,
+};
+
+let token = encode_base64_url_unpadded(encode_utf8_text("blue테이프"));
+assert_eq!(token, "Ymx1Ze2FjOydtO2UhA");
+
+let bytes = decode_base64_url_unpadded(token).expect("valid URL-safe Base64");
+assert_eq!(decode_utf8_text(bytes).expect("valid UTF-8"), "blue테이프");
+
+assert_eq!(decode_utf8_text_lossy([b'a', 0xff, b'z']), "a\u{fffd}z");
+```
+
+`decode_utf8_text`는 invalid UTF-8을 typed byte-position diagnostic으로
+거부합니다. 손실 대체는 이름에 `lossy`가 들어간 `decode_utf8_text_lossy`를
+명시적으로 호출할 때만 사용합니다. 일반 string utility, normalization,
+compression registry, serde-oriented serialization은 codec crate 밖에 둡니다.
 
 ## 개발
 
