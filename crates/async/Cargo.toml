@@ -18,4 +18,5 @@ path = "src/lib.rs"
 tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 
 [dev-dependencies]
+bluetape-rs-test = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
