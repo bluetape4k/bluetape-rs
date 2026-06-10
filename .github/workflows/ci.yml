@@ -101,6 +101,133 @@ jobs:
       - name: Test workspace
         run: cargo test --workspace --all-features --locked
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "$RUST_VERSION" --profile minimal --component llvm-tools-preview
+          rustup default "$RUST_VERSION"
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-coverage-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-coverage-
+            ${{ runner.os }}-cargo-
+
+      - name: Generate coverage report
+        run: |
+          mkdir -p coverage
+          cargo llvm-cov --workspace --all-features --locked --lcov --output-path coverage/lcov.info
+          python3 - <<'PY'
+          from pathlib import Path
+
+          repo = Path.cwd()
+
+          def pct(covered: int, total: int) -> str:
+              if total == 0:
+                  return "n/a"
+              return f"{covered * 100 / total:.2f}%"
+
+          entries = []
+          current = None
+          for line in Path("coverage/lcov.info").read_text().splitlines():
+              if line.startswith("SF:"):
+                  current = {"file": line[3:], "lines": 0, "covered": 0}
+              elif line.startswith("DA:") and current is not None:
+                  _, count = line[3:].split(",", 1)
+                  current["lines"] += 1
+                  if int(count) > 0:
+                      current["covered"] += 1
+              elif line == "end_of_record" and current is not None:
+                  entries.append(current)
+                  current = None
+
+          crate_entries = []
+          for entry in entries:
+              path = entry["file"]
+              if "/crates/" not in path:
+                  crate = "root"
+              else:
+                  crate = path.split("/crates/", 1)[1].split("/", 1)[0]
+              entry["crate"] = crate
+              crate_entries.append(entry)
+
+          totals = {}
+          for entry in crate_entries:
+              bucket = totals.setdefault(entry["crate"], {"lines": 0, "covered": 0})
+              bucket["lines"] += entry["lines"]
+              bucket["covered"] += entry["covered"]
+
+          total_lines = sum(value["lines"] for value in totals.values())
+          total_covered = sum(value["covered"] for value in totals.values())
+
+          lines = [
+              "# Coverage Summary",
+              "",
+              f"- Workspace line coverage: {pct(total_covered, total_lines)} ({total_covered}/{total_lines})",
+              "",
+              "| Crate | Line coverage | Covered / Total |",
+              "| --- | ---: | ---: |",
+          ]
+          for crate in sorted(totals):
+              value = totals[crate]
+              lines.append(
+                  f"| {crate} | {pct(value['covered'], value['lines'])} | {value['covered']} / {value['lines']} |"
+              )
+
+          lines.extend([
+              "",
+              "| File | Line coverage | Covered / Total |",
+              "| --- | ---: | ---: |",
+          ])
+          for entry in sorted(crate_entries, key=lambda item: item["file"]):
+              source = Path(entry["file"])
+              try:
+                  rel = source.relative_to(repo)
+              except ValueError:
+                  rel = source
+              lines.append(
+                  f"| `{rel}` | {pct(entry['covered'], entry['lines'])} | {entry['covered']} / {entry['lines']} |"
+              )
+
+          Path("coverage/summary.md").write_text("\n".join(lines) + "\n")
+          PY
+
+      - name: Summarize coverage
+        if: always()
+        run: |
+          if [ -f coverage/summary.md ]; then
+            {
+              cat coverage/summary.md
+              echo
+              echo "_LCOV and Markdown summaries are available in the \`coverage-rust\` artifact._"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-rust
+          path: coverage/
+          retention-days: 30
+          if-no-files-found: error
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
