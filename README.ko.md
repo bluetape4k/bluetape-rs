@@ -106,6 +106,7 @@ use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_codec::{decode_hex, encode_hex_lower};
+use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -170,6 +171,26 @@ assert_eq!(
     vec![0x00, 0xab, 0xff]
 );
 ```
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64, decode_base64_url_unpadded, encode_base64, encode_base64_url_unpadded,
+};
+
+assert_eq!(encode_base64(b"fo"), "Zm8=");
+assert_eq!(decode_base64("Zm8=").expect("valid Base64"), b"fo");
+
+let token = encode_base64_url_unpadded([0xfb, 0xff]);
+assert_eq!(token, "-_8");
+assert_eq!(
+    decode_base64_url_unpadded(token).expect("valid URL-safe Base64"),
+    vec![0xfb, 0xff]
+);
+```
+
+Standard helper는 `+`와 `/` alphabet을 사용하고, URL-safe helper는 `-`와
+`_`를 사용합니다. 이름이 `_unpadded`로 끝나는 함수는 decode 시 `=` padding을
+거부합니다.
 
 ## 개발
 

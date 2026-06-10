@@ -113,6 +113,7 @@ use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_codec::{decode_hex, encode_hex_lower};
+use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -177,6 +178,25 @@ assert_eq!(
     vec![0x00, 0xab, 0xff]
 );
 ```
+
+```rust
+use bluetape_rs_codec::{
+    decode_base64, decode_base64_url_unpadded, encode_base64, encode_base64_url_unpadded,
+};
+
+assert_eq!(encode_base64(b"fo"), "Zm8=");
+assert_eq!(decode_base64("Zm8=").expect("valid Base64"), b"fo");
+
+let token = encode_base64_url_unpadded([0xfb, 0xff]);
+assert_eq!(token, "-_8");
+assert_eq!(
+    decode_base64_url_unpadded(token).expect("valid URL-safe Base64"),
+    vec![0xfb, 0xff]
+);
+```
+
+Standard helpers use the `+` and `/` alphabet. URL-safe helpers use `-` and
+`_`. Function names ending in `_unpadded` reject `=` padding during decode.
 
 ## Development
 
