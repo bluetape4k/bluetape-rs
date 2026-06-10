@@ -2,6 +2,8 @@
 
 Small `tracing` conventions and subscriber builders for bluetape-rs.
 
+![bluetape-rs-logging crate overview](../../docs/images/readme-diagrams/bluetape-rs-logging-crate.png)
+
 Library code must not install a process-global subscriber. Applications own the
 decision to install the subscriber returned by this crate.
 
@@ -9,7 +11,7 @@ decision to install the subscriber returned by this crate.
 
 ```toml
 [dependencies]
-bluetape-rs-logging = "0.1.0"
+bluetape-rs-logging = "0.1.1"
 ```
 
 ```rust

@@ -1,0 +1,69 @@
+digraph G {
+  graph [
+    rankdir=TB,
+    bgcolor="#FBFCFF",
+    pad="0.35",
+    nodesep="0.55",
+    ranksep="0.75",
+    splines=ortho,
+    outputorder=edgesfirst,
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="30" COLOR="#243042">bluetape-rs Workspace</FONT></TD></TR>
+        <TR><TD><FONT FACE="Comic Mono" POINT-SIZE="15" COLOR="#667085">Rust-native backend primitives organized as focused crates</FONT></TD></TR>
+      </TABLE>
+    >,
+    labelloc=t,
+    labeljust=c
+  ];
+  node [shape=plain, margin=0, fontname="Comic Mono"];
+  edge [color="#9AA4B2", penwidth=2.2, arrowsize=0.8, fontname="Comic Mono", fontsize=12, fontcolor="#667085"];
+
+  facade [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8F7F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">bluetape-rs facade</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">default core feature</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">opt-in crate re-exports</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">edges mean feature exposure</FONT></TD></TR>
+</TABLE>>];
+  core [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#DDEBFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Core</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">validation errors</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">string helpers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">numeric checks</FONT></TD></TR>
+</TABLE>>];
+  logging [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#DCF7EA">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Logging</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">tracing builders</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">correlation IDs</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">test capture</FONT></TD></TR>
+</TABLE>>];
+  test [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFF0C9">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Test</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">async assertions</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">concurrency testers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">temp resources</FONT></TD></TR>
+</TABLE>>];
+  collections [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8E0FF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Collections</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">iterator helpers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">map transforms</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">page values</FONT></TD></TR>
+</TABLE>>];
+  async [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFE1DF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Async</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">bounded tasks</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">timeouts</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">shutdown</FONT></TD></TR>
+</TABLE>>];
+  deferred [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#F2F4F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Deferred package families</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">codec, compression, serde, testcontainers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">SQL, SQLx, resilience, leader, AWS, audit, graph, text, workshop</FONT></TD></TR>
+</TABLE>>];
+
+  { rank=same; core; logging; test; collections; async; }
+  facade -> core;
+  facade -> logging;
+  facade -> test;
+  facade -> collections;
+  facade -> async;
+  core -> deferred [style=invis, weight=3];
+  logging -> deferred [style=invis, weight=3];
+  test -> deferred [style=invis, weight=3];
+  collections -> deferred [style=invis, weight=3];
+  async -> deferred [style=invis, weight=3];
+}

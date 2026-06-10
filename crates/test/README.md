@@ -2,6 +2,8 @@
 
 Reusable test helpers for bluetape-rs crates.
 
+![bluetape-rs-test crate overview](../../docs/images/readme-diagrams/bluetape-rs-test-crate.png)
+
 This crate provides deterministic async assertions, `MultithreadingTester`,
 `SuspendedJobTester`, and temporary resource cleanup helpers. Testcontainers
 fixtures are intentionally deferred to the `bluetape-rs-testcontainers`
@@ -11,7 +13,7 @@ milestone.
 
 ```toml
 [dev-dependencies]
-bluetape-rs-test = "0.1.0"
+bluetape-rs-test = "0.1.1"
 ```
 
 ```rust

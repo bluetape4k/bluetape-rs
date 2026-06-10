@@ -1,0 +1,47 @@
+graph 1 10.948 8.059
+node facade 5.6441 5.9219 2.9306 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8F7F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">bluetape-rs facade</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">default core feature</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">opt-in crate re-exports</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">edges mean feature exposure</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node core 0.90799 3.2309 1.816 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#DDEBFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Core</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">validation errors</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">string helpers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">numeric checks</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node logging 3.2274 3.2309 1.7222 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#DCF7EA">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Logging</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">tracing builders</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">correlation IDs</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">test capture</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node test 5.6441 3.2309 2.0035 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFF0C9">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Test</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">async assertions</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">concurrency testers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">temp resources</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node collections 8.0747 3.2309 1.7431 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8E0FF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Collections</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">iterator helpers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">map transforms</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">page values</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node async 10.227 3.2309 1.441 1.941 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFE1DF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Async</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">bounded tasks</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">timeouts</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">shutdown</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+node deferred 5.6441 0.75521 6.2222 1.5104 <
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#F2F4F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Deferred package families</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">codec, compression, serde, testcontainers</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">SQL, SQLx, resilience, leader, AWS, audit, graph, text, workshop</FONT></TD></TR>
+</TABLE>> solid plain black lightgrey
+edge facade core 7 4.1845 5.9167 2.7929 5.9167 0.90799 5.9167 0.90799 5.9167 0.90799 5.9167 0.90799 4.3579 0.90799 4.3579 solid #9AA4B2
+edge facade logging 7 4.4106 4.9523 4.4106 4.1829 4.4106 3.2361 4.4106 3.2361 4.4106 3.2361 4.2446 3.2361 4.2446 3.2361 solid #9AA4B2
+edge facade test 4 5.6441 4.9542 5.6441 4.9542 5.6441 4.3564 5.6441 4.3564 solid #9AA4B2
+edge facade collections 7 6.8776 4.9523 6.8776 4.1829 6.8776 3.2361 6.8776 3.2361 6.8776 3.2361 7.0473 3.2361 7.0473 3.2361 solid #9AA4B2
+edge facade async 7 7.1069 5.9167 8.4482 5.9167 10.227 5.9167 10.227 5.9167 10.227 5.9167 10.227 4.3579 10.227 4.3579 solid #9AA4B2
+edge core deferred 7 0.90799 2.2611 0.90799 1.5652 0.90799 0.75 0.90799 0.75 0.90799 0.75 2.3805 0.75 2.3805 0.75 invis #9AA4B2
+edge logging deferred 4 3.3108 2.2631 3.3108 2.2631 3.3108 1.6651 3.3108 1.6651 invis #9AA4B2
+edge test deferred 4 5.6441 2.2631 5.6441 2.2631 5.6441 1.6651 5.6441 1.6651 invis #9AA4B2
+edge collections deferred 4 7.9792 2.2631 7.9792 2.2631 7.9792 1.6651 7.9792 1.6651 invis #9AA4B2
+edge async deferred 7 10.227 2.2611 10.227 1.5652 10.227 0.75 10.227 0.75 10.227 0.75 8.9094 0.75 8.9094 0.75 invis #9AA4B2
+stop

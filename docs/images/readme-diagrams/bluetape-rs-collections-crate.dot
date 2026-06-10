@@ -1,0 +1,46 @@
+digraph G {
+  graph [
+    rankdir=TB,
+    bgcolor="#FBFCFF",
+    pad="0.35",
+    nodesep="0.55",
+    ranksep="0.75",
+    splines=ortho,
+    outputorder=edgesfirst,
+    label=<
+      <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="30" COLOR="#243042">bluetape-rs-collections</FONT></TD></TR>
+        <TR><TD><FONT FACE="Comic Mono" POINT-SIZE="15" COLOR="#667085">Focused iterator, slice, map, and page helpers</FONT></TD></TR>
+      </TABLE>
+    >,
+    labelloc=t,
+    labeljust=c
+  ];
+  node [shape=plain, margin=0, fontname="Comic Mono"];
+  edge [color="#9AA4B2", penwidth=2.2, arrowsize=0.8, fontname="Comic Mono", fontsize=12, fontcolor="#667085"];
+
+  input [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Inputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">iterators</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">slices</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">HashMap values</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">materialized pages</FONT></TD></TR>
+</TABLE>>];
+  crate [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#E8E0FF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">bluetape-rs-collections</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">named collection patterns</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">typed collection errors</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">modules: iter | slice | map | page | error</FONT></TD></TR>
+</TABLE>>];
+  output [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#FFFFFF">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Outputs</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">chunks/windows</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">grouped values</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">mapped HashMap</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">Page metadata</FONT></TD></TR>
+</TABLE>>];
+  legend [label=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="8" BGCOLOR="#F2F4F7">
+<TR><TD><FONT FACE="Architects Daughter" POINT-SIZE="22" COLOR="#243042">Route meaning</FONT></TD></TR>
+<TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">left edge: caller input</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT FACE="Comic Mono" POINT-SIZE="13" COLOR="#667085">right edge: returned output</FONT></TD></TR>
+</TABLE>>];
+  { rank=same; input; crate; output; }
+  input -> crate;
+  crate -> output;
+  crate -> legend [style=invis, weight=1];
+}

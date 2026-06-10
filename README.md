@@ -4,6 +4,8 @@
 
 Rust backend primitives for the bluetape ecosystem.
 
+![bluetape-rs workspace overview](docs/images/readme-diagrams/bluetape-rs-workspace-overview.png)
+
 `bluetape-rs` is a new WIP repository. It is not a port of the Kotlin/JVM
 `bluetape4k` libraries and it is not a rewrite of `bluetape-go`. The goal is to
 provide Rust-native building blocks for backend services where compile-time
@@ -79,10 +81,10 @@ dependency surface.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.1.0", features = ["logging"] }
+bluetape-rs = { version = "0.1.1", features = ["logging"] }
 
 [dev-dependencies]
-bluetape-rs = { version = "0.1.0", features = ["test"] }
+bluetape-rs = { version = "0.1.1", features = ["test"] }
 ```
 
 ```rust
@@ -93,11 +95,11 @@ Focused crates use underscore import names:
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.1.0"
-bluetape-rs-logging = "0.1.0"
+bluetape-rs-core = "0.1.1"
+bluetape-rs-logging = "0.1.1"
 
 [dev-dependencies]
-bluetape-rs-test = "0.1.0"
+bluetape-rs-test = "0.1.1"
 ```
 
 ```rust
