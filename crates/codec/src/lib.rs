@@ -1,8 +1,8 @@
 //! Codec and encoding helpers for bluetape-rs.
 //!
-//! This crate is the `0.3.0` codec boundary. It starts with workspace and
-//! facade wiring only so the first codec APIs can land in focused follow-up
-//! issues without mixing bootstrap work with encoder behavior.
+//! This crate is the `0.3.0` codec boundary. It starts with strict hexadecimal
+//! encoding and decoding, then grows into focused Base64 and URL-safe helpers
+//! in follow-up issues.
 //!
 //! Planned APIs stay small and Rust-native:
 //!
@@ -18,6 +18,10 @@
 //! // Enable the root facade when a single dependency is more convenient:
 //! // bluetape-rs = { version = "0.1.1", features = ["codec"] }
 //! ```
+
+mod hex;
+
+pub use hex::{HexDecodeError, decode_hex, encode_hex_lower, encode_hex_upper};
 
 #[cfg(test)]
 mod tests {

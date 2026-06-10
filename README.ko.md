@@ -105,7 +105,7 @@ bluetape-rs-test = "0.1.1"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_collections::{Page, iter};
-// bluetape_rs_codec는 0.3.0 line에서 focused encoder API를 노출합니다.
+use bluetape_rs_codec::{decode_hex, encode_hex_lower};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -157,6 +157,19 @@ bluetape-rs-codec = "0.3.0"
 `bluetape-rs-codec`는 strict hex, Base64, URL-safe encoding helper를 위한
 `0.3.0` crate boundary입니다. Compression은 `0.4.0`, serde-oriented
 serialization은 `0.5.0`으로 계속 분리합니다.
+
+```rust
+use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
+
+let bytes = [0x00, 0xab, 0xff];
+
+assert_eq!(encode_hex_lower(bytes), "00abff");
+assert_eq!(encode_hex_upper(bytes), "00ABFF");
+assert_eq!(
+    decode_hex("00abFF").expect("valid hex"),
+    vec![0x00, 0xab, 0xff]
+);
+```
 
 ## 개발
 
