@@ -12,7 +12,8 @@ integration tests matter.
 
 ## Current Status
 
-The current package scope is the `0.1.0` foundation release.
+The current package scope is the `0.2.0` collections and async/concurrency
+release line.
 
 The first useful work should stay narrow:
 
@@ -23,6 +24,8 @@ The first useful work should stay narrow:
   library code, including scoped test capture helpers
 - add reusable test helpers for async assertions, `MultithreadingTester`,
   `SuspendedJobTester`, and temporary resource cleanup
+- add focused collection helpers and Tokio-first bounded task helpers for the
+  `0.2.0` line
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
@@ -34,6 +37,7 @@ The first useful work should stay narrow:
 | Logging | `bluetape-rs-logging` | Tracing setup helpers, structured fields, bounded correlation IDs, and scoped test capture. |
 | Testing | `bluetape-rs-test` | Async assertions, `MultithreadingTester`, `SuspendedJobTester`, temporary resources, and future Testcontainers boundaries. |
 | Collections | `bluetape-rs-collections` | Focused iterator, slice, map, grouping, chunking, and error-aware transform helpers. |
+| Async | `bluetape-rs-async` | Tokio-first bounded task execution helpers with explicit cancellation and result aggregation behavior. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | Compression | `bluetape-rs-compression` | Opt-in compression helpers and registry-style codec selection. |
 | Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
@@ -100,6 +104,17 @@ bluetape-rs-test = "0.1.0"
 use bluetape_rs_core::require_not_blank;
 use bluetape_rs_logging::CorrelationId;
 use bluetape_rs_test::TempDir;
+```
+
+For Tokio task helpers:
+
+```toml
+[dependencies]
+bluetape-rs-async = "0.2.0"
+```
+
+```rust
+use bluetape_rs_async::try_map_bounded;
 ```
 
 ## Development

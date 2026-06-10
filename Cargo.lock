@@ -15,10 +15,18 @@ dependencies = [
 name = "bluetape-rs"
 version = "0.1.1"
 dependencies = [
+ "bluetape-rs-async",
  "bluetape-rs-collections",
  "bluetape-rs-core",
  "bluetape-rs-logging",
  "bluetape-rs-test",
+]
+
+[[package]]
+name = "bluetape-rs-async"
+version = "0.2.0"
+dependencies = [
+ "tokio",
 ]
 
 [[package]]

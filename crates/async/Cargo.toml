@@ -1,0 +1,21 @@
+[package]
+name = "bluetape-rs-async"
+version = "0.2.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Tokio-first async task helpers for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["async", "tokio", "concurrency", "tasks"]
+categories = ["asynchronous", "concurrency"]
+
+[lib]
+name = "bluetape_rs_async"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["rt"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "sync", "test-util", "time"] }
