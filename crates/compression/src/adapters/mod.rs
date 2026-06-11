@@ -1,3 +1,12 @@
+#[cfg(any(
+    feature = "gzip",
+    feature = "zlib",
+    feature = "deflate",
+    feature = "zstd",
+    feature = "lz4",
+    feature = "snappy"
+))]
+mod common;
 #[cfg(feature = "deflate")]
 mod deflate;
 #[cfg(any(feature = "gzip", feature = "zlib", feature = "deflate"))]

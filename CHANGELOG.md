@@ -16,6 +16,9 @@ All notable changes to this project are documented in this file.
   and random payloads.
 - Added benchmark CSVs, a Markdown comparison report, and chart assets under
   `docs/benchmark` and `docs/images/readme-charts`.
+- Added config-aware decompression limits, a 64 MiB default decode safety
+  limit, `Read`/`Write` stream copy helpers, and direct stream reader/writer
+  constructors to `bluetape-rs-compression`.
 
 ### Validation
 

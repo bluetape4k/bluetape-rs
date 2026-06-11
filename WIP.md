@@ -180,11 +180,12 @@ Defer out of `0.1.0`:
   deflate, zstd, lz4, and snappy compressors behind additive feature flags.
 - Added typed configuration and error contracts with registry-style algorithm
   selection.
+- Added config-aware decompression safety limits, a 64 MiB default decode
+  safety limit, stream copy helpers, and direct stream reader/writer
+  constructors for `Read`/`Write` boundaries.
 - Added the same-condition benchmark runner and report comparing `bluetape-rs`,
   `bluetape-go`, and `bluetape4k-io` on JSON, text, binary, and random
   payloads.
-- Streaming APIs remain the next 0.4.x boundary after the in-memory contract is
-  reviewed.
 
 ### `0.5.0` - Serialization Interfaces
 

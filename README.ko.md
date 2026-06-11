@@ -262,11 +262,18 @@ Compression helper를 사용할 때:
 bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
 ```
 
-`bluetape-rs-compression`은 gzip, zlib, deflate, zstd, lz4, snappy in-memory
-compressor를 additive feature flag 뒤에 제공합니다. Default feature set은
-비어 있으므로 필요한 algorithm feature를 명시적으로 선택합니다. `features =
-["all"]`은 benchmark 또는 local comparison 용도로만 사용합니다. `zstd` feature는
-native `zstd-sys` build path를 사용합니다.
+`bluetape-rs-compression`은 gzip, zlib, deflate, zstd, lz4, snappy compressor를
+additive feature flag 뒤에 제공합니다. Default feature set은 비어 있으므로
+필요한 algorithm feature를 명시적으로 선택합니다. `features = ["all"]`은
+benchmark 또는 local comparison 용도로만 사용합니다. `zstd` feature는 native
+`zstd-sys` build path를 사용합니다. Decode helper는 기본 64 MiB
+decompressed-size safety limit를 적용하며, caller는 더 작은 limit를 지정하거나
+trusted input에서 명시적으로 해제할 수 있습니다. Stream helper는 `Read`에서
+`Write`로 복사하고 encoder를 finish한 뒤 반환합니다. 직접 stream 소유권이
+필요하면 `compression_writer` / `decompression_reader` constructor를 사용할 수
+있습니다. `lz4`와 snappy one-shot helper는 block/raw payload format을 유지하고,
+stream helper는 framed stream format을 사용하므로 matching stream API로
+round-trip해야 합니다.
 
 ```rust
 use bluetape_rs_compression::{CompressionAlgorithm, CompressionConfig};
@@ -279,6 +286,31 @@ let compressed = algorithm
     )
     .expect("compress");
 let restored = algorithm.decompress(&compressed).expect("decompress");
+
+assert_eq!(restored, br#"{"service":"blue"}"#);
+```
+
+```rust
+use bluetape_rs_compression::{CompressionAlgorithm, CompressionConfig};
+
+let algorithm = CompressionAlgorithm::Gzip;
+let mut compressed = Vec::new();
+algorithm
+    .compress_stream(
+        b"{\"service\":\"blue\"}".as_slice(),
+        &mut compressed,
+        CompressionConfig::new(),
+    )
+    .expect("compress stream");
+
+let mut restored = Vec::new();
+algorithm
+    .decompress_stream(
+        &compressed[..],
+        &mut restored,
+        CompressionConfig::new().with_max_decompressed_size(1024),
+    )
+    .expect("decompress stream");
 
 assert_eq!(restored, br#"{"service":"blue"}"#);
 ```

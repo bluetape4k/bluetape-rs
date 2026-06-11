@@ -8,11 +8,13 @@ mod adapters;
 mod config;
 mod error;
 mod registry;
+mod stream;
 mod traits;
 
-pub use config::{CompressionConfig, CompressionLevel};
+pub use config::{CompressionConfig, CompressionLevel, DEFAULT_MAX_DECOMPRESSED_SIZE};
 pub use error::CompressionError;
 pub use registry::{CompressionAlgorithm, algorithms};
+pub use stream::{CompressionWriter, DecompressionReader};
 pub use traits::Compressor;
 
 #[cfg(any(
