@@ -13,7 +13,7 @@ decision to install the subscriber returned by this crate.
 
 ```toml
 [dependencies]
-bluetape-rs-logging = "0.3.1"
+bluetape-rs-logging = "0.4.0"
 ```
 
 ```rust

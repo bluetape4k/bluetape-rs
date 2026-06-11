@@ -4,7 +4,7 @@
 
 Codec and encoding helpers for bluetape-rs.
 
-This crate is part of the `0.3.1` workspace release. It provides strict
+This crate is part of the `0.4.0` workspace release. It provides strict
 hexadecimal encoding and decoding primitives plus focused Base64, Base58,
 Base62, and UTF-8 text/byte boundary helpers.
 
@@ -28,14 +28,14 @@ Base62, and UTF-8 text/byte boundary helpers.
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.1"
+bluetape-rs-codec = "0.4.0"
 ```
 
 Or enable the optional root facade:
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.3.1", features = ["codec"] }
+bluetape-rs = { version = "0.4.0", features = ["codec"] }
 ```
 
 ## Hex

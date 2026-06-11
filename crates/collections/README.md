@@ -6,7 +6,7 @@ Focused collection and iterator helpers for bluetape-rs.
 
 ![bluetape-rs-collections crate overview](../../docs/images/readme-diagrams/bluetape-rs-collections-crate.png)
 
-This crate is part of the `0.3.1` workspace release. It intentionally
+This crate is part of the `0.4.0` workspace release. It intentionally
 keeps the initial surface small so helper APIs can be added only when they are
 more expressive than standard library iterator, slice, and map methods.
 
@@ -25,7 +25,7 @@ more expressive than standard library iterator, slice, and map methods.
 
 ```toml
 [dependencies]
-bluetape-rs-collections = "0.3.1"
+bluetape-rs-collections = "0.4.0"
 ```
 
 ```rust

@@ -1,6 +1,6 @@
 [package]
 name = "bluetape-rs"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Rust backend primitives for the bluetape ecosystem."
@@ -31,13 +31,13 @@ repository = "https://github.com/bluetape4k/bluetape-rs"
 
 [workspace.dependencies]
 base64 = "0.22.1"
-bluetape-rs-codec = { path = "crates/codec", version = "0.3.1" }
-bluetape-rs-collections = { path = "crates/collections", version = "0.3.1" }
-bluetape-rs-compression = { path = "crates/compression", version = "0.3.1", default-features = false }
-bluetape-rs-async = { path = "crates/async", version = "0.3.1" }
-bluetape-rs-core = { path = "crates/core", version = "0.3.1" }
-bluetape-rs-logging = { path = "crates/logging", version = "0.3.1" }
-bluetape-rs-test = { path = "crates/test", version = "0.3.1" }
+bluetape-rs-codec = { path = "crates/codec", version = "0.4.0" }
+bluetape-rs-collections = { path = "crates/collections", version = "0.4.0" }
+bluetape-rs-compression = { path = "crates/compression", version = "0.4.0", default-features = false }
+bluetape-rs-async = { path = "crates/async", version = "0.4.0" }
+bluetape-rs-core = { path = "crates/core", version = "0.4.0" }
+bluetape-rs-logging = { path = "crates/logging", version = "0.4.0" }
+bluetape-rs-test = { path = "crates/test", version = "0.4.0" }
 flate2 = { version = "1.1.5", default-features = false }
 lz4_flex = { version = "0.11.5", default-features = false }
 snap = "1.1.1"

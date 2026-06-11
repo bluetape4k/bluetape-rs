@@ -25,7 +25,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "bluetape-rs"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "bluetape-rs-async",
  "bluetape-rs-codec",
@@ -38,7 +38,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-async"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "bluetape-rs-test",
  "tokio",
@@ -46,18 +46,18 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-codec"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "base64",
 ]
 
 [[package]]
 name = "bluetape-rs-collections"
-version = "0.3.1"
+version = "0.4.0"
 
 [[package]]
 name = "bluetape-rs-compression"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "flate2",
  "lz4_flex",
@@ -68,11 +68,11 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-core"
-version = "0.3.1"
+version = "0.4.0"
 
 [[package]]
 name = "bluetape-rs-logging"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "tracing",
  "tracing-subscriber",
@@ -80,7 +80,7 @@ dependencies = [
 
 [[package]]
 name = "bluetape-rs-test"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "tokio",
 ]
@@ -105,7 +105,7 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
 name = "compression-benchmark"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "bluetape-rs-compression",
 ]

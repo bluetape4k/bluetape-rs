@@ -21,9 +21,7 @@ through the matching stream API.
 
 ```toml
 [dependencies]
-# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
-# Use a workspace path or Git dependency until the 0.4.0 release.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 ```
 
 ```rust

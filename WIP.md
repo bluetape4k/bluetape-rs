@@ -15,15 +15,13 @@ parity against `bluetape-go` and `bluetape4k-io` with shared fixtures.
 - The repository is a Rust 2024 workspace with root facade crate
   `bluetape-rs` plus focused crates for core, logging, test support,
   collections, async helpers, codec helpers, and compression helpers.
-- The current published line is `0.3.1`; `0.4.0` work is tracked in GitHub
-  milestone `0.4.0`.
+- The current release-prep line is `0.4.0`; `0.4.0` work is tracked in GitHub
+  milestone `0.4.0` until the release readiness issue and epic are closed.
 - Feasibility research exists under
   `docs/research/2026-06-08-backend-library-feasibility.md`.
-- GitHub milestone `0.4.0` tracks compression epic #73 and child issues for
-  crate shape, error/config contracts, compressor families, registry defaults,
-  tests/docs, release readiness, and benchmark parity.
-- Issue #83 tracks the first implementation PR for Rust compressors plus
-  same-condition benchmark reporting.
+- GitHub milestone `0.4.0` tracks compression epic #73 and release readiness
+  issue #80 after the implementation, documentation, and benchmark child issues
+  have been merged.
 - Benchmark comparison data is preserved under `docs/benchmark`.
 
 ## `0.1.0` Scope

@@ -14,12 +14,12 @@ integration tests matter.
 
 ## Current Status
 
-The current published package scope is the corrective `0.3.1` workspace
-release. It publishes the root facade and all focused foundation, collections,
-async, and codec crates under the same version. The active `0.4.0` milestone
-starts the opt-in compression line.
+The current release-prep package scope is the `0.4.0` workspace release. It
+publishes the root facade and all focused foundation, collections, async,
+codec, and compression crates under the same version. The `0.4.0` line starts
+the opt-in compression surface.
 
-Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
+Completed foundation, `0.2.0`, `0.3.0`, and `0.4.0` work stays narrow:
 
 - define the workspace layout and release policy
 - add general helper functions for typed validation errors, strings, and small
@@ -37,11 +37,11 @@ Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
-The `0.3.1` line publishes the latest stable workspace. The codec scope adds
+The `0.4.0` line publishes the latest stable workspace. The codec scope keeps
 the explicit `bluetape-rs-codec` boundary for hex, Base64, Base58, Base62,
-URL-safe encoding, and UTF-8 text/byte boundary helpers. The `0.4.0`
-compression scope keeps compression dependencies behind explicit feature flags
-and records same-condition benchmark results before release stabilization.
+URL-safe encoding, and UTF-8 text/byte boundary helpers. The compression scope
+keeps algorithm dependencies behind explicit feature flags and records
+same-condition benchmark results before release publication.
 
 ## Intended Package Families
 
@@ -93,10 +93,10 @@ dependency surface.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.3.1", features = ["logging", "codec"] }
+bluetape-rs = { version = "0.4.0", features = ["logging", "codec"] }
 
 [dev-dependencies]
-bluetape-rs = { version = "0.3.1", features = ["test"] }
+bluetape-rs = { version = "0.4.0", features = ["test"] }
 ```
 
 ```rust
@@ -107,17 +107,15 @@ Focused crates use underscore import names:
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.3.1"
-bluetape-rs-logging = "0.3.1"
-bluetape-rs-collections = "0.3.1"
-bluetape-rs-async = "0.3.1"
-bluetape-rs-codec = "0.3.1"
-# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
-# Use a workspace path or Git dependency until the 0.4.0 release.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-core = "0.4.0"
+bluetape-rs-logging = "0.4.0"
+bluetape-rs-collections = "0.4.0"
+bluetape-rs-async = "0.4.0"
+bluetape-rs-codec = "0.4.0"
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 
 [dev-dependencies]
-bluetape-rs-test = "0.3.1"
+bluetape-rs-test = "0.4.0"
 ```
 
 ```rust
@@ -147,7 +145,7 @@ For Tokio task and control helpers:
 
 ```toml
 [dependencies]
-bluetape-rs-async = "0.3.1"
+bluetape-rs-async = "0.4.0"
 ```
 
 ```rust
@@ -173,10 +171,10 @@ For codec helpers:
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.1"
+bluetape-rs-codec = "0.4.0"
 ```
 
-`bluetape-rs-codec` is the `0.3.1` crate boundary for strict hex, Base64,
+`bluetape-rs-codec` is the `0.4.0` crate boundary for strict hex, Base64,
 Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
 Compression starts in the `0.4.0` milestone, and serde-oriented serialization
 remains deferred to `0.5.0`.
@@ -263,8 +261,7 @@ For compression helpers:
 
 ```toml
 [dependencies]
-# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 ```
 
 `bluetape-rs-compression` provides gzip, zlib, deflate, zstd, lz4, and snappy

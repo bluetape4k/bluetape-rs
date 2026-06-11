@@ -15,7 +15,7 @@ Testcontainers fixture는 의도적으로 `bluetape-rs-testcontainers` milestone
 
 ```toml
 [dev-dependencies]
-bluetape-rs-test = "0.3.1"
+bluetape-rs-test = "0.4.0"
 ```
 
 ```rust
