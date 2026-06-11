@@ -57,6 +57,7 @@ Latest focused run:
 | `cargo test --workspace --all-features --locked` | PASS |
 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | PASS |
 | `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked` | PASS |
+| `rustup run 1.85.0 cargo fmt --all --check && git diff --check && rustup run 1.85.0 cargo check --workspace --all-targets --all-features --locked && rustup run 1.85.0 cargo test -p bluetape-rs-compression --all-features --locked && rustup run 1.85.0 cargo clippy --workspace --all-targets --all-features --locked -- -D warnings && RUSTDOCFLAGS="-D warnings" rustup run 1.85.0 cargo doc -p bluetape-rs-compression --all-features --no-deps --locked` | PASS |
 
 ## Residual Notes
 

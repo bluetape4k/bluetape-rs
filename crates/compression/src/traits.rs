@@ -49,14 +49,14 @@ pub trait Compressor: Copy + Send + Sync + 'static {
         config: CompressionConfig,
     ) -> Result<Vec<u8>, CompressionError> {
         let decompressed = self.decompress(compressed)?;
-        if let Some(limit) = config.max_decompressed_size
-            && decompressed.len() > limit
-        {
-            return Err(CompressionError::DecompressedSizeLimitExceeded {
-                algorithm: self.name(),
-                limit,
-                actual: decompressed.len(),
-            });
+        if let Some(limit) = config.max_decompressed_size {
+            if decompressed.len() > limit {
+                return Err(CompressionError::DecompressedSizeLimitExceeded {
+                    algorithm: self.name(),
+                    limit,
+                    actual: decompressed.len(),
+                });
+            }
         }
         Ok(decompressed)
     }

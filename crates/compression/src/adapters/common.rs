@@ -50,14 +50,14 @@ where
         }
 
         let next = written.saturating_add(read as u64);
-        if let Some(limit) = config.max_decompressed_size
-            && next > limit as u64
-        {
-            return Err(CompressionError::DecompressedSizeLimitExceeded {
-                algorithm,
-                limit,
-                actual: usize::try_from(next).unwrap_or(usize::MAX),
-            });
+        if let Some(limit) = config.max_decompressed_size {
+            if next > limit as u64 {
+                return Err(CompressionError::DecompressedSizeLimitExceeded {
+                    algorithm,
+                    limit,
+                    actual: usize::try_from(next).unwrap_or(usize::MAX),
+                });
+            }
         }
 
         writer
@@ -73,14 +73,14 @@ pub(crate) fn enforce_size_limit(
     actual: usize,
     config: CompressionConfig,
 ) -> Result<(), CompressionError> {
-    if let Some(limit) = config.max_decompressed_size
-        && actual > limit
-    {
-        return Err(CompressionError::DecompressedSizeLimitExceeded {
-            algorithm,
-            limit,
-            actual,
-        });
+    if let Some(limit) = config.max_decompressed_size {
+        if actual > limit {
+            return Err(CompressionError::DecompressedSizeLimitExceeded {
+                algorithm,
+                limit,
+                actual,
+            });
+        }
     }
     Ok(())
 }
