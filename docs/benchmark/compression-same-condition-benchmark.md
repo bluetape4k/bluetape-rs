@@ -123,6 +123,18 @@ Large-payload compression winners are separated by metric because faster compres
 | binary | bluetape-rs lz4 | 28756.29 | bluetape4k-io lz4 | 0.006504 |
 | random | bluetape-rs lz4 | 42060.99 | bluetape-go gzip | 1 |
 
+## Recommendation Notes
+
+These recommendations are scoped to this local same-condition snapshot and should not be read as production rankings.
+
+| use case | recommendation | excluded interpretation |
+|---|---|---|
+| Best compression ratio on compressible JSON/text/binary payloads | Prefer evaluating `zstd` first, then validate CPU cost with your service payloads. | This does not make `zstd` the default for every deployment or every payload size. |
+| Maximum throughput where modestly larger output is acceptable | Evaluate `lz4` and `snappy` first; they dominate many large-payload throughput rows. | Throughput wins do not imply smallest network/storage footprint. |
+| Interoperability with common gzip/deflate ecosystems | Keep `gzip` and `deflate` documented as compatibility choices. | Compatibility-oriented choices are not usually throughput or ratio winners in this snapshot. |
+| Random or already-compressed payloads | Avoid assuming compression helps; ratios are near or above 1.0 and CPU cost remains. | Random-payload results should not be generalized to structured service data. |
+| Cross-runtime comparison | Use the normalized tables for broad direction only and rerun in the target runtime before changing defaults. | The Rust, Go, and JVM harnesses are not statistically identical benchmark engines. |
+
 ## Normalized Large Payload Comparison
 
 | payload | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |
