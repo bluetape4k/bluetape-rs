@@ -21,213 +21,221 @@
 <text x="907.0" y="230.0" class="muted" text-anchor="end" font-size="16">MiB/s</text>
 <line x1="174.0" y1="274.0" x2="174.0" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
 <text x="174.0" y="660.0" class="axis" text-anchor="middle" font-size="12">50</text>
-<line x1="251.9" y1="274.0" x2="251.9" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="251.9" y="660.0" class="axis" text-anchor="middle" font-size="12">100</text>
-<line x1="375.4" y1="274.0" x2="375.4" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="375.4" y="660.0" class="axis" text-anchor="middle" font-size="12">300</text>
-<line x1="510.7" y1="274.0" x2="510.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="510.7" y="660.0" class="axis" text-anchor="middle" font-size="12">1000</text>
-<line x1="634.2" y1="274.0" x2="634.2" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="634.2" y="660.0" class="axis" text-anchor="middle" font-size="12">3000</text>
-<line x1="769.5" y1="274.0" x2="769.5" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="769.5" y="660.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="244.3" y1="274.0" x2="244.3" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="244.3" y="660.0" class="axis" text-anchor="middle" font-size="12">100</text>
+<line x1="355.7" y1="274.0" x2="355.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="355.7" y="660.0" class="axis" text-anchor="middle" font-size="12">300</text>
+<line x1="477.8" y1="274.0" x2="477.8" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="477.8" y="660.0" class="axis" text-anchor="middle" font-size="12">1000</text>
+<line x1="589.2" y1="274.0" x2="589.2" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="589.2" y="660.0" class="axis" text-anchor="middle" font-size="12">3000</text>
+<line x1="711.3" y1="274.0" x2="711.3" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="711.3" y="660.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="822.7" y1="274.0" x2="822.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="822.7" y="660.0" class="axis" text-anchor="middle" font-size="12">30000</text>
 <line x1="893.0" y1="274.0" x2="893.0" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="893.0" y="660.0" class="axis" text-anchor="middle" font-size="12">30000</text>
+<text x="893.0" y="660.0" class="axis" text-anchor="middle" font-size="12">60000</text>
 <line x1="174.0" y1="636.0" x2="893.0" y2="636.0" stroke="#6b7280" stroke-width="1.2"/>
 <text x="86.0" y="313.0" class="detail" text-anchor="start" font-size="16">gzip</text>
-<rect x="174.0" y="296.0" width="158.6" height="9" rx="5" fill="#d99a5b"/>
-<text x="339.6" y="304.0" class="value" text-anchor="start" font-size="11">205</text>
-<rect x="174.0" y="310.0" width="201.4" height="9" rx="5" fill="#6aaed6"/>
-<text x="382.4" y="318.0" class="value" text-anchor="start" font-size="11">300</text>
-<rect x="174.0" y="324.0" width="166.4" height="9" rx="5" fill="#94c973"/>
-<text x="347.4" y="332.0" class="value" text-anchor="start" font-size="11">220</text>
+<rect x="174.0" y="296.0" width="143.1" height="9" rx="5" fill="#d99a5b"/>
+<text x="324.1" y="304.0" class="value" text-anchor="start" font-size="11">205</text>
+<rect x="174.0" y="310.0" width="181.7" height="9" rx="5" fill="#6aaed6"/>
+<text x="362.7" y="318.0" class="value" text-anchor="start" font-size="11">300</text>
+<rect x="174.0" y="324.0" width="150.2" height="9" rx="5" fill="#94c973"/>
+<text x="331.2" y="332.0" class="value" text-anchor="start" font-size="11">220</text>
 <text x="86.0" y="355.0" class="detail" text-anchor="start" font-size="16">deflate</text>
-<rect x="174.0" y="338.0" width="179.5" height="9" rx="5" fill="#d99a5b"/>
-<text x="360.5" y="346.0" class="value" text-anchor="start" font-size="11">247</text>
-<rect x="174.0" y="352.0" width="202.3" height="9" rx="5" fill="#6aaed6"/>
-<text x="383.3" y="360.0" class="value" text-anchor="start" font-size="11">302</text>
-<rect x="174.0" y="366.0" width="165.2" height="9" rx="5" fill="#94c973"/>
-<text x="346.2" y="374.0" class="value" text-anchor="start" font-size="11">217</text>
+<rect x="174.0" y="338.0" width="161.9" height="9" rx="5" fill="#d99a5b"/>
+<text x="342.9" y="346.0" class="value" text-anchor="start" font-size="11">247</text>
+<rect x="174.0" y="352.0" width="182.5" height="9" rx="5" fill="#6aaed6"/>
+<text x="363.5" y="360.0" class="value" text-anchor="start" font-size="11">302</text>
+<rect x="174.0" y="366.0" width="149.0" height="9" rx="5" fill="#94c973"/>
+<text x="330.0" y="374.0" class="value" text-anchor="start" font-size="11">217</text>
 <text x="86.0" y="397.0" class="detail" text-anchor="start" font-size="16">lz4</text>
-<rect x="174.0" y="380.0" width="440.5" height="9" rx="5" fill="#d99a5b"/>
-<text x="621.5" y="388.0" class="value" text-anchor="start" font-size="11">2,518</text>
-<rect x="174.0" y="394.0" width="406.1" height="9" rx="5" fill="#6aaed6"/>
-<text x="587.1" y="402.0" class="value" text-anchor="start" font-size="11">1,854</text>
-<rect x="174.0" y="408.0" width="453.0" height="9" rx="5" fill="#94c973"/>
-<text x="634.0" y="416.0" class="value" text-anchor="start" font-size="11">2,815</text>
+<rect x="174.0" y="380.0" width="397.4" height="9" rx="5" fill="#d99a5b"/>
+<text x="578.4" y="388.0" class="value" text-anchor="start" font-size="11">2,518</text>
+<rect x="174.0" y="394.0" width="366.4" height="9" rx="5" fill="#6aaed6"/>
+<text x="547.4" y="402.0" class="value" text-anchor="start" font-size="11">1,854</text>
+<rect x="174.0" y="408.0" width="408.8" height="9" rx="5" fill="#94c973"/>
+<text x="589.8" y="416.0" class="value" text-anchor="start" font-size="11">2,815</text>
 <text x="86.0" y="439.0" class="detail" text-anchor="start" font-size="16">snappy</text>
-<rect x="174.0" y="422.0" width="477.8" height="9" rx="5" fill="#d99a5b"/>
-<text x="658.8" y="430.0" class="value" text-anchor="start" font-size="11">3,510</text>
-<rect x="174.0" y="436.0" width="439.1" height="9" rx="5" fill="#6aaed6"/>
-<text x="620.1" y="444.0" class="value" text-anchor="start" font-size="11">2,488</text>
-<rect x="174.0" y="450.0" width="420.8" height="9" rx="5" fill="#94c973"/>
-<text x="601.8" y="458.0" class="value" text-anchor="start" font-size="11">2,112</text>
+<rect x="174.0" y="422.0" width="431.1" height="9" rx="5" fill="#d99a5b"/>
+<text x="612.1" y="430.0" class="value" text-anchor="start" font-size="11">3,510</text>
+<rect x="174.0" y="436.0" width="396.2" height="9" rx="5" fill="#6aaed6"/>
+<text x="577.2" y="444.0" class="value" text-anchor="start" font-size="11">2,488</text>
+<rect x="174.0" y="450.0" width="379.6" height="9" rx="5" fill="#94c973"/>
+<text x="560.6" y="458.0" class="value" text-anchor="start" font-size="11">2,112</text>
 <text x="86.0" y="481.0" class="detail" text-anchor="start" font-size="16">zstd</text>
-<rect x="174.0" y="464.0" width="427.9" height="9" rx="5" fill="#d99a5b"/>
-<text x="608.9" y="472.0" class="value" text-anchor="start" font-size="11">2,251</text>
-<rect x="174.0" y="478.0" width="331.5" height="9" rx="5" fill="#6aaed6"/>
-<text x="512.5" y="486.0" class="value" text-anchor="start" font-size="11">954</text>
-<rect x="174.0" y="492.0" width="397.9" height="9" rx="5" fill="#94c973"/>
-<text x="578.9" y="500.0" class="value" text-anchor="start" font-size="11">1,723</text>
+<rect x="174.0" y="464.0" width="386.1" height="9" rx="5" fill="#d99a5b"/>
+<text x="567.1" y="472.0" class="value" text-anchor="start" font-size="11">2,251</text>
+<rect x="174.0" y="478.0" width="299.1" height="9" rx="5" fill="#6aaed6"/>
+<text x="480.1" y="486.0" class="value" text-anchor="start" font-size="11">954</text>
+<rect x="174.0" y="492.0" width="359.0" height="9" rx="5" fill="#94c973"/>
+<text x="540.0" y="500.0" class="value" text-anchor="start" font-size="11">1,723</text>
 <rect x="963.0" y="188.0" width="879.0" height="502.0" rx="24" fill="#eaf8ef" stroke="#c9d7e4" stroke-width="1.2"/>
 <text x="991.0" y="232.0" class="panel-title" text-anchor="start" font-size="29">TEXT</text>
 <text x="1812.0" y="230.0" class="muted" text-anchor="end" font-size="16">MiB/s</text>
 <line x1="1079.0" y1="274.0" x2="1079.0" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
 <text x="1079.0" y="660.0" class="axis" text-anchor="middle" font-size="12">50</text>
-<line x1="1156.9" y1="274.0" x2="1156.9" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1156.9" y="660.0" class="axis" text-anchor="middle" font-size="12">100</text>
-<line x1="1280.4" y1="274.0" x2="1280.4" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1280.4" y="660.0" class="axis" text-anchor="middle" font-size="12">300</text>
-<line x1="1415.7" y1="274.0" x2="1415.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1415.7" y="660.0" class="axis" text-anchor="middle" font-size="12">1000</text>
-<line x1="1539.2" y1="274.0" x2="1539.2" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1539.2" y="660.0" class="axis" text-anchor="middle" font-size="12">3000</text>
-<line x1="1674.5" y1="274.0" x2="1674.5" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1674.5" y="660.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="1149.3" y1="274.0" x2="1149.3" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1149.3" y="660.0" class="axis" text-anchor="middle" font-size="12">100</text>
+<line x1="1260.7" y1="274.0" x2="1260.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1260.7" y="660.0" class="axis" text-anchor="middle" font-size="12">300</text>
+<line x1="1382.8" y1="274.0" x2="1382.8" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1382.8" y="660.0" class="axis" text-anchor="middle" font-size="12">1000</text>
+<line x1="1494.2" y1="274.0" x2="1494.2" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1494.2" y="660.0" class="axis" text-anchor="middle" font-size="12">3000</text>
+<line x1="1616.3" y1="274.0" x2="1616.3" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1616.3" y="660.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="1727.7" y1="274.0" x2="1727.7" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1727.7" y="660.0" class="axis" text-anchor="middle" font-size="12">30000</text>
 <line x1="1798.0" y1="274.0" x2="1798.0" y2="636.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1798.0" y="660.0" class="axis" text-anchor="middle" font-size="12">30000</text>
+<text x="1798.0" y="660.0" class="axis" text-anchor="middle" font-size="12">60000</text>
 <line x1="1079.0" y1="636.0" x2="1798.0" y2="636.0" stroke="#6b7280" stroke-width="1.2"/>
 <text x="991.0" y="313.0" class="detail" text-anchor="start" font-size="16">gzip</text>
-<rect x="1079.0" y="296.0" width="365.8" height="9" rx="5" fill="#d99a5b"/>
-<text x="1451.8" y="304.0" class="value" text-anchor="start" font-size="11">1,295</text>
-<rect x="1079.0" y="310.0" width="309.7" height="9" rx="5" fill="#6aaed6"/>
-<text x="1395.7" y="318.0" class="value" text-anchor="start" font-size="11">787</text>
-<rect x="1079.0" y="324.0" width="209.1" height="9" rx="5" fill="#94c973"/>
-<text x="1295.1" y="332.0" class="value" text-anchor="start" font-size="11">321</text>
+<rect x="1079.0" y="296.0" width="330.0" height="9" rx="5" fill="#d99a5b"/>
+<text x="1416.0" y="304.0" class="value" text-anchor="start" font-size="11">1,295</text>
+<rect x="1079.0" y="310.0" width="279.4" height="9" rx="5" fill="#6aaed6"/>
+<text x="1365.4" y="318.0" class="value" text-anchor="start" font-size="11">787</text>
+<rect x="1079.0" y="324.0" width="188.7" height="9" rx="5" fill="#94c973"/>
+<text x="1274.7" y="332.0" class="value" text-anchor="start" font-size="11">321</text>
 <text x="991.0" y="355.0" class="detail" text-anchor="start" font-size="16">deflate</text>
-<rect x="1079.0" y="338.0" width="371.0" height="9" rx="5" fill="#d99a5b"/>
-<text x="1457.0" y="346.0" class="value" text-anchor="start" font-size="11">1,356</text>
-<rect x="1079.0" y="352.0" width="318.3" height="9" rx="5" fill="#6aaed6"/>
-<text x="1404.3" y="360.0" class="value" text-anchor="start" font-size="11">849</text>
-<rect x="1079.0" y="366.0" width="205.8" height="9" rx="5" fill="#94c973"/>
-<text x="1291.8" y="374.0" class="value" text-anchor="start" font-size="11">312</text>
+<rect x="1079.0" y="338.0" width="334.7" height="9" rx="5" fill="#d99a5b"/>
+<text x="1420.7" y="346.0" class="value" text-anchor="start" font-size="11">1,356</text>
+<rect x="1079.0" y="352.0" width="287.2" height="9" rx="5" fill="#6aaed6"/>
+<text x="1373.2" y="360.0" class="value" text-anchor="start" font-size="11">849</text>
+<rect x="1079.0" y="366.0" width="185.7" height="9" rx="5" fill="#94c973"/>
+<text x="1271.7" y="374.0" class="value" text-anchor="start" font-size="11">312</text>
 <text x="991.0" y="397.0" class="detail" text-anchor="start" font-size="16">lz4</text>
-<rect x="1079.0" y="380.0" width="721.8" height="9" rx="5" fill="#d99a5b"/>
-<text x="1796.0" y="388.0" class="value" text-anchor="end" font-size="11">30,746</text>
-<rect x="1079.0" y="394.0" width="530.0" height="9" rx="5" fill="#6aaed6"/>
-<text x="1616.0" y="402.0" class="value" text-anchor="start" font-size="11">5,583</text>
-<rect x="1079.0" y="408.0" width="693.5" height="9" rx="5" fill="#94c973"/>
-<text x="1779.5" y="416.0" class="value" text-anchor="start" font-size="11">23,919</text>
+<rect x="1079.0" y="380.0" width="651.2" height="9" rx="5" fill="#d99a5b"/>
+<text x="1737.2" y="388.0" class="value" text-anchor="start" font-size="11">30,746</text>
+<rect x="1079.0" y="394.0" width="478.2" height="9" rx="5" fill="#6aaed6"/>
+<text x="1564.2" y="402.0" class="value" text-anchor="start" font-size="11">5,583</text>
+<rect x="1079.0" y="408.0" width="625.7" height="9" rx="5" fill="#94c973"/>
+<text x="1711.7" y="416.0" class="value" text-anchor="start" font-size="11">23,919</text>
 <text x="991.0" y="439.0" class="detail" text-anchor="start" font-size="16">snappy</text>
-<rect x="1079.0" y="422.0" width="669.5" height="9" rx="5" fill="#d99a5b"/>
-<text x="1755.5" y="430.0" class="value" text-anchor="start" font-size="11">19,314</text>
-<rect x="1079.0" y="436.0" width="551.5" height="9" rx="5" fill="#6aaed6"/>
-<text x="1637.5" y="444.0" class="value" text-anchor="start" font-size="11">6,760</text>
-<rect x="1079.0" y="450.0" width="603.6" height="9" rx="5" fill="#94c973"/>
-<text x="1689.6" y="458.0" class="value" text-anchor="start" font-size="11">10,746</text>
+<rect x="1079.0" y="422.0" width="604.1" height="9" rx="5" fill="#d99a5b"/>
+<text x="1690.1" y="430.0" class="value" text-anchor="start" font-size="11">19,314</text>
+<rect x="1079.0" y="436.0" width="497.6" height="9" rx="5" fill="#6aaed6"/>
+<text x="1583.6" y="444.0" class="value" text-anchor="start" font-size="11">6,760</text>
+<rect x="1079.0" y="450.0" width="544.6" height="9" rx="5" fill="#94c973"/>
+<text x="1630.6" y="458.0" class="value" text-anchor="start" font-size="11">10,746</text>
 <text x="991.0" y="481.0" class="detail" text-anchor="start" font-size="16">zstd</text>
-<rect x="1079.0" y="464.0" width="622.7" height="9" rx="5" fill="#d99a5b"/>
-<text x="1708.7" y="472.0" class="value" text-anchor="start" font-size="11">12,737</text>
-<rect x="1079.0" y="478.0" width="396.5" height="9" rx="5" fill="#6aaed6"/>
-<text x="1482.5" y="486.0" class="value" text-anchor="start" font-size="11">1,702</text>
-<rect x="1079.0" y="492.0" width="586.6" height="9" rx="5" fill="#94c973"/>
-<text x="1672.6" y="500.0" class="value" text-anchor="start" font-size="11">9,235</text>
+<rect x="1079.0" y="464.0" width="561.8" height="9" rx="5" fill="#d99a5b"/>
+<text x="1647.8" y="472.0" class="value" text-anchor="start" font-size="11">12,737</text>
+<rect x="1079.0" y="478.0" width="357.8" height="9" rx="5" fill="#6aaed6"/>
+<text x="1443.8" y="486.0" class="value" text-anchor="start" font-size="11">1,702</text>
+<rect x="1079.0" y="492.0" width="529.2" height="9" rx="5" fill="#94c973"/>
+<text x="1615.2" y="500.0" class="value" text-anchor="start" font-size="11">9,235</text>
 <rect x="58.0" y="716.0" width="879.0" height="502.0" rx="24" fill="#fff3dd" stroke="#c9d7e4" stroke-width="1.2"/>
 <text x="86.0" y="760.0" class="panel-title" text-anchor="start" font-size="29">BINARY</text>
 <text x="907.0" y="758.0" class="muted" text-anchor="end" font-size="16">MiB/s</text>
 <line x1="174.0" y1="802.0" x2="174.0" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
 <text x="174.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">50</text>
-<line x1="251.9" y1="802.0" x2="251.9" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="251.9" y="1188.0" class="axis" text-anchor="middle" font-size="12">100</text>
-<line x1="375.4" y1="802.0" x2="375.4" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="375.4" y="1188.0" class="axis" text-anchor="middle" font-size="12">300</text>
-<line x1="510.7" y1="802.0" x2="510.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="510.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">1000</text>
-<line x1="634.2" y1="802.0" x2="634.2" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="634.2" y="1188.0" class="axis" text-anchor="middle" font-size="12">3000</text>
-<line x1="769.5" y1="802.0" x2="769.5" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="769.5" y="1188.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="244.3" y1="802.0" x2="244.3" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="244.3" y="1188.0" class="axis" text-anchor="middle" font-size="12">100</text>
+<line x1="355.7" y1="802.0" x2="355.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="355.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">300</text>
+<line x1="477.8" y1="802.0" x2="477.8" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="477.8" y="1188.0" class="axis" text-anchor="middle" font-size="12">1000</text>
+<line x1="589.2" y1="802.0" x2="589.2" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="589.2" y="1188.0" class="axis" text-anchor="middle" font-size="12">3000</text>
+<line x1="711.3" y1="802.0" x2="711.3" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="711.3" y="1188.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="822.7" y1="802.0" x2="822.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="822.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">30000</text>
 <line x1="893.0" y1="802.0" x2="893.0" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="893.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">30000</text>
+<text x="893.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">60000</text>
 <line x1="174.0" y1="1164.0" x2="893.0" y2="1164.0" stroke="#6b7280" stroke-width="1.2"/>
 <text x="86.0" y="841.0" class="detail" text-anchor="start" font-size="16">gzip</text>
-<rect x="174.0" y="824.0" width="359.0" height="9" rx="5" fill="#d99a5b"/>
-<text x="540.0" y="832.0" class="value" text-anchor="start" font-size="11">1,219</text>
-<rect x="174.0" y="838.0" width="303.1" height="9" rx="5" fill="#6aaed6"/>
-<text x="484.1" y="846.0" class="value" text-anchor="start" font-size="11">741</text>
-<rect x="174.0" y="852.0" width="210.1" height="9" rx="5" fill="#94c973"/>
-<text x="391.1" y="860.0" class="value" text-anchor="start" font-size="11">324</text>
+<rect x="174.0" y="824.0" width="323.9" height="9" rx="5" fill="#d99a5b"/>
+<text x="504.9" y="832.0" class="value" text-anchor="start" font-size="11">1,219</text>
+<rect x="174.0" y="838.0" width="273.4" height="9" rx="5" fill="#6aaed6"/>
+<text x="454.4" y="846.0" class="value" text-anchor="start" font-size="11">741</text>
+<rect x="174.0" y="852.0" width="189.6" height="9" rx="5" fill="#94c973"/>
+<text x="370.6" y="860.0" class="value" text-anchor="start" font-size="11">324</text>
 <text x="86.0" y="883.0" class="detail" text-anchor="start" font-size="16">deflate</text>
-<rect x="174.0" y="866.0" width="370.2" height="9" rx="5" fill="#d99a5b"/>
-<text x="551.2" y="874.0" class="value" text-anchor="start" font-size="11">1,347</text>
-<rect x="174.0" y="880.0" width="309.7" height="9" rx="5" fill="#6aaed6"/>
-<text x="490.7" y="888.0" class="value" text-anchor="start" font-size="11">786</text>
-<rect x="174.0" y="894.0" width="200.1" height="9" rx="5" fill="#94c973"/>
-<text x="381.1" y="902.0" class="value" text-anchor="start" font-size="11">297</text>
+<rect x="174.0" y="866.0" width="334.0" height="9" rx="5" fill="#d99a5b"/>
+<text x="515.0" y="874.0" class="value" text-anchor="start" font-size="11">1,347</text>
+<rect x="174.0" y="880.0" width="279.4" height="9" rx="5" fill="#6aaed6"/>
+<text x="460.4" y="888.0" class="value" text-anchor="start" font-size="11">786</text>
+<rect x="174.0" y="894.0" width="180.6" height="9" rx="5" fill="#94c973"/>
+<text x="361.6" y="902.0" class="value" text-anchor="start" font-size="11">297</text>
 <text x="86.0" y="925.0" class="detail" text-anchor="start" font-size="16">lz4</text>
-<rect x="174.0" y="908.0" width="714.2" height="9" rx="5" fill="#d99a5b"/>
-<text x="891.0" y="916.0" class="value" text-anchor="end" font-size="11">28,756</text>
-<rect x="174.0" y="922.0" width="526.8" height="9" rx="5" fill="#6aaed6"/>
-<text x="707.8" y="930.0" class="value" text-anchor="start" font-size="11">5,427</text>
-<rect x="174.0" y="936.0" width="691.0" height="9" rx="5" fill="#94c973"/>
-<text x="872.0" y="944.0" class="value" text-anchor="start" font-size="11">23,383</text>
+<rect x="174.0" y="908.0" width="644.4" height="9" rx="5" fill="#d99a5b"/>
+<text x="825.4" y="916.0" class="value" text-anchor="start" font-size="11">28,756</text>
+<rect x="174.0" y="922.0" width="475.3" height="9" rx="5" fill="#6aaed6"/>
+<text x="656.3" y="930.0" class="value" text-anchor="start" font-size="11">5,427</text>
+<rect x="174.0" y="936.0" width="623.4" height="9" rx="5" fill="#94c973"/>
+<text x="804.4" y="944.0" class="value" text-anchor="start" font-size="11">23,383</text>
 <text x="86.0" y="967.0" class="detail" text-anchor="start" font-size="16">snappy</text>
-<rect x="174.0" y="950.0" width="627.8" height="9" rx="5" fill="#d99a5b"/>
-<text x="808.8" y="958.0" class="value" text-anchor="start" font-size="11">13,332</text>
-<rect x="174.0" y="964.0" width="531.9" height="9" rx="5" fill="#6aaed6"/>
-<text x="712.9" y="972.0" class="value" text-anchor="start" font-size="11">5,679</text>
-<rect x="174.0" y="978.0" width="587.3" height="9" rx="5" fill="#94c973"/>
-<text x="768.3" y="986.0" class="value" text-anchor="start" font-size="11">9,297</text>
+<rect x="174.0" y="950.0" width="566.5" height="9" rx="5" fill="#d99a5b"/>
+<text x="747.5" y="958.0" class="value" text-anchor="start" font-size="11">13,332</text>
+<rect x="174.0" y="964.0" width="479.9" height="9" rx="5" fill="#6aaed6"/>
+<text x="660.9" y="972.0" class="value" text-anchor="start" font-size="11">5,679</text>
+<rect x="174.0" y="978.0" width="529.9" height="9" rx="5" fill="#94c973"/>
+<text x="710.9" y="986.0" class="value" text-anchor="start" font-size="11">9,297</text>
 <text x="86.0" y="1009.0" class="detail" text-anchor="start" font-size="16">zstd</text>
-<rect x="174.0" y="992.0" width="456.1" height="9" rx="5" fill="#d99a5b"/>
-<text x="637.1" y="1000.0" class="value" text-anchor="start" font-size="11">2,893</text>
-<rect x="174.0" y="1006.0" width="327.3" height="9" rx="5" fill="#6aaed6"/>
-<text x="508.3" y="1014.0" class="value" text-anchor="start" font-size="11">920</text>
-<rect x="174.0" y="1020.0" width="429.3" height="9" rx="5" fill="#94c973"/>
-<text x="610.3" y="1028.0" class="value" text-anchor="start" font-size="11">2,279</text>
+<rect x="174.0" y="992.0" width="411.5" height="9" rx="5" fill="#d99a5b"/>
+<text x="592.5" y="1000.0" class="value" text-anchor="start" font-size="11">2,893</text>
+<rect x="174.0" y="1006.0" width="295.3" height="9" rx="5" fill="#6aaed6"/>
+<text x="476.3" y="1014.0" class="value" text-anchor="start" font-size="11">920</text>
+<rect x="174.0" y="1020.0" width="387.3" height="9" rx="5" fill="#94c973"/>
+<text x="568.3" y="1028.0" class="value" text-anchor="start" font-size="11">2,279</text>
 <rect x="963.0" y="716.0" width="879.0" height="502.0" rx="24" fill="#f6edff" stroke="#c9d7e4" stroke-width="1.2"/>
 <text x="991.0" y="760.0" class="panel-title" text-anchor="start" font-size="29">RANDOM</text>
 <text x="1812.0" y="758.0" class="muted" text-anchor="end" font-size="16">MiB/s</text>
 <line x1="1079.0" y1="802.0" x2="1079.0" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
 <text x="1079.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">50</text>
-<line x1="1156.9" y1="802.0" x2="1156.9" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1156.9" y="1188.0" class="axis" text-anchor="middle" font-size="12">100</text>
-<line x1="1280.4" y1="802.0" x2="1280.4" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1280.4" y="1188.0" class="axis" text-anchor="middle" font-size="12">300</text>
-<line x1="1415.7" y1="802.0" x2="1415.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1415.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">1000</text>
-<line x1="1539.2" y1="802.0" x2="1539.2" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1539.2" y="1188.0" class="axis" text-anchor="middle" font-size="12">3000</text>
-<line x1="1674.5" y1="802.0" x2="1674.5" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1674.5" y="1188.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="1149.3" y1="802.0" x2="1149.3" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1149.3" y="1188.0" class="axis" text-anchor="middle" font-size="12">100</text>
+<line x1="1260.7" y1="802.0" x2="1260.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1260.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">300</text>
+<line x1="1382.8" y1="802.0" x2="1382.8" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1382.8" y="1188.0" class="axis" text-anchor="middle" font-size="12">1000</text>
+<line x1="1494.2" y1="802.0" x2="1494.2" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1494.2" y="1188.0" class="axis" text-anchor="middle" font-size="12">3000</text>
+<line x1="1616.3" y1="802.0" x2="1616.3" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1616.3" y="1188.0" class="axis" text-anchor="middle" font-size="12">10000</text>
+<line x1="1727.7" y1="802.0" x2="1727.7" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
+<text x="1727.7" y="1188.0" class="axis" text-anchor="middle" font-size="12">30000</text>
 <line x1="1798.0" y1="802.0" x2="1798.0" y2="1164.0" stroke="#d7e3ee" stroke-width="1"/>
-<text x="1798.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">30000</text>
+<text x="1798.0" y="1188.0" class="axis" text-anchor="middle" font-size="12">60000</text>
 <line x1="1079.0" y1="1164.0" x2="1798.0" y2="1164.0" stroke="#6b7280" stroke-width="1.2"/>
 <text x="991.0" y="841.0" class="detail" text-anchor="start" font-size="16">gzip</text>
-<rect x="1079.0" y="824.0" width="51.1" height="9" rx="5" fill="#d99a5b"/>
-<text x="1137.1" y="832.0" class="value" text-anchor="start" font-size="11">79</text>
-<rect x="1079.0" y="838.0" width="110.3" height="9" rx="5" fill="#6aaed6"/>
-<text x="1196.3" y="846.0" class="value" text-anchor="start" font-size="11">133</text>
-<rect x="1079.0" y="852.0" width="52.3" height="9" rx="5" fill="#94c973"/>
-<text x="1138.3" y="860.0" class="value" text-anchor="start" font-size="11">80</text>
+<rect x="1079.0" y="824.0" width="46.1" height="9" rx="5" fill="#d99a5b"/>
+<text x="1132.1" y="832.0" class="value" text-anchor="start" font-size="11">79</text>
+<rect x="1079.0" y="838.0" width="99.5" height="9" rx="5" fill="#6aaed6"/>
+<text x="1185.5" y="846.0" class="value" text-anchor="start" font-size="11">133</text>
+<rect x="1079.0" y="852.0" width="47.2" height="9" rx="5" fill="#94c973"/>
+<text x="1133.2" y="860.0" class="value" text-anchor="start" font-size="11">80</text>
 <text x="991.0" y="883.0" class="detail" text-anchor="start" font-size="16">deflate</text>
-<rect x="1079.0" y="866.0" width="47.1" height="9" rx="5" fill="#d99a5b"/>
-<text x="1133.1" y="874.0" class="value" text-anchor="start" font-size="11">76</text>
-<rect x="1079.0" y="880.0" width="110.5" height="9" rx="5" fill="#6aaed6"/>
-<text x="1196.5" y="888.0" class="value" text-anchor="start" font-size="11">134</text>
-<rect x="1079.0" y="894.0" width="49.5" height="9" rx="5" fill="#94c973"/>
-<text x="1135.5" y="902.0" class="value" text-anchor="start" font-size="11">78</text>
+<rect x="1079.0" y="866.0" width="42.5" height="9" rx="5" fill="#d99a5b"/>
+<text x="1128.5" y="874.0" class="value" text-anchor="start" font-size="11">76</text>
+<rect x="1079.0" y="880.0" width="99.7" height="9" rx="5" fill="#6aaed6"/>
+<text x="1185.7" y="888.0" class="value" text-anchor="start" font-size="11">134</text>
+<rect x="1079.0" y="894.0" width="44.7" height="9" rx="5" fill="#94c973"/>
+<text x="1130.7" y="902.0" class="value" text-anchor="start" font-size="11">78</text>
 <text x="991.0" y="925.0" class="detail" text-anchor="start" font-size="16">lz4</text>
-<rect x="1079.0" y="908.0" width="757.0" height="9" rx="5" fill="#d99a5b"/>
-<text x="1796.0" y="916.0" class="value" text-anchor="end" font-size="11">42,061</text>
-<rect x="1079.0" y="922.0" width="556.4" height="9" rx="5" fill="#6aaed6"/>
-<text x="1642.4" y="930.0" class="value" text-anchor="start" font-size="11">7,063</text>
-<rect x="1079.0" y="936.0" width="625.6" height="9" rx="5" fill="#94c973"/>
-<text x="1711.6" y="944.0" class="value" text-anchor="start" font-size="11">13,068</text>
+<rect x="1079.0" y="908.0" width="683.0" height="9" rx="5" fill="#d99a5b"/>
+<text x="1769.0" y="916.0" class="value" text-anchor="start" font-size="11">42,061</text>
+<rect x="1079.0" y="922.0" width="502.0" height="9" rx="5" fill="#6aaed6"/>
+<text x="1588.0" y="930.0" class="value" text-anchor="start" font-size="11">7,063</text>
+<rect x="1079.0" y="936.0" width="564.4" height="9" rx="5" fill="#94c973"/>
+<text x="1650.4" y="944.0" class="value" text-anchor="start" font-size="11">13,068</text>
 <text x="991.0" y="967.0" class="detail" text-anchor="start" font-size="16">snappy</text>
-<rect x="1079.0" y="950.0" width="733.5" height="9" rx="5" fill="#d99a5b"/>
-<text x="1796.0" y="958.0" class="value" text-anchor="end" font-size="11">34,130</text>
-<rect x="1079.0" y="964.0" width="498.2" height="9" rx="5" fill="#6aaed6"/>
-<text x="1584.2" y="972.0" class="value" text-anchor="start" font-size="11">4,206</text>
-<rect x="1079.0" y="978.0" width="519.7" height="9" rx="5" fill="#94c973"/>
-<text x="1605.7" y="986.0" class="value" text-anchor="start" font-size="11">5,092</text>
+<rect x="1079.0" y="950.0" width="661.8" height="9" rx="5" fill="#d99a5b"/>
+<text x="1747.8" y="958.0" class="value" text-anchor="start" font-size="11">34,130</text>
+<rect x="1079.0" y="964.0" width="449.5" height="9" rx="5" fill="#6aaed6"/>
+<text x="1535.5" y="972.0" class="value" text-anchor="start" font-size="11">4,206</text>
+<rect x="1079.0" y="978.0" width="468.9" height="9" rx="5" fill="#94c973"/>
+<text x="1554.9" y="986.0" class="value" text-anchor="start" font-size="11">5,092</text>
 <text x="991.0" y="1009.0" class="detail" text-anchor="start" font-size="16">zstd</text>
-<rect x="1079.0" y="992.0" width="586.7" height="9" rx="5" fill="#d99a5b"/>
-<text x="1672.7" y="1000.0" class="value" text-anchor="start" font-size="11">9,245</text>
-<rect x="1079.0" y="1006.0" width="388.7" height="9" rx="5" fill="#6aaed6"/>
-<text x="1474.7" y="1014.0" class="value" text-anchor="start" font-size="11">1,588</text>
-<rect x="1079.0" y="1020.0" width="555.6" height="9" rx="5" fill="#94c973"/>
-<text x="1641.6" y="1028.0" class="value" text-anchor="start" font-size="11">7,009</text>
+<rect x="1079.0" y="992.0" width="529.3" height="9" rx="5" fill="#d99a5b"/>
+<text x="1615.3" y="1000.0" class="value" text-anchor="start" font-size="11">9,245</text>
+<rect x="1079.0" y="1006.0" width="350.7" height="9" rx="5" fill="#6aaed6"/>
+<text x="1436.7" y="1014.0" class="value" text-anchor="start" font-size="11">1,588</text>
+<rect x="1079.0" y="1020.0" width="501.3" height="9" rx="5" fill="#94c973"/>
+<text x="1587.3" y="1028.0" class="value" text-anchor="start" font-size="11">7,009</text>
 <rect x="76.0" y="1247.0" width="1748.0" height="54.0" rx="18" fill="#f8fbff" stroke="#d7e3ee" stroke-width="1.2"/>
 <text x="950.0" y="1270.0" class="detail" text-anchor="middle" font-size="17">Shared fixtures: JSON/Text/Binary/Random x 1 KiB, 64 KiB, 512 KiB</text>
 <text x="950.0" y="1290.0" class="muted" text-anchor="middle" font-size="14">Common charted compressors: gzip, deflate, lz4, snappy, zstd. zlib is preserved in Rust/Go raw CSV.</text>

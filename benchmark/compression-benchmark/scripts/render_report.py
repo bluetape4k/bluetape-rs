@@ -50,6 +50,32 @@ def metric(row: dict[str, str], name: str) -> float:
     return float(row["mib_s"] if name == "throughput" else row["ratio"])
 
 
+def row_metrics(rows: list[dict[str, str]], ecosystem: str, payload: str, size: str, compressor: str, direction: str) -> tuple[str, str]:
+    for row in rows:
+        if (
+            row["ecosystem"] == ecosystem
+            and row["direction"] == direction
+            and row["payload_kind"] == payload
+            and row["payload_size"] == size
+            and row["compressor"] == compressor
+        ):
+            return f"{float(row['mib_s']):.2f}", f"{float(row['ratio']):.6g}"
+    raise KeyError((ecosystem, payload, size, compressor, direction))
+
+
+def large_compress_row(rows: list[dict[str, str]], ecosystem: str, payload: str, compressor: str) -> dict[str, str]:
+    for row in rows:
+        if (
+            row["ecosystem"] == ecosystem
+            and row["direction"] == "compress"
+            and row["payload_kind"] == payload
+            and row["payload_size"] == "large"
+            and row["compressor"] == compressor
+        ):
+            return row
+    raise KeyError((ecosystem, payload, compressor))
+
+
 def text(x: float, y: float, value: object, cls: str, anchor: str = "start", size: int = 16) -> str:
     return (
         f'<text x="{x:.1f}" y="{y:.1f}" class="{cls}" text-anchor="{anchor}" '
@@ -75,9 +101,9 @@ def render_chart(rows: list[dict[str, str]], metric_name: str, output: Path) -> 
     title = "Same-condition Compression Ratio" if ratio else "Same-condition Compression Throughput"
     subtitle = "Large payloads, lower is better, log scale" if ratio else "Large payloads, higher is better, MiB/s, log scale"
     unit = "ratio" if ratio else "MiB/s"
-    ticks = [0.0002, 0.001, 0.01, 0.1, 1.0] if ratio else [50, 100, 300, 1000, 3000, 10000, 30000]
+    ticks = [0.0002, 0.001, 0.01, 0.1, 1.0] if ratio else [50, 100, 300, 1000, 3000, 10000, 30000, 60000]
     minimum = 0.0002 if ratio else 50.0
-    maximum = 1.2 if ratio else 30000.0
+    maximum = 1.2 if ratio else 60000.0
 
     width, height = 1900, 1360
     margin = 58
@@ -164,22 +190,25 @@ def write_markdown(rows: list[dict[str, str]]) -> None:
         "This report compares `bluetape-rs`, `bluetape-go`, and `bluetape4k-io` with the same payload fixtures.",
         "It is a local same-condition snapshot, not a production ranking or regression threshold.",
         "",
-        "![Compression throughput](../images/readme-charts/compression-throughput-large-payloads.png)",
+        "![Compression throughput](../images/readme-charts/compression-throughput-large-payloads.svg)",
         "",
-        "![Compression ratio](../images/readme-charts/compression-ratio-large-payloads.png)",
+        "![Compression ratio](../images/readme-charts/compression-ratio-large-payloads.svg)",
         "",
         "## Run Conditions",
         "",
         "- Date: 2026-06-11",
         "- Host: Apple M5, darwin/arm64",
-        "- Fixtures: `(cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads)`",
-        "- Rust: `cargo run -p compression-benchmark --release -- --payload-dir /tmp/bluetape-compression-bench/payloads --output docs/benchmark/compression-same-condition-rust.csv`",
-        "- Go: `go test -run '^$' -bench '^BenchmarkSameConditionCompressors' -benchmem -benchtime=100ms -count=1 ./...`",
-        "- JVM: `./gradlew :bluetape4k-io:test --tests 'io.bluetape4k.io.benchmark.SameConditionCompressorBenchmarkTest' --no-build-cache --rerun-tasks`",
+        "- Repository root: `/Users/debop/work/bluetape4k/bluetape-rs`",
+        "- Required sibling checkouts: `/Users/debop/work/bluetape4k/bluetape-go` and `/Users/debop/work/bluetape4k/bluetape4k-projects` at the revisions in metadata.",
+        "- Fixtures: `(cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads --output-dir /tmp/bluetape-compression-bench/payloads --manifest ../../../docs/benchmark/compression-fixtures-manifest.csv)`",
+        "- Rust cwd: repository root; command: `cargo run -p compression-benchmark --release --locked -- --payload-dir /tmp/bluetape-compression-bench/payloads --output docs/benchmark/compression-same-condition-rust.csv`",
+        "- Go cwd: `benchmark/compression-benchmark/go`; command: `go test -run '^$' -bench '^BenchmarkSameConditionCompressors' -benchmem -benchtime=100ms -count=1 ./... > ../../../docs/benchmark/raw/go-same-condition.txt`",
+        "- JVM: tracked CSV preserved from the same local snapshot; rerun is BLOCKED because the recorded `bluetape4k-projects` revision does not contain a tracked same-condition benchmark test selector.",
         "- Shared fixtures: `/tmp/bluetape-compression-bench/payloads`",
         "- Matrix: JSON/Text/Binary/Random x small 1 KiB, medium 64 KiB, large 512 KiB",
         "- Throughput: higher is better; all CSV/report/chart throughput values are normalized to MiB/s",
         "- Compression ratio: lower is better",
+        "- Go allocation counters are preserved in `docs/benchmark/raw/go-same-condition.txt`; the normalized cross-ecosystem CSV keeps common metrics only.",
         "- Source revisions and fixture hashes: `docs/benchmark/compression-same-condition-metadata.md`",
         "- CSV schema is normalized across ecosystems; `timing_provenance` records the source harness.",
         "",
@@ -188,13 +217,59 @@ def write_markdown(rows: list[dict[str, str]]) -> None:
         "- This is a single local run on one host.",
         "- Rust, Go, and JVM use different lightweight harnesses, so short-window timing noise is expected.",
         "- Use the table for broad comparison under identical payload bytes, not for stable production rankings.",
+        "- Allocation data is Go-only raw `-benchmem` evidence and is not normalized across Rust/JVM/Go.",
         "- `zlib` is preserved in Rust/Go raw CSVs but excluded from common charts because the JVM comparison set does not include zlib.",
         "",
-        "## Large Payload Results",
+        "## Per-Ecosystem Large Payload Snapshots",
+        "",
+        "These per-ecosystem snapshots come first so raw ecosystem behavior stays visible before normalized comparisons.",
+        "",
+    ]
+    for ecosystem, _ in ECOSYSTEMS:
+        lines.extend(
+            [
+                f"### {ecosystem}",
+                "",
+                "| payload | compressor | MiB/s | ratio |",
+                "|---|---:|---:|---:|",
+            ]
+        )
+        for payload in PAYLOADS:
+            for compressor in COMMON_COMPRESSORS:
+                row = large_compress_row(rows, ecosystem, payload, compressor)
+                lines.append(f"| {payload} | {compressor} | {float(row['mib_s']):.2f} | {float(row['ratio']):.6g} |")
+        lines.append("")
+    lines.extend(
+        [
+            "## Winner Summary",
+            "",
+            "Large-payload compression winners are separated by metric because faster compressors are not always the smallest-output compressors.",
+            "",
+            "| payload | throughput winner | MiB/s | ratio winner | ratio |",
+            "|---|---:|---:|---:|---:|",
+        ]
+    )
+    for payload in PAYLOADS:
+        candidates = [
+            (ecosystem, compressor, large_compress_row(rows, ecosystem, payload, compressor))
+            for ecosystem, _ in ECOSYSTEMS
+            for compressor in COMMON_COMPRESSORS
+        ]
+        throughput = max(candidates, key=lambda item: float(item[2]["mib_s"]))
+        ratio_winner = min(candidates, key=lambda item: float(item[2]["ratio"]))
+        lines.append(
+            f"| {payload} | {throughput[0]} {throughput[1]} | {float(throughput[2]['mib_s']):.2f} | "
+            f"{ratio_winner[0]} {ratio_winner[1]} | {float(ratio_winner[2]['ratio']):.6g} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Normalized Large Payload Comparison",
         "",
         "| payload | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |",
         "|---|---:|---:|---:|---:|---:|---:|---:|",
-    ]
+        ]
+    )
     for payload in PAYLOADS:
         for compressor in COMMON_COMPRESSORS:
             values = []
@@ -202,6 +277,32 @@ def write_markdown(rows: list[dict[str, str]]) -> None:
                 row = find_row(rows, ecosystem, payload, compressor)
                 values.extend([f"{float(row['mib_s']):.2f}", f"{float(row['ratio']):.6g}"])
             lines.append(f"| {payload} | {compressor} | {' | '.join(values)} |")
+    lines.extend(
+        [
+            "",
+            "## Full Payload Matrix",
+            "",
+            "The normalized tables below include compression and decompression throughput for every shared payload kind, payload size, compressor, ecosystem, and operation direction.",
+            "",
+        ]
+    )
+    for direction in ["compress", "decompress"]:
+        lines.extend(
+            [
+                f"### {direction.title()}",
+                "",
+                "| payload | size | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |",
+                "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+            ]
+        )
+        for payload in PAYLOADS:
+            for size in ["small", "medium", "large"]:
+                for compressor in COMMON_COMPRESSORS:
+                    values = []
+                    for ecosystem, _ in ECOSYSTEMS:
+                        values.extend(row_metrics(rows, ecosystem, payload, size, compressor, direction))
+                    lines.append(f"| {payload} | {size} | {compressor} | {' | '.join(values)} |")
+        lines.append("")
     lines.extend(
         [
             "",

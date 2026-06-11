@@ -15,6 +15,12 @@ trusting `/tmp` state or memory.
 - Avoid local filesystem paths in generated SVG assets.
 - Keep unreleased crate install snippets as path/Git examples until the release
   exists.
+- Make generated reports fail fast when a required benchmark row is missing;
+  `n/a` placeholders can hide incomplete evidence.
+- Keep source revision provenance tied to the actual review baseline, not an
+  earlier implementation commit.
+- Public reproduction commands must name the cwd, sibling checkout assumptions,
+  and exact BLOCKED reason when a cross-repo harness is not tracked.
 
 ## Applied In Issue #83
 
@@ -23,3 +29,12 @@ trusting `/tmp` state or memory.
 - `benchmark/compression-benchmark/scripts/normalize_csv.py`
 - `benchmark/compression-benchmark/scripts/render_report.py`
 - `docs/review/2026-06-11-issue-83-compression-benchmark-review.md`
+
+## Applied In Issues #81/#82
+
+- `benchmark/compression-benchmark/src/main.rs`
+- `benchmark/compression-benchmark/go/cmd/generate-payloads`
+- `benchmark/compression-benchmark/scripts/render_report.py`
+- `docs/benchmark/compression-same-condition-benchmark.md`
+- `docs/benchmark/compression-same-condition-metadata.md`
+- `docs/review/2026-06-11-issue-81-82-benchmark-evidence-review.md`
