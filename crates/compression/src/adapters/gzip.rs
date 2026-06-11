@@ -59,7 +59,7 @@ impl Compressor for Gzip {
     where
         W: Write,
     {
-        Ok(CompressionWriter::Gzip(flate2::write::GzEncoder::new(
+        Ok(CompressionWriter::gzip(flate2::write::GzEncoder::new(
             writer,
             flate_level(config.level),
         )))
@@ -73,7 +73,7 @@ impl Compressor for Gzip {
     where
         R: Read,
     {
-        Ok(DecompressionReader::Gzip(
+        Ok(DecompressionReader::gzip(
             crate::stream::LimitedReader::new(
                 self.name(),
                 flate2::read::GzDecoder::new(reader),

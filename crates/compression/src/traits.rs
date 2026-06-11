@@ -2,6 +2,12 @@ use crate::{CompressionConfig, CompressionError, CompressionWriter, Decompressio
 use std::io::{Read, Write};
 
 /// A compressor with one-shot byte helpers and optional streaming helpers.
+///
+/// The default decompression and streaming implementations exist for source
+/// compatibility with custom implementors. They buffer before checking
+/// [`CompressionConfig::max_decompressed_size`], so custom codecs that accept
+/// untrusted compressed input must override [`Compressor::decompress_with_config`]
+/// and streaming methods with allocation-aware limit checks.
 pub trait Compressor: Copy + Send + Sync + 'static {
     /// Stable algorithm name used in reports and registry lookup.
     fn name(&self) -> &'static str;
@@ -37,6 +43,12 @@ pub trait Compressor: Copy + Send + Sync + 'static {
     fn decompress(&self, compressed: &[u8]) -> Result<Vec<u8>, CompressionError>;
 
     /// Decompress bytes using an explicit configuration.
+    ///
+    /// The default implementation calls [`Compressor::decompress`] first and
+    /// checks the decompressed `Vec` length afterward. Built-in adapters
+    /// override this where the underlying format can declare or stream output
+    /// size before allocation. Custom implementors that handle untrusted input
+    /// should also override it.
     ///
     /// # Errors
     ///
@@ -118,7 +130,8 @@ pub trait Compressor: Copy + Send + Sync + 'static {
     /// The default implementation preserves source compatibility for custom
     /// implementors by buffering the full input and calling
     /// [`Compressor::compress_with_config`]; production streaming adapters
-    /// should override it.
+    /// should override it because the fallback buffers all input before
+    /// invoking the one-shot API.
     ///
     /// # Errors
     ///
@@ -166,7 +179,8 @@ pub trait Compressor: Copy + Send + Sync + 'static {
     /// The default implementation preserves source compatibility for custom
     /// implementors by buffering the full compressed input and calling
     /// [`Compressor::decompress_with_config`]; production streaming adapters
-    /// should override it.
+    /// should override it because the fallback buffers compressed input and
+    /// may also materialize full decompressed output before writing.
     ///
     /// # Errors
     ///

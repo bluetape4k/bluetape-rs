@@ -50,7 +50,7 @@ impl Compressor for Zstd {
         W: Write,
     {
         zstd::stream::write::Encoder::new(writer, zstd_level(self.name(), config.level)?)
-            .map(CompressionWriter::Zstd)
+            .map(CompressionWriter::zstd)
             .map_err(|source| CompressionError::CompressWrite {
                 algorithm: self.name(),
                 source,
@@ -67,7 +67,7 @@ impl Compressor for Zstd {
     {
         zstd::stream::read::Decoder::new(reader)
             .map(|reader| {
-                DecompressionReader::Zstd(crate::stream::LimitedReader::new(
+                DecompressionReader::zstd(crate::stream::LimitedReader::new(
                     self.name(),
                     reader,
                     config,

@@ -5,7 +5,11 @@ use crate::{
 };
 use std::io::{Read, Write};
 
-/// lz4 compressor with prepended uncompressed size.
+/// lz4 compressor.
+///
+/// One-shot byte helpers use lz4 block payloads with prepended uncompressed
+/// size. Streaming helpers use lz4 framed payloads; the two payload formats are
+/// intentionally not interchangeable.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Lz4;
 
@@ -57,7 +61,7 @@ impl Compressor for Lz4 {
         W: Write,
     {
         reject_non_default_level(self.name(), config.level)?;
-        Ok(CompressionWriter::Lz4(lz4_flex::frame::FrameEncoder::new(
+        Ok(CompressionWriter::lz4(lz4_flex::frame::FrameEncoder::new(
             writer,
         )))
     }
@@ -70,7 +74,7 @@ impl Compressor for Lz4 {
     where
         R: Read,
     {
-        Ok(DecompressionReader::Lz4(crate::stream::LimitedReader::new(
+        Ok(DecompressionReader::lz4(crate::stream::LimitedReader::new(
             self.name(),
             lz4_flex::frame::FrameDecoder::new(reader),
             config,

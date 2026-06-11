@@ -16,6 +16,16 @@ fn large_payload() -> Vec<u8> {
 
 #[test]
 fn registry_contains_compiled_algorithms() {
+    #[cfg(not(any(
+        feature = "gzip",
+        feature = "zlib",
+        feature = "deflate",
+        feature = "zstd",
+        feature = "lz4",
+        feature = "snappy"
+    )))]
+    assert!(algorithms().is_empty());
+
     for algorithm in algorithms() {
         assert!(!algorithm.name().is_empty());
     }
@@ -113,6 +123,58 @@ fn compiled_algorithms_reject_corrupted_payload() {
         );
         assert!(err.source().is_some(), "{}", algorithm.name());
         assert!(err.to_string().contains(algorithm.name()));
+    }
+}
+
+#[test]
+fn compiled_algorithms_reject_corrupted_stream_payload() {
+    for algorithm in algorithms() {
+        let corrupted = corrupted_stream_payload(algorithm);
+        let mut restored = Vec::new();
+        let err = algorithm
+            .decompress_stream(&corrupted[..], &mut restored, CompressionConfig::new())
+            .unwrap_err();
+        assert!(
+            matches!(
+                err,
+                CompressionError::DecompressInit { .. } | CompressionError::DecompressRead { .. }
+            ),
+            "{}",
+            algorithm.name()
+        );
+        assert!(err.source().is_some(), "{}", algorithm.name());
+    }
+}
+
+#[test]
+fn compiled_algorithms_report_direct_reader_corrupted_stream_payload() {
+    for algorithm in algorithms() {
+        let corrupted = corrupted_stream_payload(algorithm);
+        match algorithm.decompression_reader(&corrupted[..], CompressionConfig::new()) {
+            Ok(mut reader) => {
+                let mut restored = Vec::new();
+                let err = reader
+                    .read_to_end(&mut restored)
+                    .expect_err("corrupted stream reader should fail");
+                assert!(
+                    !err.to_string().is_empty()
+                        || err
+                            .get_ref()
+                            .and_then(|source| source.downcast_ref::<CompressionError>())
+                            .is_some(),
+                    "{}",
+                    algorithm.name()
+                );
+            }
+            Err(err) => {
+                assert!(
+                    matches!(err, CompressionError::DecompressInit { .. }),
+                    "{}",
+                    algorithm.name()
+                );
+                assert!(err.source().is_some(), "{}", algorithm.name());
+            }
+        }
     }
 }
 
@@ -412,6 +474,19 @@ impl Write for FailingWrite {
     fn flush(&mut self) -> std::io::Result<()> {
         Ok(())
     }
+}
+
+fn corrupted_stream_payload(algorithm: &bluetape_rs_compression::CompressionAlgorithm) -> Vec<u8> {
+    let mut compressed = Vec::new();
+    algorithm
+        .compress_stream(PAYLOAD, &mut compressed, CompressionConfig::new())
+        .unwrap();
+    if let Some(first) = compressed.first_mut() {
+        *first ^= 0xff;
+    } else {
+        compressed.push(0xff);
+    }
+    compressed
 }
 
 #[cfg(feature = "lz4")]

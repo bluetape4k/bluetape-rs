@@ -59,7 +59,7 @@ impl Compressor for Deflate {
     where
         W: Write,
     {
-        Ok(CompressionWriter::Deflate(
+        Ok(CompressionWriter::deflate(
             flate2::write::DeflateEncoder::new(writer, flate_level(config.level)),
         ))
     }
@@ -72,7 +72,7 @@ impl Compressor for Deflate {
     where
         R: Read,
     {
-        Ok(DecompressionReader::Deflate(
+        Ok(DecompressionReader::deflate(
             crate::stream::LimitedReader::new(
                 self.name(),
                 flate2::read::DeflateDecoder::new(reader),

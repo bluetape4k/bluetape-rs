@@ -5,7 +5,11 @@ use crate::{
 };
 use std::io::{Read, Write};
 
-/// snappy raw block compressor.
+/// snappy compressor.
+///
+/// One-shot byte helpers use snappy raw block payloads. Streaming helpers use
+/// snappy framed payloads; the two payload formats are intentionally not
+/// interchangeable.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Snappy;
 
@@ -62,8 +66,8 @@ impl Compressor for Snappy {
         W: Write,
     {
         reject_non_default_level(self.name(), config.level)?;
-        Ok(CompressionWriter::Snappy(Box::new(
-            snap::write::FrameEncoder::new(writer),
+        Ok(CompressionWriter::snappy(snap::write::FrameEncoder::new(
+            writer,
         )))
     }
 
@@ -75,7 +79,7 @@ impl Compressor for Snappy {
     where
         R: Read,
     {
-        Ok(DecompressionReader::Snappy(
+        Ok(DecompressionReader::snappy(
             crate::stream::LimitedReader::new(
                 self.name(),
                 snap::read::FrameDecoder::new(reader),

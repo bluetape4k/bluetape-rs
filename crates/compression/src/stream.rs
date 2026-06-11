@@ -10,7 +10,10 @@ use std::io::{Read, Write};
 )))]
 use std::marker::PhantomData;
 
-/// Streaming compression writer for enabled algorithms.
+/// Opaque streaming compression writer for enabled algorithms.
+///
+/// The concrete backend writer type is intentionally hidden so codec backend
+/// upgrades remain an internal implementation detail.
 ///
 /// # Examples
 ///
@@ -33,7 +36,11 @@ use std::marker::PhantomData;
 ///
 /// Call [`CompressionWriter::finish`] after the final write to flush codec
 /// trailers and recover the wrapped writer.
-pub enum CompressionWriter<W: Write> {
+pub struct CompressionWriter<W: Write> {
+    inner: CompressionWriterInner<W>,
+}
+
+enum CompressionWriterInner<W: Write> {
     /// gzip stream writer.
     #[cfg(feature = "gzip")]
     Gzip(flate2::write::GzEncoder<W>),
@@ -61,7 +68,52 @@ pub enum CompressionWriter<W: Write> {
         feature = "snappy"
     )))]
     #[doc(hidden)]
+    #[allow(dead_code)]
     NoAlgorithms(PhantomData<W>),
+}
+
+impl<W: Write> CompressionWriter<W> {
+    #[cfg(feature = "gzip")]
+    pub(crate) fn gzip(writer: flate2::write::GzEncoder<W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Gzip(writer),
+        }
+    }
+
+    #[cfg(feature = "zlib")]
+    pub(crate) fn zlib(writer: flate2::write::ZlibEncoder<W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Zlib(writer),
+        }
+    }
+
+    #[cfg(feature = "deflate")]
+    pub(crate) fn deflate(writer: flate2::write::DeflateEncoder<W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Deflate(writer),
+        }
+    }
+
+    #[cfg(feature = "zstd")]
+    pub(crate) fn zstd(writer: zstd::stream::write::Encoder<'static, W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Zstd(writer),
+        }
+    }
+
+    #[cfg(feature = "lz4")]
+    pub(crate) fn lz4(writer: lz4_flex::frame::FrameEncoder<W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Lz4(writer),
+        }
+    }
+
+    #[cfg(feature = "snappy")]
+    pub(crate) fn snappy(writer: snap::write::FrameEncoder<W>) -> Self {
+        Self {
+            inner: CompressionWriterInner::Snappy(Box::new(writer)),
+        }
+    }
 }
 
 impl<W: Write> CompressionWriter<W> {
@@ -72,9 +124,9 @@ impl<W: Write> CompressionWriter<W> {
     /// Returns [`CompressionError`] when the underlying encoder fails to write
     /// its final bytes.
     pub fn finish(self) -> Result<W, CompressionError> {
-        match self {
+        match self.inner {
             #[cfg(feature = "gzip")]
-            Self::Gzip(writer) => {
+            CompressionWriterInner::Gzip(writer) => {
                 writer
                     .finish()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -83,7 +135,7 @@ impl<W: Write> CompressionWriter<W> {
                     })
             }
             #[cfg(feature = "zlib")]
-            Self::Zlib(writer) => {
+            CompressionWriterInner::Zlib(writer) => {
                 writer
                     .finish()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -92,7 +144,7 @@ impl<W: Write> CompressionWriter<W> {
                     })
             }
             #[cfg(feature = "deflate")]
-            Self::Deflate(writer) => {
+            CompressionWriterInner::Deflate(writer) => {
                 writer
                     .finish()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -101,7 +153,7 @@ impl<W: Write> CompressionWriter<W> {
                     })
             }
             #[cfg(feature = "zstd")]
-            Self::Zstd(writer) => {
+            CompressionWriterInner::Zstd(writer) => {
                 writer
                     .finish()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -110,7 +162,7 @@ impl<W: Write> CompressionWriter<W> {
                     })
             }
             #[cfg(feature = "lz4")]
-            Self::Lz4(writer) => {
+            CompressionWriterInner::Lz4(writer) => {
                 writer
                     .finish()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -119,7 +171,7 @@ impl<W: Write> CompressionWriter<W> {
                     })
             }
             #[cfg(feature = "snappy")]
-            Self::Snappy(writer) => {
+            CompressionWriterInner::Snappy(writer) => {
                 (*writer)
                     .into_inner()
                     .map_err(|source| CompressionError::CompressFinish {
@@ -135,7 +187,7 @@ impl<W: Write> CompressionWriter<W> {
                 feature = "lz4",
                 feature = "snappy"
             )))]
-            Self::NoAlgorithms(_) => Err(CompressionError::CompressFinish {
+            CompressionWriterInner::NoAlgorithms(_) => Err(CompressionError::CompressFinish {
                 algorithm: "none",
                 source: std::io::Error::other("no compression algorithms enabled"),
             }),
@@ -145,19 +197,19 @@ impl<W: Write> CompressionWriter<W> {
 
 impl<W: Write> Write for CompressionWriter<W> {
     fn write(&mut self, _buf: &[u8]) -> std::io::Result<usize> {
-        match self {
+        match &mut self.inner {
             #[cfg(feature = "gzip")]
-            Self::Gzip(writer) => writer.write(_buf),
+            CompressionWriterInner::Gzip(writer) => writer.write(_buf),
             #[cfg(feature = "zlib")]
-            Self::Zlib(writer) => writer.write(_buf),
+            CompressionWriterInner::Zlib(writer) => writer.write(_buf),
             #[cfg(feature = "deflate")]
-            Self::Deflate(writer) => writer.write(_buf),
+            CompressionWriterInner::Deflate(writer) => writer.write(_buf),
             #[cfg(feature = "zstd")]
-            Self::Zstd(writer) => writer.write(_buf),
+            CompressionWriterInner::Zstd(writer) => writer.write(_buf),
             #[cfg(feature = "lz4")]
-            Self::Lz4(writer) => writer.write(_buf),
+            CompressionWriterInner::Lz4(writer) => writer.write(_buf),
             #[cfg(feature = "snappy")]
-            Self::Snappy(writer) => writer.write(_buf),
+            CompressionWriterInner::Snappy(writer) => writer.write(_buf),
             #[cfg(not(any(
                 feature = "gzip",
                 feature = "zlib",
@@ -166,26 +218,26 @@ impl<W: Write> Write for CompressionWriter<W> {
                 feature = "lz4",
                 feature = "snappy"
             )))]
-            Self::NoAlgorithms(_) => {
+            CompressionWriterInner::NoAlgorithms(_) => {
                 Err(std::io::Error::other("no compression algorithms enabled"))
             }
         }
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
-        match self {
+        match &mut self.inner {
             #[cfg(feature = "gzip")]
-            Self::Gzip(writer) => writer.flush(),
+            CompressionWriterInner::Gzip(writer) => writer.flush(),
             #[cfg(feature = "zlib")]
-            Self::Zlib(writer) => writer.flush(),
+            CompressionWriterInner::Zlib(writer) => writer.flush(),
             #[cfg(feature = "deflate")]
-            Self::Deflate(writer) => writer.flush(),
+            CompressionWriterInner::Deflate(writer) => writer.flush(),
             #[cfg(feature = "zstd")]
-            Self::Zstd(writer) => writer.flush(),
+            CompressionWriterInner::Zstd(writer) => writer.flush(),
             #[cfg(feature = "lz4")]
-            Self::Lz4(writer) => writer.flush(),
+            CompressionWriterInner::Lz4(writer) => writer.flush(),
             #[cfg(feature = "snappy")]
-            Self::Snappy(writer) => writer.flush(),
+            CompressionWriterInner::Snappy(writer) => writer.flush(),
             #[cfg(not(any(
                 feature = "gzip",
                 feature = "zlib",
@@ -194,14 +246,17 @@ impl<W: Write> Write for CompressionWriter<W> {
                 feature = "lz4",
                 feature = "snappy"
             )))]
-            Self::NoAlgorithms(_) => {
+            CompressionWriterInner::NoAlgorithms(_) => {
                 Err(std::io::Error::other("no compression algorithms enabled"))
             }
         }
     }
 }
 
-/// Streaming decompression reader for enabled algorithms.
+/// Opaque streaming decompression reader for enabled algorithms.
+///
+/// Read failures that come from decompressed-size limit enforcement preserve the
+/// typed [`CompressionError`] as the source of the returned [`std::io::Error`].
 ///
 /// # Examples
 ///
@@ -221,7 +276,11 @@ impl<W: Write> Write for CompressionWriter<W> {
 /// assert_eq!(restored, b"payload");
 /// # }
 /// ```
-pub enum DecompressionReader<R: Read> {
+pub struct DecompressionReader<R: Read> {
+    inner: DecompressionReaderInner<R>,
+}
+
+enum DecompressionReaderInner<R: Read> {
     /// gzip stream reader.
     #[cfg(feature = "gzip")]
     Gzip(LimitedReader<flate2::read::GzDecoder<R>>),
@@ -249,24 +308,71 @@ pub enum DecompressionReader<R: Read> {
         feature = "snappy"
     )))]
     #[doc(hidden)]
+    #[allow(dead_code)]
     NoAlgorithms(PhantomData<R>),
+}
+
+impl<R: Read> DecompressionReader<R> {
+    #[cfg(feature = "gzip")]
+    pub(crate) fn gzip(reader: LimitedReader<flate2::read::GzDecoder<R>>) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Gzip(reader),
+        }
+    }
+
+    #[cfg(feature = "zlib")]
+    pub(crate) fn zlib(reader: LimitedReader<flate2::read::ZlibDecoder<R>>) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Zlib(reader),
+        }
+    }
+
+    #[cfg(feature = "deflate")]
+    pub(crate) fn deflate(reader: LimitedReader<flate2::read::DeflateDecoder<R>>) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Deflate(reader),
+        }
+    }
+
+    #[cfg(feature = "zstd")]
+    pub(crate) fn zstd(
+        reader: LimitedReader<zstd::stream::read::Decoder<'static, std::io::BufReader<R>>>,
+    ) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Zstd(reader),
+        }
+    }
+
+    #[cfg(feature = "lz4")]
+    pub(crate) fn lz4(reader: LimitedReader<lz4_flex::frame::FrameDecoder<R>>) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Lz4(reader),
+        }
+    }
+
+    #[cfg(feature = "snappy")]
+    pub(crate) fn snappy(reader: LimitedReader<snap::read::FrameDecoder<R>>) -> Self {
+        Self {
+            inner: DecompressionReaderInner::Snappy(reader),
+        }
+    }
 }
 
 impl<R: Read> Read for DecompressionReader<R> {
     fn read(&mut self, _buf: &mut [u8]) -> std::io::Result<usize> {
-        match self {
+        match &mut self.inner {
             #[cfg(feature = "gzip")]
-            Self::Gzip(reader) => reader.read(_buf),
+            DecompressionReaderInner::Gzip(reader) => reader.read(_buf),
             #[cfg(feature = "zlib")]
-            Self::Zlib(reader) => reader.read(_buf),
+            DecompressionReaderInner::Zlib(reader) => reader.read(_buf),
             #[cfg(feature = "deflate")]
-            Self::Deflate(reader) => reader.read(_buf),
+            DecompressionReaderInner::Deflate(reader) => reader.read(_buf),
             #[cfg(feature = "zstd")]
-            Self::Zstd(reader) => reader.read(_buf),
+            DecompressionReaderInner::Zstd(reader) => reader.read(_buf),
             #[cfg(feature = "lz4")]
-            Self::Lz4(reader) => reader.read(_buf),
+            DecompressionReaderInner::Lz4(reader) => reader.read(_buf),
             #[cfg(feature = "snappy")]
-            Self::Snappy(reader) => reader.read(_buf),
+            DecompressionReaderInner::Snappy(reader) => reader.read(_buf),
             #[cfg(not(any(
                 feature = "gzip",
                 feature = "zlib",
@@ -275,7 +381,7 @@ impl<R: Read> Read for DecompressionReader<R> {
                 feature = "lz4",
                 feature = "snappy"
             )))]
-            Self::NoAlgorithms(_) => {
+            DecompressionReaderInner::NoAlgorithms(_) => {
                 Err(std::io::Error::other("no compression algorithms enabled"))
             }
         }

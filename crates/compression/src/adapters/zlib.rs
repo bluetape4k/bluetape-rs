@@ -59,7 +59,7 @@ impl Compressor for Zlib {
     where
         W: Write,
     {
-        Ok(CompressionWriter::Zlib(flate2::write::ZlibEncoder::new(
+        Ok(CompressionWriter::zlib(flate2::write::ZlibEncoder::new(
             writer,
             flate_level(config.level),
         )))
@@ -73,7 +73,7 @@ impl Compressor for Zlib {
     where
         R: Read,
     {
-        Ok(DecompressionReader::Zlib(
+        Ok(DecompressionReader::zlib(
             crate::stream::LimitedReader::new(
                 self.name(),
                 flate2::read::ZlibDecoder::new(reader),

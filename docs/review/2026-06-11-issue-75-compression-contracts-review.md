@@ -17,7 +17,7 @@
 | 2 Ops/SRE reliability | `sre-reviewer` | PASS, P0=0 P1=0 | Re-review verified deterministic failing `Read`/`Write` tests, typed IO sources, direct reader limit source preservation, and default limit assertion. |
 | 3 Structural/API | `architect-reviewer` | PASS, P0=0 P1=0 | Re-review verified `decompress_with_config` is defaulted for source compatibility, old-shape custom `Compressor` implementor test, no-default clippy, and typed `UnsupportedOperation` fallback. |
 | 4 Rust code quality | `code-reviewer` | PASS, P0=0 P1=0 | Verified typed errors/source, Rustdoc, feature cfg, no production panic/todo, stream constructors, and boxed snappy writer enum sizing. |
-| 5 Tests/types | `test-engineer` | PASS, P0=0 P1=0 | Verified no-default clippy, direct `decompression_reader` limit test, one-shot/stream/limit-failure stress tests. |
+| 5 Tests/types | `test-engineer` | PASS, P0=0 P1=0 | Verified no-default clippy, direct `decompression_reader` limit test, corrupted framed stream failures, one-shot/stream/limit-failure stress tests. |
 | 6 Performance/stability | `performance-reviewer` | PASS, P0=0 P1=0 | Verified lz4/snappy preallocation protection, bounded stream copy behavior, large enum boxing, exact-limit tests, and stress evidence. |
 | 7 Documentation/evidence | `library-user-reviewer` | PASS, P0=0 P1=0 | Re-review verified registry Rustdoc warns lz4/snappy one-shot block/raw versus framed stream payloads, trait summary, README parity, and rustdoc/doc tests. |
 | Final verifier | `verifier` | PASS, P0=0 P1=0 | Verified issue requirements, typed config/error/stream contracts, feature matrix, stress tests, docs parity, and local validation evidence. |
@@ -42,18 +42,19 @@ The compression integration suite now includes bounded multi-thread stress tests
 
 Latest focused run:
 
-- `cargo test -p bluetape-rs-compression --all-features --locked`: PASS, 22 integration tests + 3 doctests
+- `cargo test -p bluetape-rs-compression --all-features --locked`: PASS, 24 integration tests + 3 doctests
 
 ## Validation Evidence
 
 | Command | Result |
 |---|---|
 | `cargo fmt --all --check && git diff --check` | PASS |
-| `cargo test -p bluetape-rs-compression --all-features --locked` | PASS, 22 integration tests + 3 doctests |
-| `cargo test -p bluetape-rs-compression --no-default-features --locked` | PASS, 18 integration tests + 3 doctests |
+| `cargo test -p bluetape-rs-compression --all-features --locked` | PASS, 24 integration tests + 3 doctests |
+| `cargo test -p bluetape-rs-compression --no-default-features --locked` | PASS, 20 integration tests + 3 doctests |
 | `for feature in gzip zlib deflate zstd lz4 snappy; do cargo test -p bluetape-rs-compression --no-default-features --features "$feature" --locked; done` | PASS |
 | `cargo clippy -p bluetape-rs-compression --no-default-features --all-targets --locked -- -D warnings` | PASS |
 | `cargo clippy -p bluetape-rs-compression --all-targets --all-features --locked -- -D warnings` | PASS |
+| `rustup run 1.85.0 cargo check -p bluetape-rs-compression --all-targets --all-features --locked` | PASS |
 | `cargo test --workspace --all-features --locked` | PASS |
 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | PASS |
 | `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked` | PASS |
