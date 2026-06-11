@@ -12,9 +12,11 @@ categories = ["development-tools", "asynchronous"]
 
 [workspace]
 members = [
+    "benchmark/compression-benchmark",
     "crates/async",
     "crates/codec",
     "crates/collections",
+    "crates/compression",
     "crates/core",
     "crates/logging",
     "crates/test",
@@ -31,13 +33,19 @@ repository = "https://github.com/bluetape4k/bluetape-rs"
 base64 = "0.22.1"
 bluetape-rs-codec = { path = "crates/codec", version = "0.3.1" }
 bluetape-rs-collections = { path = "crates/collections", version = "0.3.1" }
+bluetape-rs-compression = { path = "crates/compression", version = "0.3.1", default-features = false }
 bluetape-rs-async = { path = "crates/async", version = "0.3.1" }
 bluetape-rs-core = { path = "crates/core", version = "0.3.1" }
 bluetape-rs-logging = { path = "crates/logging", version = "0.3.1" }
 bluetape-rs-test = { path = "crates/test", version = "0.3.1" }
+flate2 = { version = "1.1.5", default-features = false }
+lz4_flex = { version = "0.11.5", default-features = false }
+snap = "1.1.1"
+thiserror = "2.0.17"
 tokio = { version = "1.48.0", default-features = false }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", default-features = false }
+zstd = { version = "0.13.3", default-features = false }
 
 [lib]
 name = "bluetape_rs"
@@ -47,6 +55,14 @@ path = "src/lib.rs"
 default = ["core"]
 codec = ["dep:bluetape-rs-codec"]
 collections = ["dep:bluetape-rs-collections"]
+compression = ["dep:bluetape-rs-compression"]
+compression-all = ["compression", "bluetape-rs-compression?/all"]
+compression-deflate = ["compression", "bluetape-rs-compression?/deflate"]
+compression-gzip = ["compression", "bluetape-rs-compression?/gzip"]
+compression-lz4 = ["compression", "bluetape-rs-compression?/lz4"]
+compression-snappy = ["compression", "bluetape-rs-compression?/snappy"]
+compression-zlib = ["compression", "bluetape-rs-compression?/zlib"]
+compression-zstd = ["compression", "bluetape-rs-compression?/zstd"]
 async = ["dep:bluetape-rs-async"]
 core = ["dep:bluetape-rs-core"]
 logging = ["dep:bluetape-rs-logging"]
@@ -55,6 +71,7 @@ test = ["dep:bluetape-rs-test"]
 [dependencies]
 bluetape-rs-codec = { workspace = true, optional = true }
 bluetape-rs-collections = { workspace = true, optional = true }
+bluetape-rs-compression = { workspace = true, optional = true }
 bluetape-rs-async = { workspace = true, optional = true }
 bluetape-rs-core = { workspace = true, optional = true }
 bluetape-rs-logging = { workspace = true, optional = true }
