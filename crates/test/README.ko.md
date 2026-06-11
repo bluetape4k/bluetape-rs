@@ -2,16 +2,16 @@
 
 [English](README.md) | [한국어](README.ko.md)
 
-Reusable test helpers for bluetape-rs crates.
+bluetape-rs crate에서 재사용하는 test helper입니다.
 
 ![bluetape-rs-test crate overview](../../docs/images/readme-diagrams/bluetape-rs-test-crate.png)
 
-This crate provides deterministic async assertions, `MultithreadingTester`,
-`SuspendedJobTester`, and temporary resource cleanup helpers. Testcontainers
-fixtures are intentionally deferred to the `bluetape-rs-testcontainers`
-milestone.
+이 crate는 deterministic async assertion, `MultithreadingTester`,
+`SuspendedJobTester`, temporary resource cleanup helper를 제공합니다.
+Testcontainers fixture는 의도적으로 `bluetape-rs-testcontainers` milestone까지
+분리합니다.
 
-## Usage
+## 사용 예
 
 ```toml
 [dev-dependencies]

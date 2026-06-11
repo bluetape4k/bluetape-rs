@@ -2,27 +2,30 @@
 
 [English](README.md) | [한국어](README.ko.md)
 
-Rust-native opt-in compression helpers for `bluetape-rs`.
+`bluetape-rs`를 위한 Rust-native opt-in compression helper입니다.
 
-The crate exposes a small `Compressor` trait, typed configuration, typed errors,
-one-shot byte helpers, stream copy helpers, and feature-gated adapters for
-gzip, zlib, deflate, zstd, lz4, and snappy.
-Default features are empty; select the algorithm features you need. Use `all`
-for benchmark/dev comparison, not as a default downstream recommendation.
-The `zstd` feature enables the native `zstd-sys` build path.
-Decode helpers apply a 64 MiB decompressed-size safety limit by default. Use
-`CompressionConfig::with_max_decompressed_size` for a smaller bound, or
-`CompressionConfig::without_decompressed_size_limit` only when another trusted
-layer already bounds decoded output.
-`lz4` and `snappy` expose fixed-level block codecs and reject explicit
-non-default compression levels. Their one-shot helpers keep block/raw payload
-formats; their stream helpers use framed stream formats and should round-trip
-through the matching stream API.
+이 crate는 작은 `Compressor` trait, typed configuration, typed error, one-shot byte
+helper, stream copy helper, 그리고 gzip, zlib, deflate, zstd, lz4, snappy를 위한
+feature-gated adapter를 제공합니다.
+
+Default feature는 비어 있습니다. 필요한 algorithm feature만 선택하세요. `all`은
+benchmark/dev 비교용이며 downstream default recommendation으로 사용하지 않습니다.
+`zstd` feature는 native `zstd-sys` build path를 활성화합니다.
+
+Decode helper는 기본적으로 64 MiB decompressed-size safety limit을 적용합니다.
+더 작은 bound가 필요하면 `CompressionConfig::with_max_decompressed_size`를
+사용하고, 이미 다른 신뢰 계층이 decoded output을 제한할 때만
+`CompressionConfig::without_decompressed_size_limit`를 사용하세요.
+
+`lz4`와 `snappy`는 fixed-level block codec을 노출하며 명시적인 non-default
+compression level을 거부합니다. One-shot helper는 block/raw payload format을
+유지하고, stream helper는 framed stream format을 사용하므로 같은 stream API로
+round-trip해야 합니다.
 
 ```toml
 [dependencies]
-# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
-# Use a workspace path or Git dependency until the 0.4.0 release.
+# `bluetape-rs-compression`은 아직 unreleased 0.4.0 line입니다.
+# 0.4.0 release 전에는 workspace path 또는 Git dependency를 사용합니다.
 bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
 ```
 

@@ -2,14 +2,14 @@
 
 [English](README.md) | [한국어](README.ko.md)
 
-Small `tracing` conventions and subscriber builders for bluetape-rs.
+bluetape-rs를 위한 작은 `tracing` convention과 subscriber builder입니다.
 
 ![bluetape-rs-logging crate overview](../../docs/images/readme-diagrams/bluetape-rs-logging-crate.png)
 
-Library code must not install a process-global subscriber. Applications own the
-decision to install the subscriber returned by this crate.
+Library code는 process-global subscriber를 설치하지 않아야 합니다. 이 crate가
+반환하는 subscriber를 설치할지 결정하는 책임은 application에 있습니다.
 
-## Usage
+## 사용 예
 
 ```toml
 [dependencies]
