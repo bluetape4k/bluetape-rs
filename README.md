@@ -331,7 +331,7 @@ threshold.
 See [the compression benchmark report](docs/benchmark/compression-same-condition-benchmark.md)
 and [benchmark metadata](docs/benchmark/compression-same-condition-metadata.md)
 for raw CSV files, fixture hashes, source revisions, run commands, caveats, and
-the large-payload comparison table.
+large-payload plus full compress/decompress matrix tables.
 
 ## Development
 

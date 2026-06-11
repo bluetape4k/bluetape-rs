@@ -324,7 +324,7 @@ same-condition snapshot이며, production ranking 또는 regression threshold가
 
 ![Compression ratio](docs/images/readme-charts/compression-ratio-large-payloads.png)
 
-Raw CSV, 실행 command, large-payload 비교표는
+Raw CSV, 실행 command, large-payload 비교표, 전체 compress/decompress matrix는
 [compression benchmark report](docs/benchmark/compression-same-condition-benchmark.md)와
 [benchmark metadata](docs/benchmark/compression-same-condition-metadata.md)를
 참고하세요.

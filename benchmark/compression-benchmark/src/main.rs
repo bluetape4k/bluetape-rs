@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse()?;
     let payloads = load_payloads(&options.payload_dir)?;
     let mut rows = vec![String::from(
-        "ecosystem,compressor,direction,payload_kind,payload_size,original_bytes,compressed_bytes,ratio,iterations,total_ns,ns_op,mib_s",
+        "ecosystem,compressor,direction,payload_kind,payload_size,original_bytes,compressed_bytes,ratio,iterations,total_ns,ns_op,mib_s,timing_provenance",
     )];
 
     for algorithm in algorithms() {
@@ -154,7 +154,7 @@ fn row(
         payload.kind,
         payload.size,
         payload.bytes.len(),
-    )
+    ) + ",rust-instant-loop"
 }
 
 #[cfg(test)]
@@ -234,7 +234,7 @@ mod tests {
 
         assert_eq!(
             row,
-            "bluetape-rs,gzip,compress,json,small,1024,256,0.250000,4,4000,1000.0,976.56"
+            "bluetape-rs,gzip,compress,json,small,1024,256,0.250000,4,4000,1000.0,976.56,rust-instant-loop"
         );
     }
 }

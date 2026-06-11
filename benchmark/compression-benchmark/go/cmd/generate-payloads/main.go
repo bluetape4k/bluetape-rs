@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"flag"
 	"fmt"
 	"math/rand/v2"
 	"os"
@@ -15,16 +18,34 @@ type payload struct {
 }
 
 func main() {
-	dir := "/tmp/bluetape-compression-bench/payloads"
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	dir := flag.String("output-dir", "/tmp/bluetape-compression-bench/payloads", "directory for generated payload fixtures")
+	manifest := flag.String("manifest", "../../../docs/benchmark/compression-fixtures-manifest.csv", "CSV manifest path")
+	flag.Parse()
+
+	if err := os.MkdirAll(*dir, 0o755); err != nil {
 		panic(err)
 	}
+	var manifestRows []string
+	manifestRows = append(manifestRows, "file,bytes,sha256,first32_hex")
 	for _, p := range payloads() {
-		path := filepath.Join(dir, p.kind+"-"+p.size+".bin")
+		file := p.kind + "-" + p.size + ".bin"
+		path := filepath.Join(*dir, file)
 		if err := os.WriteFile(path, p.data, 0o644); err != nil {
 			panic(err)
 		}
+		sum := sha256.Sum256(p.data)
+		first := p.data
+		if len(first) > 32 {
+			first = first[:32]
+		}
+		manifestRows = append(manifestRows, fmt.Sprintf("%s,%d,%s,%s", file, len(p.data), hex.EncodeToString(sum[:]), hex.EncodeToString(first)))
 		fmt.Printf("%s,%d\n", path, len(p.data))
+	}
+	if err := os.MkdirAll(filepath.Dir(*manifest), 0o755); err != nil {
+		panic(err)
+	}
+	if err := os.WriteFile(*manifest, []byte(strings.Join(manifestRows, "\n")+"\n"), 0o644); err != nil {
+		panic(err)
 	}
 }
 

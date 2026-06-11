@@ -3,6 +3,7 @@ package compressionmatrix
 import (
 	"bytes"
 	"fmt"
+	"math/rand/v2"
 	"os"
 	"path/filepath"
 	"strings"
@@ -139,7 +140,11 @@ func binaryPayload(target int) []byte {
 }
 
 func randomPayload(target int) []byte {
+	r := rand.New(rand.NewPCG(0x5eed, 0x0ddba11))
 	out := make([]byte, target)
+	for i := range out {
+		out[i] = byte(r.Uint64())
+	}
 	return out
 }
 
