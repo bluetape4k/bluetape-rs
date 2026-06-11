@@ -13,12 +13,11 @@ native binary, 명시적 오류 처리, 재현 가능한 integration test가 중
 
 ## 현재 상태
 
-현재 publish된 package scope는 보정 `0.3.1` workspace release입니다. Root
-facade와 foundation, collections, async, codec focused crate 전체를 같은
-version으로 배포합니다. 활성 `0.4.0` milestone은 opt-in compression line을
-시작합니다.
+현재 release-prep package scope는 `0.4.0` workspace release입니다. Root facade와
+foundation, collections, async, codec, compression focused crate 전체를 같은
+version으로 배포합니다. `0.4.0` line은 opt-in compression surface를 시작합니다.
 
-완료된 foundation, `0.2.0`, `0.3.0` 작업 범위는 작게 유지합니다.
+완료된 foundation, `0.2.0`, `0.3.0`, `0.4.0` 작업 범위는 작게 유지합니다.
 
 - workspace layout과 release policy 정의
 - typed validation error, string, 작은 numeric check를 위한 일반 helper 함수 추가
@@ -33,11 +32,11 @@ version으로 배포합니다. 활성 `0.4.0` milestone은 opt-in compression li
   compression crate 추가
 - Kotlin extension API나 Go package shape를 복사하지 않는 Rust-native API 유지
 
-`0.3.1` line은 최신 stable workspace를 배포합니다. Codec scope는 hex, Base64,
-Base58, Base62 helper를 위한 명시적 `bluetape-rs-codec` boundary를 추가합니다.
+`0.4.0` line은 최신 stable workspace를 배포합니다. Codec scope는 hex, Base64,
+Base58, Base62 helper를 위한 명시적 `bluetape-rs-codec` boundary를 유지합니다.
 URL-safe encoding과 UTF-8 text/byte boundary helper도 이 범위에 포함합니다.
-`0.4.0` compression scope는 compression dependency를 명시적 feature flag 뒤에
-두고, release stabilization 전에 동일 조건 benchmark 결과를 기록합니다.
+Compression scope는 algorithm dependency를 명시적 feature flag 뒤에 두고, release
+publication 전에 동일 조건 benchmark 결과를 기록합니다.
 
 ## 계획 패키지군
 
@@ -87,10 +86,10 @@ Root facade는 기본으로 `core`만 활성화합니다. Optional facade module
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.3.1", features = ["logging", "codec"] }
+bluetape-rs = { version = "0.4.0", features = ["logging", "codec"] }
 
 [dev-dependencies]
-bluetape-rs = { version = "0.3.1", features = ["test"] }
+bluetape-rs = { version = "0.4.0", features = ["test"] }
 ```
 
 ```rust
@@ -101,17 +100,15 @@ Focused crate는 import name에서 hyphen 대신 underscore를 사용합니다.
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.3.1"
-bluetape-rs-logging = "0.3.1"
-bluetape-rs-collections = "0.3.1"
-bluetape-rs-async = "0.3.1"
-bluetape-rs-codec = "0.3.1"
-# `bluetape-rs-compression`은 아직 unreleased 0.4.0 line입니다.
-# 0.4.0 release 전에는 workspace path 또는 Git dependency를 사용합니다.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-core = "0.4.0"
+bluetape-rs-logging = "0.4.0"
+bluetape-rs-collections = "0.4.0"
+bluetape-rs-async = "0.4.0"
+bluetape-rs-codec = "0.4.0"
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 
 [dev-dependencies]
-bluetape-rs-test = "0.3.1"
+bluetape-rs-test = "0.4.0"
 ```
 
 ```rust
@@ -141,7 +138,7 @@ Tokio task 및 control helper를 사용할 때:
 
 ```toml
 [dependencies]
-bluetape-rs-async = "0.3.1"
+bluetape-rs-async = "0.4.0"
 ```
 
 ```rust
@@ -167,11 +164,11 @@ Codec helper를 사용할 때:
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.1"
+bluetape-rs-codec = "0.4.0"
 ```
 
 `bluetape-rs-codec`는 strict hex, Base64, Base58, Base62, URL-safe encoding,
-UTF-8 text/byte boundary helper를 위한 `0.3.1` crate boundary입니다.
+UTF-8 text/byte boundary helper를 위한 `0.4.0` crate boundary입니다.
 Compression은 `0.4.0` milestone에서 시작하고, serde-oriented serialization은
 `0.5.0`으로 계속 분리합니다.
 
@@ -258,8 +255,7 @@ Compression helper를 사용할 때:
 
 ```toml
 [dependencies]
-# `bluetape-rs-compression`은 아직 unreleased 0.4.0 line입니다.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 ```
 
 `bluetape-rs-compression`은 gzip, zlib, deflate, zstd, lz4, snappy compressor를

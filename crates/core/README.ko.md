@@ -20,7 +20,7 @@ bluetape-rs crate들이 공유하는 작고 Rust다운 helper입니다.
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.3.1"
+bluetape-rs-core = "0.4.0"
 ```
 
 ```rust

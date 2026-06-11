@@ -4,6 +4,10 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## [v0.4.0] - 2026-06-11
+
 ### Added
 
 - Added the opt-in `bluetape-rs-compression` crate with gzip, zlib, deflate,
@@ -22,7 +26,12 @@ All notable changes to this project are documented in this file.
 
 ### Validation
 
-- Pending final PR validation.
+- `cargo metadata --no-deps --format-version 1`
+- `cargo fmt --all --check`
+- `cargo test --workspace --all-features --locked`
+- `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked`
+- `cargo publish --workspace --dry-run --locked`
 
 ## [v0.3.1] - 2026-06-10
 

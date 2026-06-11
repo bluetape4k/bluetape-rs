@@ -4,7 +4,7 @@
 
 bluetape-rs를 위한 codec 및 encoding helper입니다.
 
-이 crate는 `0.3.1` workspace release에 포함됩니다. Strict hexadecimal
+이 crate는 `0.4.0` workspace release에 포함됩니다. Strict hexadecimal
 encoding/decoding primitive와 focused Base64, Base58, Base62, UTF-8 text/byte
 boundary helper를 제공합니다.
 
@@ -28,14 +28,14 @@ boundary helper를 제공합니다.
 
 ```toml
 [dependencies]
-bluetape-rs-codec = "0.3.1"
+bluetape-rs-codec = "0.4.0"
 ```
 
 또는 optional root facade를 활성화합니다.
 
 ```toml
 [dependencies]
-bluetape-rs = { version = "0.3.1", features = ["codec"] }
+bluetape-rs = { version = "0.4.0", features = ["codec"] }
 ```
 
 ## Hex

@@ -6,7 +6,7 @@ bluetape-rs를 위한 focused collection 및 iterator helper입니다.
 
 ![bluetape-rs-collections crate overview](../../docs/images/readme-diagrams/bluetape-rs-collections-crate.png)
 
-이 crate는 `0.3.1` workspace release에 포함됩니다. 초기 surface를 작게 유지해,
+이 crate는 `0.4.0` workspace release에 포함됩니다. 초기 surface를 작게 유지해,
 standard library iterator, slice, map method보다 더 표현력이 있을 때만 helper
 API를 추가합니다.
 
@@ -23,7 +23,7 @@ API를 추가합니다.
 
 ```toml
 [dependencies]
-bluetape-rs-collections = "0.3.1"
+bluetape-rs-collections = "0.4.0"
 ```
 
 ```rust

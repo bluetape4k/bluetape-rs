@@ -6,7 +6,7 @@ bluetape-rs를 위한 Tokio-first async task helper입니다.
 
 ![bluetape-rs-async crate overview](../../docs/images/readme-diagrams/bluetape-rs-async-crate.png)
 
-이 crate는 `0.3.1` workspace release에 포함됩니다. Bounded task execution과
+이 crate는 `0.4.0` workspace release에 포함됩니다. Bounded task execution과
 명시적 실패 동작을 위한 작은 helper를 제공합니다. Tokio primitive나
 service-specific shutdown, timeout, deadline policy를 대체하지 않고, 흔한 task
 lifecycle policy만 감쌉니다.
@@ -28,7 +28,7 @@ boundary를 사용하세요.
 
 ```toml
 [dependencies]
-bluetape-rs-async = "0.3.1"
+bluetape-rs-async = "0.4.0"
 ```
 
 ```rust

@@ -24,9 +24,7 @@ round-trip해야 합니다.
 
 ```toml
 [dependencies]
-# `bluetape-rs-compression`은 아직 unreleased 0.4.0 line입니다.
-# 0.4.0 release 전에는 workspace path 또는 Git dependency를 사용합니다.
-bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+bluetape-rs-compression = { version = "0.4.0", default-features = false, features = ["gzip"] }
 ```
 
 ```rust

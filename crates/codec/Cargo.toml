@@ -1,6 +1,6 @@
 [package]
 name = "bluetape-rs-codec"
-version = "0.3.1"
+version = "0.4.0"
 edition.workspace = true
 rust-version.workspace = true
 description = "Codec and encoding helpers for bluetape-rs."

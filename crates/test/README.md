@@ -15,7 +15,7 @@ milestone.
 
 ```toml
 [dev-dependencies]
-bluetape-rs-test = "0.3.1"
+bluetape-rs-test = "0.4.0"
 ```
 
 ```rust
