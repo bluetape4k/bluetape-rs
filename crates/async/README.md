@@ -1,5 +1,7 @@
 # bluetape-rs-async
 
+[English](README.md) | [한국어](README.ko.md)
+
 Tokio-first async task helpers for bluetape-rs.
 
 ![bluetape-rs-async crate overview](../../docs/images/readme-diagrams/bluetape-rs-async-crate.png)

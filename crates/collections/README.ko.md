@@ -2,26 +2,24 @@
 
 [English](README.md) | [한국어](README.ko.md)
 
-Focused collection and iterator helpers for bluetape-rs.
+bluetape-rs를 위한 focused collection 및 iterator helper입니다.
 
 ![bluetape-rs-collections crate overview](../../docs/images/readme-diagrams/bluetape-rs-collections-crate.png)
 
-This crate is part of the `0.3.1` workspace release. It intentionally
-keeps the initial surface small so helper APIs can be added only when they are
-more expressive than standard library iterator, slice, and map methods.
+이 crate는 `0.3.1` workspace release에 포함됩니다. 초기 surface를 작게 유지해,
+standard library iterator, slice, map method보다 더 표현력이 있을 때만 helper
+API를 추가합니다.
 
-## Scope
+## 범위
 
-- iterator helpers under `iter`: owned chunks, sliding windows, predicate
-  chunking, grouping, frequency counts, and `Result` partitioning
-- map helpers under `map`: value transforms for `HashMap`
-- page value type under `page`: page-number metadata for already materialized
-  item collections
-- slice helpers under `slice`: clamped signed ranges and zero-copy padding when
-  borrowing can add value beyond `std`
-- error-aware transforms when they improve `Result`-based flows
+- `iter`: owned chunk, sliding window, predicate chunking, grouping,
+  frequency count, `Result` partitioning
+- `map`: `HashMap` value transform helper
+- `page`: 이미 materialize된 item collection을 위한 page metadata value type
+- `slice`: clamped signed range와 borrow가 유용한 zero-copy padding
+- `Result` 기반 흐름을 더 명확히 하는 error-aware transform
 
-## Usage
+## 사용 예
 
 ```toml
 [dependencies]
