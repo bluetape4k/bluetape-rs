@@ -1,35 +1,28 @@
 # WIP
 
-Snapshot: 2026-06-10 KST
-Scope: `0.2.0` collections and async/concurrency helpers.
+Snapshot: 2026-06-11 KST
+Scope: `0.4.0` compression helpers and same-condition benchmarks.
 
 ## Current Target Release
 
-`v0.2.0` - Collections and async/concurrency helpers for backend services.
+`v0.4.0` - Compression helpers for backend services.
 
-This release proves that the repository can add focused Rust-native crates after
-the foundation line without turning into a catch-all utility package.
+This release starts the Rust-native compression line and tracks benchmark
+parity against `bluetape-go` and `bluetape4k-io` with shared fixtures.
 
 ## Current State
 
 - The repository is a Rust 2024 workspace with root facade crate
   `bluetape-rs` plus focused crates for core, logging, test support,
-  collections, and async helpers.
-- The root crate and foundation crates are versioned as `0.1.1`; `0.2.0`
-  crates use the `0.2.0` line.
+  collections, async helpers, codec helpers, and compression helpers.
+- The current release-prep line is `0.4.0`; `0.4.0` work is tracked in GitHub
+  milestone `0.4.0` until the release readiness issue and epic are closed.
 - Feasibility research exists under
   `docs/research/2026-06-08-backend-library-feasibility.md`.
-- GitHub milestone `0.2.0` tracks epic #18 and child issues for collections,
-  Tokio task helpers, cancellation/deadline helpers, deterministic tests, and
-  docs parity.
-- The `0.2.0` package line stays focused on collection helpers and
-  async/concurrency primitives that later backend crates can share.
-- Completed `0.2.0` child issues:
-  - #20 collection iterator/map helpers
-  - #21 Tokio task group and bounded concurrency helpers
-  - #22 cancellation, timeout, deadline, and shutdown helpers
-  - #23 deterministic async/concurrency test coverage
-  - #24 README and WIP parity
+- GitHub milestone `0.4.0` tracks compression epic #73 and release readiness
+  issue #80 after the implementation, documentation, and benchmark child issues
+  have been merged.
+- Benchmark comparison data is preserved under `docs/benchmark`.
 
 ## `0.1.0` Scope
 
@@ -72,8 +65,8 @@ Branch policy:
 ## Milestone Roadmap
 
 This roadmap follows the broad shape of `bluetape-go` while keeping package
-contracts Rust-native. GitHub milestones should be opened only when the next
-release window is ready; `0.2.0` is the active milestone in GitHub.
+contracts Rust-native. GitHub milestone `0.4.0` is the active compression
+milestone.
 
 | Milestone | Theme | Notes |
 |---|---|---|
@@ -181,9 +174,16 @@ Defer out of `0.1.0`:
 
 ### `0.4.0` - Compression Helpers
 
-- Add opt-in compression helpers with safe defaults.
-- Define streaming boundaries and registry-style selection.
-- Keep heavy compression dependencies out of default features.
+- Implemented the initial `bluetape-rs-compression` crate with gzip, zlib,
+  deflate, zstd, lz4, and snappy compressors behind additive feature flags.
+- Added typed configuration and error contracts with registry-style algorithm
+  selection.
+- Added config-aware decompression safety limits, a 64 MiB default decode
+  safety limit, stream copy helpers, and direct stream reader/writer
+  constructors for `Read`/`Write` boundaries.
+- Added the same-condition benchmark runner and report comparing `bluetape-rs`,
+  `bluetape-go`, and `bluetape4k-io` on JSON, text, binary, and random
+  payloads.
 
 ### `0.5.0` - Serialization Interfaces
 

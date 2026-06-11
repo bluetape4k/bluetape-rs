@@ -1,5 +1,7 @@
 # bluetape-rs-logging
 
+[English](README.md) | [한국어](README.ko.md)
+
 Small `tracing` conventions and subscriber builders for bluetape-rs.
 
 ![bluetape-rs-logging crate overview](../../docs/images/readme-diagrams/bluetape-rs-logging-crate.png)
@@ -11,7 +13,7 @@ decision to install the subscriber returned by this crate.
 
 ```toml
 [dependencies]
-bluetape-rs-logging = "0.3.1"
+bluetape-rs-logging = "0.4.0"
 ```
 
 ```rust

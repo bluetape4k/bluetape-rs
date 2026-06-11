@@ -39,20 +39,20 @@ Do not use `main` for ordinary development. Open normal work against `develop`.
 
 ## Current Stable Baseline
 
-`main` was created from the `v0.2.0` release commit:
+`main` currently points at the `v0.3.1` release commit:
 
-- `v0.2.0^{}`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
-- `origin/main`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
+- `v0.3.1^{}`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
+- `origin/main`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
 
 GitHub's default branch remains `develop`.
 
 ## Current Development Baseline
 
-As of the `0.3.0` codec release-readiness pass, `develop` has advanced beyond
-the stable `main` branch:
+As of the `0.4.0` compression release-readiness pass, `develop` has advanced
+beyond the stable `main` branch:
 
-- `origin/develop`: `639b030559b20960e0f3d79a8e3b1cf5060994dd`
-- `origin/main`: `fae6977bc9a01d8c665a9959bd7808139791dd46`
+- `origin/develop`: `71b3a564025b66d3228df5950e23c08019a6f543`
+- `origin/main`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
 
 Recheck these references before release promotion. Stable release tags still
 belong on `main` after the verified `develop` tree is promoted.

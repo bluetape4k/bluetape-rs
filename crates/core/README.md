@@ -1,5 +1,7 @@
 # bluetape-rs-core
 
+[English](README.md) | [한국어](README.ko.md)
+
 Small Rust-native helpers shared by bluetape-rs crates.
 
 ![bluetape-rs-core crate overview](../../docs/images/readme-diagrams/bluetape-rs-core-crate.png)
@@ -18,7 +20,7 @@ combinators when they already express the operation clearly.
 
 ```toml
 [dependencies]
-bluetape-rs-core = "0.3.1"
+bluetape-rs-core = "0.4.0"
 ```
 
 ```rust

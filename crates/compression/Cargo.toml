@@ -1,0 +1,32 @@
+[package]
+name = "bluetape-rs-compression"
+version = "0.4.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Opt-in compression helpers and registry-style selection for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["compression", "gzip", "zstd", "lz4", "snappy"]
+categories = ["compression", "development-tools"]
+
+[lib]
+name = "bluetape_rs_compression"
+path = "src/lib.rs"
+
+[features]
+default = []
+all = ["gzip", "zlib", "deflate", "zstd", "lz4", "snappy"]
+gzip = ["dep:flate2"]
+zlib = ["dep:flate2"]
+deflate = ["dep:flate2"]
+zstd = ["dep:zstd"]
+lz4 = ["dep:lz4_flex"]
+snappy = ["dep:snap"]
+
+[dependencies]
+flate2 = { workspace = true, optional = true, features = ["rust_backend"] }
+lz4_flex = { workspace = true, optional = true, features = ["std", "frame"] }
+snap = { workspace = true, optional = true }
+thiserror.workspace = true
+zstd = { workspace = true, optional = true }

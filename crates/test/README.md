@@ -1,5 +1,7 @@
 # bluetape-rs-test
 
+[English](README.md) | [한국어](README.ko.md)
+
 Reusable test helpers for bluetape-rs crates.
 
 ![bluetape-rs-test crate overview](../../docs/images/readme-diagrams/bluetape-rs-test-crate.png)
@@ -13,7 +15,7 @@ milestone.
 
 ```toml
 [dev-dependencies]
-bluetape-rs-test = "0.3.1"
+bluetape-rs-test = "0.4.0"
 ```
 
 ```rust

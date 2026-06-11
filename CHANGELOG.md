@@ -2,6 +2,37 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+No unreleased changes yet.
+
+## [v0.4.0] - 2026-06-11
+
+### Added
+
+- Added the opt-in `bluetape-rs-compression` crate with gzip, zlib, deflate,
+  zstd, lz4, and snappy compressors behind additive feature flags.
+- Added the optional root crate `compression` facade feature for callers that
+  want compression helpers through `bluetape-rs`.
+- Added same-condition benchmark fixture generation, raw Go capture, and a
+  reproducible Rust benchmark runner for comparing `bluetape-rs`,
+  `bluetape-go`, and `bluetape4k-io` compressors across JSON, text, binary,
+  and random payloads.
+- Added benchmark CSVs, a Markdown comparison report, and chart assets under
+  `docs/benchmark` and `docs/images/readme-charts`.
+- Added config-aware decompression limits, a 64 MiB default decode safety
+  limit, `Read`/`Write` stream copy helpers, and direct stream reader/writer
+  constructors to `bluetape-rs-compression`.
+
+### Validation
+
+- `cargo metadata --no-deps --format-version 1`
+- `cargo fmt --all --check`
+- `cargo test --workspace --all-features --locked`
+- `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked`
+- `cargo publish --workspace --dry-run --locked`
+
 ## [v0.3.1] - 2026-06-10
 
 ### Changed
