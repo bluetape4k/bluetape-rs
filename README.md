@@ -14,9 +14,10 @@ integration tests matter.
 
 ## Current Status
 
-The current package scope is the corrective `0.3.1` workspace release. It
-publishes the root facade and all focused foundation, collections, async, and
-codec crates under the same version.
+The current published package scope is the corrective `0.3.1` workspace
+release. It publishes the root facade and all focused foundation, collections,
+async, and codec crates under the same version. The active `0.4.0` milestone
+starts the opt-in compression line.
 
 Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
 
@@ -31,15 +32,16 @@ Completed foundation, `0.2.0`, and `0.3.0` work stays narrow:
   `0.2.0` line
 - add strict hex, Base64, Base58, Base62, and UTF-8 text boundary helpers for
   the `0.3.0` codec line
+- add the first opt-in compression crate for gzip, zlib, deflate, zstd, lz4,
+  and snappy in the `0.4.0` line
 - keep all APIs Rust-native instead of copying Kotlin extension APIs or Go
   package shapes
 
-The `0.3.1` line publishes the whole current workspace. The codec scope adds
-the explicit `bluetape-rs-codec` boundary for hex,
-Base64, Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary
-helpers. Compression, serialization, Testcontainers, SQL, resilience, and
-leader election remain separate milestones so their dependency and runtime
-costs stay explicit.
+The `0.3.1` line publishes the latest stable workspace. The codec scope adds
+the explicit `bluetape-rs-codec` boundary for hex, Base64, Base58, Base62,
+URL-safe encoding, and UTF-8 text/byte boundary helpers. The `0.4.0`
+compression scope keeps compression dependencies behind explicit feature flags
+and records same-condition benchmark results before release stabilization.
 
 ## Intended Package Families
 
@@ -51,7 +53,7 @@ costs stay explicit.
 | Collections | `bluetape-rs-collections` | Focused iterator, slice, map, grouping, chunking, and error-aware transform helpers. |
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, and shutdown helpers. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
-| Compression | `bluetape-rs-compression` | Opt-in compression helpers and registry-style codec selection. |
+| Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, and snappy helpers with registry-style selection. |
 | Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
@@ -77,7 +79,7 @@ Rust should provide a different value proposition from the existing libraries:
 
 The first release should stay boring and broadly reusable: helpers, logging, and
 test support. Codec, compression, serialization, Testcontainers, and leader
-election should be split into separate milestones. Relational SQL should come
+election are split into separate milestones. Relational SQL should come
 after Testcontainers and before resilience. Leader election should come after
 SQL and resilience because Redis, RDB, etcd, and Kubernetes Lease support make it
 a larger multi-backend track. When SQL starts, its initial shape should be an
@@ -110,6 +112,9 @@ bluetape-rs-logging = "0.3.1"
 bluetape-rs-collections = "0.3.1"
 bluetape-rs-async = "0.3.1"
 bluetape-rs-codec = "0.3.1"
+# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
+# Use a workspace path or Git dependency until the 0.4.0 release.
+bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
 
 [dev-dependencies]
 bluetape-rs-test = "0.3.1"
@@ -122,6 +127,7 @@ use bluetape_rs_collections::{Page, iter};
 use bluetape_rs_codec::{decode_hex, encode_hex_lower};
 use bluetape_rs_codec::{decode_base64_url_unpadded, encode_base64_url_unpadded};
 use bluetape_rs_codec::{decode_base58, encode_base58};
+use bluetape_rs_compression::{CompressionAlgorithm, Compressor};
 use bluetape_rs_test::TempDir;
 ```
 
@@ -172,7 +178,7 @@ bluetape-rs-codec = "0.3.1"
 
 `bluetape-rs-codec` is the `0.3.1` crate boundary for strict hex, Base64,
 Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
-Compression remains deferred to `0.4.0`, and serde-oriented serialization
+Compression starts in the `0.4.0` milestone, and serde-oriented serialization
 remains deferred to `0.5.0`.
 
 ```rust
@@ -252,6 +258,49 @@ codec crate.
 Codec public API tests live under `crates/codec/tests/` so examples exercise
 the same crate boundary that downstream users call. Source-local tests stay
 limited to private implementation details.
+
+For compression helpers:
+
+```toml
+[dependencies]
+# `bluetape-rs-compression` is in the unreleased 0.4.0 line.
+bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
+```
+
+`bluetape-rs-compression` provides in-memory gzip, zlib, deflate, zstd, lz4,
+and snappy compressors behind additive feature flags. The default feature set is
+empty; select algorithms explicitly. Use `features = ["all"]` only for
+benchmarking or local comparison. The `zstd` feature uses the native
+`zstd-sys` build path.
+
+```rust
+use bluetape_rs_compression::{CompressionAlgorithm, CompressionConfig};
+
+let algorithm = CompressionAlgorithm::Gzip;
+let compressed = algorithm
+    .compress_with_config(
+        b"{\"service\":\"blue\"}",
+        CompressionConfig::new().with_level(bluetape_rs_compression::CompressionLevel::Fast),
+    )
+    .expect("compress");
+let restored = algorithm.decompress(&compressed).expect("decompress");
+
+assert_eq!(restored, br#"{"service":"blue"}"#);
+```
+
+Same-condition benchmark results compare `bluetape-rs`, `bluetape-go`, and
+`bluetape4k-io` with shared JSON, text, binary, and random payload fixtures.
+They are a local same-condition snapshot, not a production ranking or regression
+threshold.
+
+![Compression throughput](docs/images/readme-charts/compression-throughput-large-payloads.png)
+
+![Compression ratio](docs/images/readme-charts/compression-ratio-large-payloads.png)
+
+See [the compression benchmark report](docs/benchmark/compression-same-condition-benchmark.md)
+and [benchmark metadata](docs/benchmark/compression-same-condition-metadata.md)
+for raw CSV files, fixture hashes, source revisions, run commands, caveats, and
+the large-payload comparison table.
 
 ## Development
 

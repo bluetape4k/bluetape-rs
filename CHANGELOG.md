@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Added
+
+- Added the opt-in `bluetape-rs-compression` crate with gzip, zlib, deflate,
+  zstd, lz4, and snappy compressors behind additive feature flags.
+- Added the optional root crate `compression` facade feature for callers that
+  want compression helpers through `bluetape-rs`.
+- Added same-condition benchmark fixture generation, raw Go capture, and a
+  reproducible Rust benchmark runner for comparing `bluetape-rs`,
+  `bluetape-go`, and `bluetape4k-io` compressors across JSON, text, binary,
+  and random payloads.
+- Added benchmark CSVs, a Markdown comparison report, and chart assets under
+  `docs/benchmark` and `docs/images/readme-charts`.
+
+### Validation
+
+- Pending final PR validation.
+
 ## [v0.3.1] - 2026-06-10
 
 ### Changed

@@ -10,6 +10,8 @@ pub use bluetape_rs_async as async_utils;
 pub use bluetape_rs_codec as codec;
 #[cfg(feature = "collections")]
 pub use bluetape_rs_collections as collections;
+#[cfg(feature = "compression")]
+pub use bluetape_rs_compression as compression;
 #[cfg(feature = "core")]
 pub use bluetape_rs_core as core;
 #[cfg(feature = "logging")]
