@@ -267,11 +267,17 @@ For compression helpers:
 bluetape-rs-compression = { path = "crates/compression", default-features = false, features = ["gzip"] }
 ```
 
-`bluetape-rs-compression` provides in-memory gzip, zlib, deflate, zstd, lz4,
-and snappy compressors behind additive feature flags. The default feature set is
-empty; select algorithms explicitly. Use `features = ["all"]` only for
-benchmarking or local comparison. The `zstd` feature uses the native
-`zstd-sys` build path.
+`bluetape-rs-compression` provides gzip, zlib, deflate, zstd, lz4, and snappy
+compressors behind additive feature flags. The default feature set is empty;
+select algorithms explicitly. Use `features = ["all"]` only for benchmarking or
+local comparison. The `zstd` feature uses the native `zstd-sys` build path.
+Decode helpers use a 64 MiB decompressed-size safety limit by default; callers
+can set a smaller limit or explicitly remove it for trusted inputs. Stream
+helpers copy from `Read` to `Write` and finish their encoder before returning,
+and lower-level `compression_writer` / `decompression_reader` constructors are
+available when callers need direct stream ownership. `lz4` and snappy one-shot
+helpers keep block/raw payload formats; their stream helpers use framed stream
+formats and should round-trip through the matching stream API.
 
 ```rust
 use bluetape_rs_compression::{CompressionAlgorithm, CompressionConfig};
@@ -284,6 +290,31 @@ let compressed = algorithm
     )
     .expect("compress");
 let restored = algorithm.decompress(&compressed).expect("decompress");
+
+assert_eq!(restored, br#"{"service":"blue"}"#);
+```
+
+```rust
+use bluetape_rs_compression::{CompressionAlgorithm, CompressionConfig};
+
+let algorithm = CompressionAlgorithm::Gzip;
+let mut compressed = Vec::new();
+algorithm
+    .compress_stream(
+        b"{\"service\":\"blue\"}".as_slice(),
+        &mut compressed,
+        CompressionConfig::new(),
+    )
+    .expect("compress stream");
+
+let mut restored = Vec::new();
+algorithm
+    .decompress_stream(
+        &compressed[..],
+        &mut restored,
+        CompressionConfig::new().with_max_decompressed_size(1024),
+    )
+    .expect("decompress stream");
 
 assert_eq!(restored, br#"{"service":"blue"}"#);
 ```

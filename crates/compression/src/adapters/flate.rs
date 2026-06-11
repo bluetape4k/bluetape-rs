@@ -1,4 +1,5 @@
-use crate::{CompressionError, CompressionLevel};
+use crate::adapters::common::copy_decompressed;
+use crate::{CompressionConfig, CompressionError, CompressionLevel};
 
 pub(crate) fn flate_level(level: CompressionLevel) -> flate2::Compression {
     match level {
@@ -12,10 +13,9 @@ pub(crate) fn flate_level(level: CompressionLevel) -> flate2::Compression {
 pub(crate) fn read_all(
     algorithm: &'static str,
     mut reader: impl std::io::Read,
+    config: CompressionConfig,
 ) -> Result<Vec<u8>, CompressionError> {
     let mut out = Vec::new();
-    reader
-        .read_to_end(&mut out)
-        .map_err(|source| CompressionError::Decompress { algorithm, source })?;
+    copy_decompressed(algorithm, &mut reader, &mut out, config)?;
     Ok(out)
 }
