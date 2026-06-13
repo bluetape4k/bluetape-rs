@@ -49,7 +49,7 @@ publication 전에 동일 조건 benchmark 결과를 기록합니다.
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, shutdown helper. |
 | Encoding | `bluetape-rs-codec` | Base encoder, hex, URL-safe codec, 작은 binary/text codec helper. |
 | Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, snappy helper와 registry-style selection. |
-| Serialization | `bluetape-rs-serde` | serde-compatible format을 위한 안전한 serializer/deserializer interface와 test helper. |
+| Serialization | `bluetape-rs-serde` | Cache-first binary payload SerDe를 먼저 제공하고, JSON, Protobuf, Avro, Fory, cross-repo benchmark를 `0.5.x`에서 순차로 확장합니다. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, emulator fixture helper를 명시적 feature 뒤에 둡니다. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, Kubernetes Lease 기반 leader election. |
 | SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
@@ -170,7 +170,9 @@ bluetape-rs-codec = "0.4.0"
 `bluetape-rs-codec`는 strict hex, Base64, Base58, Base62, URL-safe encoding,
 UTF-8 text/byte boundary helper를 위한 `0.4.0` crate boundary입니다.
 Compression은 `0.4.0` milestone에서 시작하고, serde-oriented serialization은
-`0.5.0`으로 계속 분리합니다.
+cache-first binary payload support를 `0.5.0`에서 먼저 제공한 뒤 JSON,
+Protobuf, Avro, Fory, cross-repo benchmark follow-up을 `0.5.x`에서 순차로
+확장합니다.
 
 ```rust
 use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};

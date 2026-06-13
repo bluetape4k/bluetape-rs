@@ -1,7 +1,7 @@
 # WIP
 
-Snapshot: 2026-06-11 KST
-Scope: `0.4.0` compression helpers and same-condition benchmarks.
+Snapshot: 2026-06-13 KST
+Scope: `0.4.0` compression helpers and `0.5.x` serialization/benchmark planning.
 
 ## Current Target Release
 
@@ -23,6 +23,11 @@ parity against `bluetape-go` and `bluetape4k-io` with shared fixtures.
   issue #80 after the implementation, documentation, and benchmark child issues
   have been merged.
 - Benchmark comparison data is preserved under `docs/benchmark`.
+- The next serialization line is split across `0.5.x` milestones, starting with
+  cache-first binary payload support in `0.5.0`.
+- GitHub milestone `0.5.5` tracks same-environment, same-scenario SerDe
+  benchmarks across `bluetape-rs`, `bluetape-go`, and `bluetape4k-projects`,
+  followed by measured performance tuning.
 
 ## `0.1.0` Scope
 
@@ -66,7 +71,9 @@ Branch policy:
 
 This roadmap follows the broad shape of `bluetape-go` while keeping package
 contracts Rust-native. GitHub milestone `0.4.0` is the active compression
-milestone.
+milestone; the next serialization track is split across `0.5.x` so the cache
+payload foundation can land before JSON, Protobuf, Avro, Fory, and cross-repo
+benchmark follow-ups.
 
 | Milestone | Theme | Notes |
 |---|---|---|
@@ -75,7 +82,12 @@ milestone.
 | `0.2.0` | Collections and async/concurrency helpers | Focused iterator/map helpers, Tokio task helpers, bounded concurrency, cancellation/deadline helpers. |
 | `0.3.0` | Codec helpers | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | `0.4.0` | Compression helpers | Opt-in compression helpers, safe defaults, streaming boundaries, and registry-style codec selection. |
-| `0.5.0` | Serialization interfaces | Serde-oriented serializer/deserializer interfaces, safe defaults, and test utilities. |
+| `0.5.0` | Core + binary serialization | Cache-first serializer/deserializer traits, binary payload contract, typed errors, format metadata, trust profiles, and first binary adapter. |
+| `0.5.1` | JSON serialization | `serde_json` bytes-first adapter, UTF-8 string helpers, explicit typed decode, and malformed-input tests. |
+| `0.5.2` | Protobuf serialization | Typed Protobuf adapter, opt-in `Any`/type URL handling, static target decode, and compatibility fixtures. |
+| `0.5.3` | Avro serialization | Schema-first Avro adapter, writer/reader schema handling, codec interaction, and schema evolution tests. |
+| `0.5.4` | Fory cross-language evaluation | Apache Fory compatibility matrix across Rust, Go, Kotlin, Java, and Python; benchmark and safety evidence before any default adoption. |
+| `0.5.5` | Cross-repo SerDe benchmark and performance tuning | Same-environment benchmark scenarios across `bluetape-rs`, `bluetape-go`, and `bluetape4k-projects`, comparable reports, and measured safe optimizations. |
 | `0.6.0` | Testcontainers fixtures | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture boundaries behind explicit features. |
 | `0.7.0` | Relational SQL DSL and repository helpers | Inspectable SQL AST, dialect rendering, bind separation, SQLx adapter; no ORM claim. |
 | `0.8.0` | Resilience primitives | Retry, timeout, circuit breaker, bulkhead, backoff, policy composition, observability hooks. |
@@ -185,11 +197,78 @@ Defer out of `0.1.0`:
   `bluetape-go`, and `bluetape4k-io` on JSON, text, binary, and random
   payloads.
 
-### `0.5.0` - Serialization Interfaces
+### `0.5.0` - Core + Binary Serialization
 
-- Add serde-compatible serializer/deserializer interfaces and test utilities.
-- Keep format selection explicit and avoid magic global defaults.
-- Cover failure and boundary cases with focused tests.
+- Add the serialization crate boundary for Rust-native serializer/deserializer
+  contracts.
+- Define typed `Serializer`/`Deserializer` and binary payload traits suitable
+  for internal cache storage and restoration.
+- Define typed errors, format id, content type, version, and trust profile
+  vocabulary.
+- Select and implement the first binary adapter with explicit format selection
+  and no magic global defaults.
+- Keep compression composition explicit and compatible with the existing
+  `0.4.0` compression crate.
+- Cover round-trip, invalid input, empty payload, version mismatch, format
+  mismatch, and cache payload boundary cases with focused tests.
+- Defer JSON, Protobuf, Avro, and Fory production adapters to later `0.5.x`
+  milestones.
+
+### `0.5.1` - JSON Serialization
+
+- Add a `serde_json`-based bytes-first adapter with UTF-8 string helpers.
+- Keep typed decode explicit through `serde::Deserialize`.
+- Cover malformed JSON, target type mismatch, UTF-8 boundary, and compact output
+  cases with focused tests.
+- Defer JSONB or binary JSON adoption until usage evidence justifies it.
+
+### `0.5.2` - Protobuf Serialization
+
+- Add typed Protobuf serialization, likely around `prost`.
+- Require the caller to supply the target type by default; serialized bytes must
+  not choose arbitrary Rust types.
+- Treat `Any` and type URL support as opt-in because dynamic type selection is a
+  trust-boundary decision.
+- Add fixtures for corrupted messages, wrong target types, and compatibility
+  behavior.
+- Keep gRPC transport concerns out of scope.
+
+### `0.5.3` - Avro Serialization
+
+- Add schema-first Avro serialization, likely around `apache-avro`.
+- Define how writer and reader schemas are supplied.
+- Add v1-to-v2 and v2-to-v1 schema evolution fixtures.
+- Cover Avro codec/compression interaction where the chosen Rust Avro backend
+  supports it directly.
+- Keep schema registry support out of scope.
+
+### `0.5.4` - Fory Cross-Language Evaluation
+
+- Evaluate Apache Fory for Rust, Go, Kotlin, Java, and Python payload
+  interoperability.
+- Build a compatibility matrix and compare payload size/throughput against the
+  `0.5.0` binary adapter.
+- Document trust, compatibility mode, schema consistency, and upgrade
+  constraints before exposing any adapter as production-ready.
+- Keep Fory opt-in until benchmark, compatibility, and safety evidence justify a
+  stronger default.
+
+### `0.5.5` - Cross-Repo SerDe Benchmark and Performance Tuning
+
+- Define shared SerDe benchmark fixtures and scenario matrix for `bluetape-rs`,
+  `bluetape-go`, and `bluetape4k-projects`.
+- Run Rust, Go, and Kotlin/JVM benchmarks under the same machine/run conditions
+  and record repository commit SHA, toolchain/runtime versions, benchmark
+  command, raw output path, timestamp, and run settings.
+- Compare payload size, encode throughput, decode throughput, latency where
+  available, allocation/GC notes, and compression interaction where relevant.
+- Publish a recommendation matrix for cache-internal, human-readable,
+  schema-first, and cross-language use cases.
+- Use benchmark results to create or execute only focused, safe performance
+  improvements that preserve correctness, trust boundaries, compatibility, and
+  docs.
+- Avoid declaring a global default serializer from one benchmark run or
+  comparing unlike scenarios without caveats.
 
 ### `0.6.0` - Testcontainers Fixtures
 
@@ -318,6 +397,10 @@ Defer out of `0.1.0`:
   and test support before database abstractions.
 - Keep codec, compression, serialization, Testcontainers, and leader election
   split into separate milestones so `0.1.0` remains small.
+- Split serialization across `0.5.x`: start with cache-first binary payload
+  support in `0.5.0`, then add JSON, Protobuf, Avro, and Fory validation in
+  separate milestones, followed by same-environment cross-repo benchmarks and
+  measured performance tuning in `0.5.5`.
 - Implement relational SQL before resilience because repository/database
   ergonomics should be proven before higher-level runtime policies.
 - Implement leader election after relational SQL and resilience because the
