@@ -50,26 +50,27 @@ use bluetape_rs_serialization::{
     SerializationFormat, SerializedPayload,
 };
 
-# fn main() -> Result<(), Box<dyn std::error::Error>> {
-let config = SerializationConfig::new(
-    SerializationFormat::new("binary")?,
-    AdapterId::new("binary.primary")?,
-)?;
-let bytes = vec![1, 2, 3];
-let metadata = config.metadata_for_size(bytes.len())?;
-let payload = SerializedPayload::new(bytes, metadata)?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = SerializationConfig::new(
+        SerializationFormat::new("binary")?,
+        AdapterId::new("binary.primary")?,
+    )?;
+    let bytes = vec![1, 2, 3];
+    let metadata = config.metadata_for_size(bytes.len())?;
+    let payload = SerializedPayload::new(bytes, metadata)?;
 
-let policy = PayloadMetadataPolicy::from_config(&config);
-if let Err(error) = policy.validate(payload.metadata()) {
-    match error.kind() {
-        SerializationErrorKind::UnsupportedVersion => {
-            // Evict, rebuild, migrate namespace, or alert.
+    let policy = PayloadMetadataPolicy::from_config(&config);
+    if let Err(error) = policy.validate(payload.metadata()) {
+        match error.kind() {
+            SerializationErrorKind::UnsupportedVersion => {
+                // Evict, rebuild, migrate namespace, or alert.
+            }
+            _ => return Err(error.into()),
         }
-        _ => return Err(error.into()),
     }
+
+    Ok(())
 }
-# Ok(())
-# }
 ```
 
 ## Safety Boundary

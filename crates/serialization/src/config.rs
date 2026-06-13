@@ -75,6 +75,20 @@ impl SerializationConfig {
         Ok(self)
     }
 
+    /// Returns a config with the given content type.
+    #[must_use]
+    pub fn with_content_type(mut self, content_type: ContentType) -> Self {
+        self.content_type = content_type;
+        self
+    }
+
+    /// Returns a config with the given positive payload version.
+    #[must_use]
+    pub fn with_version(mut self, version: PayloadVersion) -> Self {
+        self.version = version;
+        self
+    }
+
     /// Returns a config with a non-legacy trust profile.
     ///
     /// # Errors
@@ -121,14 +135,14 @@ impl SerializationConfig {
                 payload_size,
             ));
         }
-        Ok(PayloadMetadata {
-            format: self.format.clone(),
-            content_type: self.content_type.clone(),
-            version: self.version,
-            trust_profile: self.trust_profile,
-            adapter_id: self.adapter_id.clone(),
+        Ok(PayloadMetadata::new(
+            self.format.clone(),
+            self.content_type.clone(),
+            self.version,
+            self.trust_profile,
+            self.adapter_id.clone(),
             payload_size,
-        })
+        ))
     }
 
     /// Creates a metadata policy from this config.
@@ -172,7 +186,7 @@ impl PayloadMetadataPolicy {
     /// Creates a policy from a config.
     #[must_use]
     pub fn from_config(config: &SerializationConfig) -> Self {
-        Self::from_parts(
+        Self::new_unchecked(
             config.format.clone(),
             config.content_type.clone(),
             config.version,
