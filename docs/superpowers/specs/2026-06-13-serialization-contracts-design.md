@@ -1,7 +1,7 @@
 # Serialization Contracts Design
 
 Date: 2026-06-13
-Status: draft for Step 2-R review
+Status: Step 2-R reviewed, P0=0 P1=0
 Scope: issue #109, milestone `0.5.0`, `crates/serialization`
 
 ## Problem
@@ -134,13 +134,23 @@ enable dynamic type loading.
 - `adapter_id: AdapterId`
 - `payload_size: usize`
 
-`ContentType`, `PayloadVersion`, and `AdapterId` are validated value types:
+`ContentType`, `PayloadVersion`, and `AdapterId` are validated value types.
+All metadata token limits are part of the public contract so implementation and
+tests do not invent different boundaries:
 
-- content type is a non-empty ASCII media type token such as
-  `application/octet-stream`;
+- format id length is 1..=64 bytes, lowercase ASCII only, with allowed bytes
+  `a-z`, `0-9`, `-`, `_`, `.`, and `/`;
+- content type length is 1..=127 bytes, lowercase ASCII only, exactly one `/`,
+  no parameters, no whitespace, no controls, and only visible media type token
+  bytes such as `a-z`, `0-9`, `!`, `#`, `$`, `&`, `^`, `_`, `.`, `+`, and `-`;
 - payload version is a positive `u16`;
-- adapter id is a non-empty safe ASCII token;
+- adapter id length is 1..=64 bytes, lowercase ASCII only, with allowed bytes
+  `a-z`, `0-9`, `-`, `_`, and `.`;
 - payload size is metadata only and never logs or stores payload bytes.
+
+`SerializedPayload` owns the encoded bytes and metadata together. Its
+constructor derives or validates `metadata.payload_size == bytes.len()`, so
+callers cannot publish metadata that disagrees with the actual encoded payload.
 
 ### Traits
 
@@ -151,15 +161,14 @@ pub trait Serializer<T>
 where
     T: serde::Serialize,
 {
-    fn serialize(&self, value: &T) -> Result<Vec<u8>, SerializationError>;
-    fn metadata(&self, payload_size: usize) -> PayloadMetadata;
+    fn serialize(&self, value: &T) -> Result<SerializedPayload, SerializationError>;
 }
 
 pub trait Deserializer<T>
 where
     T: serde::de::DeserializeOwned,
 {
-    fn deserialize(&self, bytes: &[u8]) -> Result<T, SerializationError>;
+    fn deserialize(&self, payload: &SerializedPayload) -> Result<T, SerializationError>;
     fn expected_metadata(&self) -> PayloadMetadataPolicy;
 }
 
@@ -172,16 +181,27 @@ where
 
 The exact plan may refine method names, but it must keep these constraints:
 
-- byte input is `&[u8]`;
-- encode output is owned `Vec<u8>`;
+- raw byte input remains available through `SerializedPayload::try_from_parts`
+  or an equivalent constructor that validates metadata before decode;
+- encode output is an owned `SerializedPayload` containing `Vec<u8>` bytes;
 - input values are borrowed for encode;
 - decode target type is supplied by the caller through Rust generics;
+- metadata payload size is derived from or checked against `bytes.len()`;
 - no `Any`, `TypeId`, dynamic type registry, or payload-selected type appears
   in the #109 API.
 
 `PayloadMetadataPolicy` captures what a deserializer expects before an adapter
-exists. It should support format, content type, max supported version, and trust
-profile checks without requiring a concrete envelope implementation in #109.
+exists. It must define deterministic matching rules:
+
+- `format` and `content_type` are exact matches;
+- `trust_profile` is an exact match unless a later adapter explicitly designs a
+  narrower compatibility rule in its own issue;
+- `max_supported_version` is inclusive; observed `0` is malformed and observed
+  values greater than the max return unsupported-version errors;
+- adapter id matching is optional policy metadata, never a dynamic registry
+  lookup;
+- mismatch results map to the typed error variant for format, content type,
+  trust profile, version, malformed metadata, or oversized payload.
 
 ### Errors
 
@@ -198,8 +218,13 @@ Use a typed `SerializationError` enum. Variants must preserve safe diagnostics:
 - source error for adapter failures where an adapter can provide one later.
 
 The public error must implement `std::error::Error`, `Display`, `Debug`, and
-`Send + Sync` where sources are attached. `thiserror` is acceptable because the
-workspace already uses it for `crates/compression`.
+`Send + Sync` where sources are attached. Adapter failure sources should use a
+stored shape equivalent to `Box<dyn std::error::Error + Send + Sync + 'static>`
+when the source is safe to display. If an upstream error can include raw payload
+bytes or snippets, adapters must wrap it in a redacted source before attaching
+it to `SerializationError`. `Display`, `Debug`, and `source()` traversal tests
+must prove recognizable payload markers are not exposed. `thiserror` is
+acceptable because the workspace already uses it for `crates/compression`.
 
 ### Config Defaults
 
@@ -208,7 +233,9 @@ workspace already uses it for `crates/compression`.
 - default trust profile: `StaticallyTyped`;
 - default content type: `application/octet-stream`;
 - default payload version: `1`;
-- default max payload size: bounded constant, documented as a safety guard;
+- default max payload size: `16 * 1024 * 1024` bytes; payloads with
+  `bytes.len() > max_payload_size` fail before decode, while exactly equal
+  payloads are allowed;
 - adapter id required for concrete adapters;
 - no fallback serializer;
 - no hidden compression.
@@ -221,7 +248,8 @@ metadata tokens.
 
 Issue #109 may add:
 
-- `serde` as a workspace dependency for public trait bounds;
+- `serde` as a workspace dependency for public trait bounds, with `std` support
+  and without requiring the `derive` feature in this crate;
 - `thiserror.workspace = true` in `crates/serialization` for typed errors.
 
 It must not add adapter dependencies such as `bincode`, `serde_json`, `prost`,
@@ -250,6 +278,32 @@ A dynamic registry would make future adapter lookup convenient, but it also
 creates hidden defaults and payload-selected behavior. #109 intentionally keeps
 adapter selection caller-owned and explicit.
 
+## Cache Rollout And Operator Guidance
+
+Issue #109 does not implement cache storage, cache keys, or cache eviction.
+However, its metadata contract must tell future cache users how to operate
+format and version changes safely:
+
+- `PayloadVersion` describes the serialization payload contract, not the cache
+  namespace by itself.
+- Callers must version cache namespaces or key prefixes when changing format id,
+  content type, trust profile, or an incompatible payload version.
+- A mismatch is a hard reject with safe metadata diagnostics. The contract must
+  not silently decode, fall back to another adapter, or return `None`.
+- Recommended operator actions are explicit: evict the entry, rebuild it from
+  the source of truth, migrate the namespace, or alert if mismatches appear
+  outside a planned rollout.
+- Rollback behavior is explicit: an older reader that sees a newer unsupported
+  version returns the typed unsupported-version error with observed and maximum
+  supported version metadata.
+- Observability fields must be low-cardinality and payload-free: error kind,
+  direction, format id, content type, version relation, trust profile, adapter
+  id, payload size bucket, and configured size limit. Raw payload bytes and
+  unbounded payload snippets are never log, metric, or trace fields.
+- `UnsafeLegacyCompatibility` must be documented as a temporary migration
+  boundary for fully trusted deployments only, never as an ordinary production
+  default.
+
 ## Risks And Failure Modes
 
 1. **Over-wide public API.** If #109 defines adapter-specific behavior now,
@@ -261,10 +315,13 @@ adapter selection caller-owned and explicit.
 3. **Semver trap in format ids.** A closed enum would force future format ids
    into enum variants. Mitigation: validated newtypes for ids.
 4. **Hidden payload leaks.** Error messages could accidentally include raw
-   bytes. Mitigation: error variants store metadata and reason strings only.
+   bytes. Mitigation: error variants store metadata and reason strings only,
+   and adapter source errors are attached only when safe to display or after
+   redaction.
 5. **Unclear cache migration semantics.** Version mismatch could imply fallback
-   decoding. Mitigation: #109 records mismatch as a typed error; cache eviction,
-   namespace migration, or rebuild remains caller policy.
+   decoding. Mitigation: #109 records mismatch as a typed error and documents
+   namespace migration, eviction, rebuild, and alert paths as caller-owned
+   operator policy.
 
 ## Acceptance Criteria
 
@@ -276,11 +333,27 @@ adapter selection caller-owned and explicit.
 - Config defaults are documented and test-covered.
 - Trust profile vocabulary covers trusted internal, allowlisted types,
   statically typed, and unsafe legacy compatibility.
+- `SerializedPayload` or equivalent public construction prevents metadata
+  `payload_size` from diverging from the encoded byte length.
+- `PayloadMetadataPolicy` defines exact format/content/trust matching,
+  inclusive max-version behavior, optional adapter-id matching, and mismatch
+  error mapping.
+- Format id, content type, and adapter id max lengths and allowed bytes are
+  test-covered.
 - Tests cover valid defaults, invalid metadata tokens, version mismatch, format
   mismatch, content type mismatch, trust profile mismatch, payload size limit,
-  and safe error display.
-- README/Rustdoc state that #109 adds contracts only and that adapters remain
-  later issues.
+  config validation failures, metadata byte-length consistency, and safe
+  `Display`/`Debug`/`source()` behavior.
+- Rustdoc includes compile-checked examples for config construction, adapter
+  implementation shape, encode/decode usage, metadata policy validation, and
+  typed error matching.
+- `README.md` and `README.ko.md` stay synchronized and state that #109 adds
+  contracts only, adapters remain later issues, no dynamic registry or
+  payload-selected type exists, and `UnsafeLegacyCompatibility` is explicit
+  migration-only vocabulary.
+- Operator guidance covers mixed-version deploys, cache namespace/key-prefix
+  versioning, mismatch actions, rollback behavior, and payload-free diagnostic
+  fields.
 - No JSON, Protobuf, Avro, Fory, Testcontainers, Redis, SQLx, resilience, or
   benchmark dependency is added.
 
@@ -302,4 +375,5 @@ adapter selection caller-owned and explicit.
 | Serde compatibility and dependency policy specified | Required |
 | Trust profile vocabulary specified | Required |
 | Typed metadata/error/config requirements specified | Required |
+| Payload size consistency and cache rollout guidance specified | Required |
 | Tests and verification commands specified | Required |
