@@ -941,37 +941,53 @@ fn metadata_policy_rejects_mismatches() {
 
     assert!(policy.validate(&metadata).is_ok());
 
-    let wrong_format = PayloadMetadata {
-        format: SerializationFormat::new("json").unwrap(),
-        ..metadata.clone()
-    };
+    let wrong_format = PayloadMetadata::new(
+        SerializationFormat::new("json").unwrap(),
+        metadata.content_type().clone(),
+        metadata.version(),
+        metadata.trust_profile(),
+        metadata.adapter_id().clone(),
+        metadata.payload_size(),
+    );
     assert_eq!(
         policy.validate(&wrong_format).unwrap_err().kind(),
         SerializationErrorKind::FormatMismatch
     );
 
-    let wrong_content_type = PayloadMetadata {
-        content_type: ContentType::new("application/json").unwrap(),
-        ..metadata.clone()
-    };
+    let wrong_content_type = PayloadMetadata::new(
+        metadata.format().clone(),
+        ContentType::new("application/json").unwrap(),
+        metadata.version(),
+        metadata.trust_profile(),
+        metadata.adapter_id().clone(),
+        metadata.payload_size(),
+    );
     assert_eq!(
         policy.validate(&wrong_content_type).unwrap_err().kind(),
         SerializationErrorKind::ContentTypeMismatch
     );
 
-    let wrong_trust_profile = PayloadMetadata {
-        trust_profile: SerializationTrustProfile::TrustedInternal,
-        ..metadata.clone()
-    };
+    let wrong_trust_profile = PayloadMetadata::new(
+        metadata.format().clone(),
+        metadata.content_type().clone(),
+        metadata.version(),
+        SerializationTrustProfile::TrustedInternal,
+        metadata.adapter_id().clone(),
+        metadata.payload_size(),
+    );
     assert_eq!(
         policy.validate(&wrong_trust_profile).unwrap_err().kind(),
         SerializationErrorKind::TrustProfileMismatch
     );
 
-    let wrong_adapter = PayloadMetadata {
-        adapter_id: AdapterId::new("binary.secondary").unwrap(),
-        ..metadata.clone()
-    };
+    let wrong_adapter = PayloadMetadata::new(
+        metadata.format().clone(),
+        metadata.content_type().clone(),
+        metadata.version(),
+        metadata.trust_profile(),
+        AdapterId::new("binary.secondary").unwrap(),
+        metadata.payload_size(),
+    );
     assert_eq!(
         policy.validate(&wrong_adapter).unwrap_err().kind(),
         SerializationErrorKind::AdapterIdMismatch
@@ -984,7 +1000,8 @@ fn metadata_policy_rejects_mismatches() {
         config.trust_profile(),
         None,
         config.max_payload_size(),
-    );
+    )
+    .unwrap();
     assert!(adapter_wildcard.validate(&wrong_adapter).is_ok());
 }
 
@@ -1002,19 +1019,27 @@ fn metadata_policy_enforces_version_and_size_boundaries() {
     let exact_limit = config.metadata_for_size(10).unwrap();
     assert!(policy.validate(&exact_limit).is_ok());
 
-    let oversized = PayloadMetadata {
-        payload_size: 11,
-        ..exact_limit.clone()
-    };
+    let oversized = PayloadMetadata::new(
+        exact_limit.format().clone(),
+        exact_limit.content_type().clone(),
+        exact_limit.version(),
+        exact_limit.trust_profile(),
+        exact_limit.adapter_id().clone(),
+        11,
+    );
     assert_eq!(
         policy.validate(&oversized).unwrap_err().kind(),
         SerializationErrorKind::PayloadSizeLimitExceeded
     );
 
-    let newer_version = PayloadMetadata {
-        version: PayloadVersion::new(2).unwrap(),
-        ..exact_limit
-    };
+    let newer_version = PayloadMetadata::new(
+        exact_limit.format().clone(),
+        exact_limit.content_type().clone(),
+        PayloadVersion::new(2).unwrap(),
+        exact_limit.trust_profile(),
+        exact_limit.adapter_id().clone(),
+        exact_limit.payload_size(),
+    );
     let error = policy.validate(&newer_version).unwrap_err();
     assert_eq!(error.kind(), SerializationErrorKind::UnsupportedVersion);
     assert_eq!(error.operation(), Some(SerializationOperation::Deserialize));
@@ -1043,17 +1068,68 @@ use crate::{
     SerializationOperation, SerializationTrustProfile,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct PayloadMetadata {
-    pub format: SerializationFormat,
-    pub content_type: ContentType,
-    pub version: PayloadVersion,
-    pub trust_profile: SerializationTrustProfile,
-    pub adapter_id: AdapterId,
-    pub payload_size: usize,
+    format: SerializationFormat,
+    content_type: ContentType,
+    version: PayloadVersion,
+    trust_profile: SerializationTrustProfile,
+    adapter_id: AdapterId,
+    payload_size: usize,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+impl PayloadMetadata {
+    #[must_use]
+    pub fn new(
+        format: SerializationFormat,
+        content_type: ContentType,
+        version: PayloadVersion,
+        trust_profile: SerializationTrustProfile,
+        adapter_id: AdapterId,
+        payload_size: usize,
+    ) -> Self {
+        Self {
+            format,
+            content_type,
+            version,
+            trust_profile,
+            adapter_id,
+            payload_size,
+        }
+    }
+
+    #[must_use]
+    pub fn format(&self) -> &SerializationFormat {
+        &self.format
+    }
+
+    #[must_use]
+    pub fn content_type(&self) -> &ContentType {
+        &self.content_type
+    }
+
+    #[must_use]
+    pub fn version(&self) -> PayloadVersion {
+        self.version
+    }
+
+    #[must_use]
+    pub fn trust_profile(&self) -> SerializationTrustProfile {
+        self.trust_profile
+    }
+
+    #[must_use]
+    pub fn adapter_id(&self) -> &AdapterId {
+        &self.adapter_id
+    }
+
+    #[must_use]
+    pub fn payload_size(&self) -> usize {
+        self.payload_size
+    }
+}
+
+#[derive(PartialEq, Eq)]
 pub struct SerializedPayload {
     bytes: Vec<u8>,
     metadata: PayloadMetadata,
@@ -1061,7 +1137,7 @@ pub struct SerializedPayload {
 
 impl SerializedPayload {
     pub fn new(bytes: Vec<u8>, metadata: PayloadMetadata) -> Result<Self, SerializationError> {
-        if bytes.len() != metadata.payload_size {
+        if bytes.len() != metadata.payload_size() {
             return Err(SerializationError::invalid_metadata(
                 "payload_size",
                 "metadata payload size must match byte length",
@@ -1089,17 +1165,40 @@ impl SerializedPayload {
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct PayloadMetadataPolicy {
-    pub format: SerializationFormat,
-    pub content_type: ContentType,
-    pub max_supported_version: PayloadVersion,
-    pub trust_profile: SerializationTrustProfile,
-    pub adapter_id: Option<AdapterId>,
-    pub max_payload_size: usize,
+    format: SerializationFormat,
+    content_type: ContentType,
+    max_supported_version: PayloadVersion,
+    trust_profile: SerializationTrustProfile,
+    adapter_id: Option<AdapterId>,
+    max_payload_size: usize,
 }
 
 impl PayloadMetadataPolicy {
-    #[must_use]
     pub fn from_parts(
+        format: SerializationFormat,
+        content_type: ContentType,
+        max_supported_version: PayloadVersion,
+        trust_profile: SerializationTrustProfile,
+        adapter_id: Option<AdapterId>,
+        max_payload_size: usize,
+    ) -> Result<Self, SerializationError> {
+        if max_payload_size == 0 {
+            return Err(SerializationError::invalid_config(
+                "max_payload_size",
+                "max payload size must be positive",
+            ));
+        }
+        Ok(Self::new_unchecked(
+            format,
+            content_type,
+            max_supported_version,
+            trust_profile,
+            adapter_id,
+            max_payload_size,
+        ))
+    }
+
+    pub(crate) fn new_unchecked(
         format: SerializationFormat,
         content_type: ContentType,
         max_supported_version: PayloadVersion,
@@ -1241,14 +1340,14 @@ impl SerializationConfig {
                 payload_size,
             ));
         }
-        Ok(PayloadMetadata {
-            format: self.format.clone(),
-            content_type: self.content_type.clone(),
-            version: self.version,
-            trust_profile: self.trust_profile,
-            adapter_id: self.adapter_id.clone(),
+        Ok(PayloadMetadata::new(
+            self.format.clone(),
+            self.content_type.clone(),
+            self.version,
+            self.trust_profile,
+            self.adapter_id.clone(),
             payload_size,
-        })
+        ))
     }
 
     #[must_use]
@@ -1285,7 +1384,7 @@ impl SerializationConfig {
 impl PayloadMetadataPolicy {
     #[must_use]
     pub fn from_config(config: &SerializationConfig) -> Self {
-        Self::from_parts(
+        Self::new_unchecked(
             config.format.clone(),
             config.content_type.clone(),
             config.version,
