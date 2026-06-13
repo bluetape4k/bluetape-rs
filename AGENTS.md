@@ -1,5 +1,10 @@
 # AGENTS.md - bluetape-rs
 
+This repository inherits the workspace guidance from `../AGENTS.md`.
+Read and follow the workspace root guide first. This file only adds
+repo-specific layout, commands, domain rules, and local exceptions.
+
+
 This repository is the Rust backend library line for the bluetape ecosystem.
 It is governed by the workspace-level `AGENTS.md`; this file narrows the rules
 for Rust work in this repo.
@@ -29,15 +34,6 @@ for Rust work in this repo.
 - If any required workflow gate was skipped, stop downstream work, mark the
   gate as failed, run the missing gate, repair all P0/P1 findings, and only then
   continue.
-
-## Language Policy
-
-- User-facing chat remains Korean.
-- Public contributor artifacts are English: README.md, KDoc-equivalent Rustdoc,
-  CHANGELOG, release notes, GitHub issues, PR bodies, and commit messages.
-- Keep `README.md` and `README.ko.md` synchronized whenever public behavior,
-  package scope, or roadmap changes.
-- Agent-facing guidance such as this file stays concise English.
 
 ## Project Position
 
@@ -98,10 +94,3 @@ for Rust work in this repo.
   graph database support.
 - For public API or behavior changes, update both README files and WIP/roadmap
   notes when needed.
-
-## Git Workflow
-
-- `develop` is the integration branch.
-- Do not push directly to `main`.
-- Use English Lore-protocol commit messages as required by the workspace
-  guidance.
