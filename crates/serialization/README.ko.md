@@ -1,10 +1,11 @@
 # bluetape-rs-serialization
 
-`bluetape-rs`를 위한 Rust-native serialization 경계입니다.
+`bluetape-rs`를 위한 Rust-native serialization contract입니다.
 
-이 crate는 `0.5.0` cache-first binary serialization milestone의 bootstrap
-slice입니다. 먼저 package와 문서 경계를 만들고, 이후 issue에서 trait, typed
-error, binary payload envelope, adapter를 review된 feature flag 뒤에 추가합니다.
+이 crate는 cache-first serialization을 위한 `0.5.0` contract layer를 정의합니다:
+검증된 metadata, safe default, typed error, payload envelope, `serde` 호환
+serializer/deserializer trait입니다. Concrete binary, JSON, Protobuf, Avro,
+Apache Fory, benchmark 작업은 후속 issue 범위입니다.
 
 ## 사용법
 
@@ -18,10 +19,6 @@ bluetape-rs-serialization = { git = "https://github.com/bluetape4k/bluetape-rs",
 bluetape-rs-serialization = "0.5"
 ```
 
-```rust
-use bluetape_rs_serialization as serialization;
-```
-
 Root facade 사용:
 
 ```toml
@@ -32,44 +29,72 @@ bluetape-rs = { git = "https://github.com/bluetape4k/bluetape-rs", features = ["
 bluetape-rs = { version = "0.5", features = ["serialization"] }
 ```
 
+## Contracts
+
+- `SerializationFormat`, `ContentType`, `AdapterId`, `PayloadVersion`는 stable
+  metadata token을 검증합니다.
+- `SerializationConfig` 기본값은 statically typed trust,
+  `application/octet-stream`, payload version `1`, 16 MiB payload limit입니다.
+- `SerializedPayload`는 bytes와 metadata를 함께 소유해 `payload_size`가
+  `bytes.len()`과 일치하도록 합니다.
+- `PayloadMetadataPolicy`는 format, content type, version, trust profile,
+  adapter id, size mismatch를 typed error로 거부합니다.
+- `Serializer<T>`, `Deserializer<T>`, `BinarySerializer<T>`는 `serde` 호환
+  contract입니다. Rust target type은 caller가 제공합니다.
+
+## Example
+
 ```rust
-use bluetape_rs::serialization;
+use bluetape_rs_serialization::{
+    AdapterId, PayloadMetadataPolicy, SerializationConfig, SerializationErrorKind,
+    SerializationFormat, SerializedPayload,
+};
+
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+let config = SerializationConfig::new(
+    SerializationFormat::new("binary")?,
+    AdapterId::new("binary.primary")?,
+)?;
+let bytes = vec![1, 2, 3];
+let metadata = config.metadata_for_size(bytes.len())?;
+let payload = SerializedPayload::new(bytes, metadata)?;
+
+let policy = PayloadMetadataPolicy::from_config(&config);
+if let Err(error) = policy.validate(payload.metadata()) {
+    match error.kind() {
+        SerializationErrorKind::UnsupportedVersion => {
+            // Evict, rebuild, migrate namespace, or alert.
+        }
+        _ => return Err(error.into()),
+    }
+}
+# Ok(())
+# }
 ```
 
-Root facade는 `serialization` feature를 켠 경우에만 사용할 수 있습니다. 기본
-`bluetape-rs` build는 변경하지 않습니다.
+## Safety Boundary
 
-이 bootstrap crate는 아직 serializer trait이나 adapter를 노출하지 않습니다. 해당
-API는 review된 후속 `0.5.0` issue에서 추가합니다.
+Dynamic registry, hidden default serializer, environment-selected adapter,
+fallback adapter, payload-selected Rust type은 없습니다.
 
-## 경계
+`UnsafeLegacyCompatibility`는 완전히 trusted deployment의 migration-only
+vocabulary입니다. 기본값이 아니며 shared/untrusted payload boundary에서는 별도
+adapter review 없이는 사용하지 않습니다.
 
-`0.5.0`은 cache-first binary payload support로 시작합니다. Payload metadata,
-versioning, trust profile, typed failure, adapter contract는 후속 issue에서
-추가합니다.
+## Cache Rollout Guidance
 
-`Option<T>`는 값의 부재를 의미합니다. Empty bytes는 payload data이며 숨겨진
-null convention으로 취급하지 않습니다.
+Format id, content type, trust profile, incompatible payload version이 바뀌면
+cache namespace나 key prefix를 versioning합니다. Mismatch는 hard typed
+failure입니다. Caller-owned action은 evict, source of truth 기반 rebuild,
+namespace migration, 예상 밖 mismatch alert입니다.
 
-향후 unsupported version, wrong format, wrong trust profile은 typed decode
-failure입니다. `None`으로 decode하지 않고, 조용히 fallback하지 않으며, alternate
-adapter retry도 하지 않습니다. Cache eviction, namespace migration, rebuild
-policy는 caller가 소유합니다.
+Payload-free diagnostic field는 error kind, operation, format id, content type,
+version relation, trust profile, adapter id, payload size bucket, configured size
+limit입니다.
 
-## Migration / Compatibility
+## 이 Contract Issue 범위 밖
 
-기존 `bluetape-rs` 사용자는 issue #108 때문에 code나 Cargo 설정을 바꿀 필요가
-없습니다. 필요한 caller만 `bluetape-rs-serialization`에 직접 의존하거나
-`bluetape-rs`에서 `features = ["serialization"]`을 활성화합니다.
-
-## Issue #108 Bootstrap Non-goals
-
-- Serializer trait 또는 concrete adapter
-- Runtime binary payload encoding
-- Global serializer registry
-
-## `0.5.0` Core/Binary Milestone 범위 밖
-
+- Binary adapter
 - JSON adapter
 - Protobuf adapter
 - Avro adapter
@@ -77,7 +102,7 @@ policy는 caller가 소유합니다.
 - Testcontainers integration
 - SQL 또는 SQLx integration
 - Resilience, retry, circuit-breaker, fallback policy
-- Unsafe deserialization
+- Default unsafe deserialization
 - Hidden global serializer
 - Hidden default serializer
 - Env-selected adapter
