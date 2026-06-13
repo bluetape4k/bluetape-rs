@@ -54,7 +54,7 @@ same-condition benchmark results before release publication.
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, and shutdown helpers. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, and snappy helpers with registry-style selection. |
-| Serialization | `bluetape-rs-serde` | Cache-first binary payload SerDe first, then JSON, Protobuf, Avro, Fory, and cross-repo benchmarks across `0.5.x`. |
+| Serialization | `bluetape-rs-serialization` | Reserves the cache-first binary payload SerDe boundary first, then adds JSON, Protobuf, Avro, Fory, and the cross-repo benchmark track in `0.5.5` after adapters exist. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
 | SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
@@ -65,6 +65,11 @@ same-condition benchmark results before release publication.
 | Graph | `bluetape-rs-graph` | Graph model, bulk I/O, and backend adapters where Rust drivers are mature enough. |
 | Text | `bluetape-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrappers, and language detection. |
 | Workshop | `bluetape-rs-workshop` | Runnable axum, Tokio, SQLx, Redis, AWS, graph, and text examples. |
+
+Use `bluetape-rs-serialization` directly for crate-level docs, or enable
+`features = ["serialization"]` on `bluetape-rs` for the root facade.
+Issue #108 is a crate/facade/docs bootstrap only; serializer traits, concrete
+adapters, and runtime binary encoding arrive in later reviewed `0.5.0` issues.
 
 ## Design Position
 
@@ -128,6 +133,9 @@ use bluetape_rs_codec::{decode_base58, encode_base58};
 use bluetape_rs_compression::{CompressionAlgorithm, Compressor};
 use bluetape_rs_test::TempDir;
 ```
+
+`bluetape-rs-serialization` is omitted from the callable API example until it
+exposes serializer traits or adapters in a later `0.5.0` issue.
 
 For collection helpers:
 

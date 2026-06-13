@@ -1,0 +1,20 @@
+[package]
+name = "bluetape-rs-serialization"
+version = "0.4.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Rust-native serialization contracts for bluetape-rs."
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["serialization", "serde", "binary", "cache"]
+categories = ["encoding", "development-tools"]
+
+[lib]
+name = "bluetape_rs_serialization"
+path = "src/lib.rs"
+
+[features]
+default = []
+
+[dependencies]

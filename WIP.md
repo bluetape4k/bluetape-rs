@@ -201,6 +201,11 @@ Defer out of `0.1.0`:
 
 - Add the serialization crate boundary for Rust-native serializer/deserializer
   contracts.
+- Issue #108 adds `crates/serialization` as package
+  `bluetape-rs-serialization`, library `bluetape_rs_serialization`, and the
+  opt-in root facade feature `serialization`; it is a crate/facade/docs
+  bootstrap only and does not expose serializer traits, concrete adapters, or
+  runtime binary encoding yet.
 - Define typed `Serializer`/`Deserializer` and binary payload traits suitable
   for internal cache storage and restoration.
 - Define typed errors, format id, content type, version, and trust profile

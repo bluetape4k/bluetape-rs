@@ -16,5 +16,7 @@ pub use bluetape_rs_compression as compression;
 pub use bluetape_rs_core as core;
 #[cfg(feature = "logging")]
 pub use bluetape_rs_logging as logging;
+#[cfg(feature = "serialization")]
+pub use bluetape_rs_serialization as serialization;
 #[cfg(feature = "test")]
 pub use bluetape_rs_test as test;

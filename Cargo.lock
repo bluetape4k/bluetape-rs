@@ -33,6 +33,7 @@ dependencies = [
  "bluetape-rs-compression",
  "bluetape-rs-core",
  "bluetape-rs-logging",
+ "bluetape-rs-serialization",
  "bluetape-rs-test",
 ]
 
@@ -77,6 +78,10 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
 ]
+
+[[package]]
+name = "bluetape-rs-serialization"
+version = "0.4.0"
 
 [[package]]
 name = "bluetape-rs-test"
