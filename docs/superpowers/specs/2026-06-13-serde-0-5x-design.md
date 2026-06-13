@@ -41,7 +41,7 @@ Goal: provide the internal cache payload foundation.
 
 Scope:
 
-- Add the serialization crate boundary.
+- Add the serialization crate boundary under `crates/serialization`.
 - Define core traits for serialization and deserialization.
 - Define binary payload contracts for cache storage and restoration.
 - Define typed error, format id, content type, version, and trust profile
@@ -52,11 +52,64 @@ Scope:
 - Add round-trip, invalid input, empty payload, version mismatch, and format
   mismatch tests.
 
+Issue #108 bootstrap slice:
+
+- Create `crates/serialization` with package name `bluetape-rs-serialization`
+  and library name `bluetape_rs_serialization`.
+- Register the crate in `[workspace].members` and `[workspace.dependencies]`.
+- Add a root optional dependency and root facade feature:
+  `serialization = ["dep:bluetape-rs-serialization"]`.
+- Re-export the crate from `bluetape-rs` only behind
+  `#[cfg(feature = "serialization")]`.
+- Keep the root default feature set unchanged.
+- Keep the serialization crate default feature set minimal and free of JSON,
+  Protobuf, Avro, Fory, Testcontainers, SQL, and resilience dependencies.
+- Stop at crate bootstrap, facade wiring, README/Rustdoc boundary text, and
+  roadmap parity. The first binary adapter is still part of the `0.5.0`
+  milestone, but not part of issue #108 unless the issue scope is expanded.
+
+Feature policy:
+
+- Format integrations must be additive, opt-in features when they are added in
+  later milestones.
+- Future `json`, `protobuf`, `avro`, and `fory` features must not be enabled by
+  the root crate default feature set.
+- Hidden global registries, env-selected adapters, and default serializers are
+  not allowed in `0.5.0`.
+
+Cache payload contract:
+
+- The cache envelope records format id, content type, payload version, trust
+  profile, adapter id, and payload size without requiring payload bytes in
+  diagnostics.
+- Decode failures are typed. At minimum, the plan must account for invalid
+  payload, unsupported version, format mismatch, content-type mismatch, trust
+  profile mismatch, oversized payload, and adapter failure cases.
+- Corrupt, unknown-version, wrong-format, wrong-trust-profile, truncated, or
+  trailing-byte payloads must not silently decode, fall back to `None`, or try
+  alternate adapters. Eviction, cache flush, namespace migration, or rebuild is
+  caller policy.
+- Old-reader/new-writer and rollback behavior must be explicit: unknown versions
+  fail with typed metadata diagnostics, and cache namespace/version migration is
+  documented instead of hidden behind best-effort fallback.
+- The first binary adapter must use caller-supplied target types only. Payloads
+  never select Rust types dynamically.
+- Unsafe deserialization, dynamic registries, unbounded collection/depth decode,
+  and unbounded decompressed size are not allowed.
+- The implementation plan must define buffer ownership, copy boundaries,
+  compact header/envelope expectations, and small/medium/large payload runtime
+  checks without claiming cross-repo benchmark superiority before `0.5.5`.
+
 Out of scope:
 
-- Protobuf, Avro, and Fory production adapters.
+- JSON, Protobuf, Avro, and Fory production adapters.
 - Schema registry or schema evolution support.
 - JSON as the primary cache payload format.
+- Testcontainers or external service integration.
+- SQL, SQLx, database adapters, or ORM integration.
+- Resilience, retry, circuit-breaker, or fallback policy APIs.
+- Hidden global registries, hidden default serializers, or env-selected
+  adapters.
 - Dynamic type loading.
 
 ### `0.5.1` - JSON SerDe
@@ -165,12 +218,15 @@ The public API should separate payload format from Rust type conversion:
 - `Serializer<T>` and `Deserializer<T>` are typed contracts.
 - `BinarySerializer<T>` is a bytes boundary for cache and infrastructure
   payloads.
-- Format metadata is explicit and stable enough for cache invalidation and
-  debugging.
+- Format metadata is explicit and stable enough for cache invalidation,
+  migration, rollback, and debugging.
 - `Option<T>` represents absent values; empty bytes are treated as a payload
   boundary decision, not a hidden null convention.
 - `SerializationTrustProfile` documents whether a format is trusted-internal,
   allowlisted, statically typed, or unsafe legacy compatibility.
+- Error values expose safe metadata such as expected/observed format id,
+  content type, payload version, trust profile, adapter id, and payload size
+  without logging or returning payload bytes.
 
 ## GitHub Issue Rebalancing
 
@@ -178,6 +234,8 @@ Existing `0.5.0` issues should be narrowed instead of growing the first
 milestone:
 
 - Keep crate bootstrap, core contracts, and first binary adapter in `0.5.0`.
+- Keep issue #108 limited to crate bootstrap, root facade gating, and
+  documentation parity unless its GitHub scope is explicitly expanded.
 - Move JSON adapter work to `0.5.1`.
 - Split schema-drift checks into Protobuf and Avro follow-ups.
 - Move Fory cross-language work to `0.5.4`.
@@ -189,6 +247,28 @@ milestone:
 
 - `WIP.md` documents the `0.5.x` split and matches this design.
 - Future implementation plans keep `0.5.0` cache-first and binary-first.
+- Issue #108 implementation plans name `crates/serialization`,
+  `bluetape-rs-serialization`, `bluetape_rs_serialization`, root
+  `serialization` feature gating, and unchanged root defaults.
+- Feature verification proves the root facade is unavailable by default and
+  available only with `features = ["serialization"]`.
+- Feature verification proves default builds do not pull JSON, Protobuf, Avro,
+  Fory, Testcontainers, SQL, or resilience dependencies.
+- `crates/serialization/README.md`, crate Rustdoc, `README.md`, `README.ko.md`,
+  and `WIP.md` use the same crate name, root facade feature name, and `0.5.0`
+  non-goal list.
+- Public docs state that JSON, Protobuf, Avro, Fory, Testcontainers, SQL,
+  resilience APIs, hidden globals, hidden default serializers, dynamic type
+  loading, and schema registry support are out of `0.5.0` scope.
+- Public docs show direct crate usage and root facade feature-gated usage, and
+  explain `Option<T>`, empty bytes, version mismatch, format mismatch, and
+  trust-profile mismatch behavior.
+- Tests or verification tasks cover corrupt bytes, truncated bytes, trailing
+  bytes, empty bytes, unknown format id, unsupported version, wrong target
+  type, trust-profile mismatch, oversized payload, and compressed-invalid
+  payloads before `0.5.0` release readiness is claimed.
+- Existing root crate users need no migration for issue #108 because
+  serialization is opt-in.
 - No milestone claims Protobuf, Avro, or Fory production readiness before their
   dedicated validation milestones.
 - Benchmark claims use the same-environment `0.5.5` benchmark track when they

@@ -49,7 +49,7 @@ publication 전에 동일 조건 benchmark 결과를 기록합니다.
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, shutdown helper. |
 | Encoding | `bluetape-rs-codec` | Base encoder, hex, URL-safe codec, 작은 binary/text codec helper. |
 | Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, snappy helper와 registry-style selection. |
-| Serialization | `bluetape-rs-serde` | Cache-first binary payload SerDe를 먼저 제공하고, JSON, Protobuf, Avro, Fory, cross-repo benchmark를 `0.5.x`에서 순차로 확장합니다. |
+| Serialization | `bluetape-rs-serialization` | Cache-first binary payload SerDe 경계를 먼저 예약하고, JSON, Protobuf, Avro, Fory를 순차 확장한 뒤 adapter가 준비되면 `0.5.5`에서 cross-repo benchmark track을 진행합니다. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, emulator fixture helper를 명시적 feature 뒤에 둡니다. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, Kubernetes Lease 기반 leader election. |
 | SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
@@ -60,6 +60,12 @@ publication 전에 동일 조건 benchmark 결과를 기록합니다.
 | Graph | `bluetape-rs-graph` | Graph model, bulk I/O, Rust driver가 성숙한 backend adapter. |
 | Text | `bluetape-rs-text` | Aho-Corasick search, blockword masking, tokenizer wrapper, language detection. |
 | Workshop | `bluetape-rs-workshop` | axum, Tokio, SQLx, Redis, AWS, graph, text runnable example. |
+
+crate-level 문서는 `bluetape-rs-serialization`을 직접 사용하고, root facade가
+필요하면 `bluetape-rs`에서 `features = ["serialization"]`을 활성화하세요.
+Issue #108은 crate/facade/docs bootstrap만 수행합니다. Serializer trait,
+concrete adapter, runtime binary encoding은 review된 후속 `0.5.0` issue에서
+추가합니다.
 
 ## 설계 포지션
 
@@ -121,6 +127,9 @@ use bluetape_rs_codec::{decode_base58, encode_base58};
 use bluetape_rs_compression::{CompressionAlgorithm, Compressor};
 use bluetape_rs_test::TempDir;
 ```
+
+`bluetape-rs-serialization`은 후속 `0.5.0` issue에서 serializer trait이나
+adapter를 노출하기 전까지 callable API 예제에서 제외합니다.
 
 Collection helper를 사용할 때:
 

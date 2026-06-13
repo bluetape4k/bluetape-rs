@@ -19,6 +19,7 @@ members = [
     "crates/compression",
     "crates/core",
     "crates/logging",
+    "crates/serialization",
     "crates/test",
 ]
 resolver = "3"
@@ -37,6 +38,7 @@ bluetape-rs-compression = { path = "crates/compression", version = "0.4.0", defa
 bluetape-rs-async = { path = "crates/async", version = "0.4.0" }
 bluetape-rs-core = { path = "crates/core", version = "0.4.0" }
 bluetape-rs-logging = { path = "crates/logging", version = "0.4.0" }
+bluetape-rs-serialization = { path = "crates/serialization", version = "0.4.0" }
 bluetape-rs-test = { path = "crates/test", version = "0.4.0" }
 flate2 = { version = "1.1.5", default-features = false }
 lz4_flex = { version = "0.11.5", default-features = false }
@@ -66,6 +68,7 @@ compression-zstd = ["compression", "bluetape-rs-compression?/zstd"]
 async = ["dep:bluetape-rs-async"]
 core = ["dep:bluetape-rs-core"]
 logging = ["dep:bluetape-rs-logging"]
+serialization = ["dep:bluetape-rs-serialization"]
 test = ["dep:bluetape-rs-test"]
 
 [dependencies]
@@ -75,4 +78,5 @@ bluetape-rs-compression = { workspace = true, optional = true }
 bluetape-rs-async = { workspace = true, optional = true }
 bluetape-rs-core = { workspace = true, optional = true }
 bluetape-rs-logging = { workspace = true, optional = true }
+bluetape-rs-serialization = { workspace = true, optional = true }
 bluetape-rs-test = { workspace = true, optional = true }
