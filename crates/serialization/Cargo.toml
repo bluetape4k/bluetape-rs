@@ -18,3 +18,8 @@ path = "src/lib.rs"
 default = []
 
 [dependencies]
+serde.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }

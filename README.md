@@ -54,7 +54,7 @@ same-condition benchmark results before release publication.
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, and shutdown helpers. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, and snappy helpers with registry-style selection. |
-| Serialization | `bluetape-rs-serialization` | Reserves the cache-first binary payload SerDe boundary first, then adds JSON, Protobuf, Avro, Fory, and the cross-repo benchmark track in `0.5.5` after adapters exist. |
+| Serialization | `bluetape-rs-serialization` | Rust-native SerDe contracts: validated format metadata, trust profiles, typed errors, safe config defaults, and `serde`-compatible serializer/deserializer traits. Concrete adapters start in follow-up `0.5.0` issues. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
 | SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
@@ -68,8 +68,8 @@ same-condition benchmark results before release publication.
 
 Use `bluetape-rs-serialization` directly for crate-level docs, or enable
 `features = ["serialization"]` on `bluetape-rs` for the root facade.
-Issue #108 is a crate/facade/docs bootstrap only; serializer traits, concrete
-adapters, and runtime binary encoding arrive in later reviewed `0.5.0` issues.
+Issue #109 adds contracts only; concrete adapters and runtime binary encoding
+arrive in later reviewed `0.5.0` issues.
 
 ## Design Position
 
@@ -134,8 +134,8 @@ use bluetape_rs_compression::{CompressionAlgorithm, Compressor};
 use bluetape_rs_test::TempDir;
 ```
 
-`bluetape-rs-serialization` is omitted from the callable API example until it
-exposes serializer traits or adapters in a later `0.5.0` issue.
+`bluetape-rs-serialization` exposes contracts only; callable adapter examples
+remain omitted until concrete adapters land in later `0.5.0` issues.
 
 For collection helpers:
 

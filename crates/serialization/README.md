@@ -1,11 +1,11 @@
 # bluetape-rs-serialization
 
-Rust-native serialization boundary for `bluetape-rs`.
+Rust-native serialization contracts for `bluetape-rs`.
 
-This crate is the bootstrap slice for the `0.5.0` cache-first binary
-serialization milestone. It creates the package and documentation boundary first
-so later issues can add traits, typed errors, binary payload envelopes, and
-adapters behind reviewed feature flags.
+This crate defines the `0.5.0` contract layer for cache-first serialization:
+validated metadata, safe defaults, typed errors, payload envelopes, and
+`serde`-compatible serializer/deserializer traits. Concrete binary, JSON,
+Protobuf, Avro, Apache Fory, and benchmark work remain in follow-up issues.
 
 ## Usage
 
@@ -19,10 +19,6 @@ bluetape-rs-serialization = { git = "https://github.com/bluetape4k/bluetape-rs",
 bluetape-rs-serialization = "0.5"
 ```
 
-```rust
-use bluetape_rs_serialization as serialization;
-```
-
 Root facade usage:
 
 ```toml
@@ -33,44 +29,73 @@ bluetape-rs = { git = "https://github.com/bluetape4k/bluetape-rs", features = ["
 bluetape-rs = { version = "0.5", features = ["serialization"] }
 ```
 
+## Contracts
+
+- `SerializationFormat`, `ContentType`, `AdapterId`, and `PayloadVersion`
+  validate stable metadata tokens.
+- `SerializationConfig` applies safe defaults: statically typed trust,
+  `application/octet-stream`, payload version `1`, and a 16 MiB payload limit.
+- `SerializedPayload` owns bytes and metadata together so `payload_size` matches
+  `bytes.len()`.
+- `PayloadMetadataPolicy` rejects format, content type, version, trust profile,
+  adapter id, and size mismatches with typed errors.
+- `Serializer<T>`, `Deserializer<T>`, and `BinarySerializer<T>` are
+  `serde`-compatible contracts; callers still supply the Rust target type.
+
+## Example
+
 ```rust
-use bluetape_rs::serialization;
+use bluetape_rs_serialization::{
+    AdapterId, PayloadMetadataPolicy, SerializationConfig, SerializationErrorKind,
+    SerializationFormat, SerializedPayload,
+};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let config = SerializationConfig::new(
+        SerializationFormat::new("binary")?,
+        AdapterId::new("binary.primary")?,
+    )?;
+    let bytes = vec![1, 2, 3];
+    let metadata = config.metadata_for_size(bytes.len())?;
+    let payload = SerializedPayload::new(bytes, metadata)?;
+
+    let policy = PayloadMetadataPolicy::from_config(&config);
+    if let Err(error) = policy.validate(payload.metadata()) {
+        match error.kind() {
+            SerializationErrorKind::UnsupportedVersion => {
+                // Evict, rebuild, migrate namespace, or alert.
+            }
+            _ => return Err(error.into()),
+        }
+    }
+
+    Ok(())
+}
 ```
 
-The root facade is unavailable unless the `serialization` feature is enabled.
-Default `bluetape-rs` builds remain unchanged.
+## Safety Boundary
 
-The bootstrap crate exposes no serializer traits or adapters yet. Those arrive
-in later reviewed `0.5.0` issues.
+There is no dynamic registry, hidden default serializer, environment-selected
+adapter, fallback adapter, or payload-selected Rust type.
 
-## Boundary
+`UnsafeLegacyCompatibility` is migration-only vocabulary for fully trusted
+deployments. It is not a default and must not be used for shared or untrusted
+payload boundaries without a separate adapter review.
 
-`0.5.0` starts with cache-first binary payload support. Payload metadata,
-versioning, trust profiles, typed failures, and adapter contracts are added in
-follow-up issues.
+## Cache Rollout Guidance
 
-`Option<T>` represents absent values. Empty bytes are payload data and must not
-be treated as a hidden null convention.
+Version cache namespaces or key prefixes when changing format id, content type,
+trust profile, or incompatible payload versions. Mismatches are hard typed
+failures. Caller-owned actions are evict, rebuild from the source of truth,
+migrate namespace, or alert during unexpected mismatches.
 
-Future unsupported-version, wrong-format, and wrong-trust-profile cases are
-typed decode failures. They must not decode as `None`, silently fall back, or
-try alternate adapters. Cache eviction, namespace migration, and rebuild policy
-belong to callers.
+Payload-free diagnostic fields are: error kind, operation, format id, content
+type, version relation, trust profile, adapter id, payload size bucket, and
+configured size limit.
 
-## Migration / Compatibility
+## Not In This Contract Issue
 
-Existing `bluetape-rs` users do not need code or Cargo changes for issue #108.
-Callers only opt in by depending on `bluetape-rs-serialization` directly or by
-enabling `features = ["serialization"]` on `bluetape-rs`.
-
-## Issue #108 Bootstrap Non-goals
-
-- Serializer traits or concrete adapters
-- Runtime binary payload encoding
-- Global serializer registry
-
-## Not In The `0.5.0` Core/Binary Milestone
-
+- Binary adapter
 - JSON adapter
 - Protobuf adapter
 - Avro adapter
@@ -78,7 +103,7 @@ enabling `features = ["serialization"]` on `bluetape-rs`.
 - Testcontainers integration
 - SQL or SQLx integration
 - Resilience, retry, circuit-breaker, or fallback policies
-- Unsafe deserialization
+- Unsafe deserialization by default
 - Hidden global serializers
 - Hidden default serializers
 - Env-selected adapters

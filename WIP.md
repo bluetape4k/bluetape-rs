@@ -206,10 +206,11 @@ Defer out of `0.1.0`:
   opt-in root facade feature `serialization`; it is a crate/facade/docs
   bootstrap only and does not expose serializer traits, concrete adapters, or
   runtime binary encoding yet.
-- Define typed `Serializer`/`Deserializer` and binary payload traits suitable
-  for internal cache storage and restoration.
-- Define typed errors, format id, content type, version, and trust profile
-  vocabulary.
+- Issue #109 adds the contract layer: typed `Serializer`/`Deserializer` and
+  `BinarySerializer` traits, `SerializedPayload`, `PayloadMetadataPolicy`,
+  typed errors, safe config defaults, format id, content type, version, adapter
+  id, and trust profile vocabulary. It still does not implement a concrete
+  adapter or runtime binary encoding.
 - Select and implement the first binary adapter with explicit format selection
   and no magic global defaults.
 - Keep compression composition explicit and compatible with the existing
