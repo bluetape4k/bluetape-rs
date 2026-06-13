@@ -6,14 +6,33 @@ use serde::{Serialize, de::DeserializeOwned};
 /// # Examples
 ///
 /// ```
-/// # use bluetape_rs_serialization::{SerializationError, SerializedPayload};
+/// use bluetape_rs_serialization::{
+///     AdapterId, SerializationConfig, SerializationError, SerializationFormat,
+///     SerializedPayload, Serializer,
+/// };
 /// # use serde::Serialize;
-/// # struct Example;
-/// # impl bluetape_rs_serialization::Serializer<String> for Example {
-/// #     fn serialize(&self, _value: &String) -> Result<SerializedPayload, SerializationError> {
-/// #         unimplemented!()
-/// #     }
-/// # }
+///
+/// struct Utf8Serializer {
+///     config: SerializationConfig,
+/// }
+///
+/// impl Serializer<String> for Utf8Serializer {
+///     fn serialize(&self, value: &String) -> Result<SerializedPayload, SerializationError> {
+///         let bytes = value.as_bytes().to_vec();
+///         let metadata = self.config.metadata_for_size(bytes.len())?;
+///         SerializedPayload::new(bytes, metadata)
+///     }
+/// }
+///
+/// let serializer = Utf8Serializer {
+///     config: SerializationConfig::new(
+///         SerializationFormat::new("binary")?,
+///         AdapterId::new("utf8.example")?,
+///     )?,
+/// };
+/// let payload = serializer.serialize(&"hello".to_owned())?;
+/// assert_eq!(payload.bytes(), b"hello");
+/// # Ok::<(), bluetape_rs_serialization::SerializationError>(())
 /// ```
 pub trait Serializer<T>
 where
