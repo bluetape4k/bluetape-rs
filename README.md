@@ -54,7 +54,7 @@ same-condition benchmark results before release publication.
 | Async | `bluetape-rs-async` | Tokio-first bounded task execution, timeout/deadline, cancellation, and shutdown helpers. |
 | Encoding | `bluetape-rs-codec` | Base encoders, hex, URL-safe codecs, and small binary/text codec helpers. |
 | Compression | `bluetape-rs-compression` | Opt-in gzip, zlib, deflate, zstd, lz4, and snappy helpers with registry-style selection. |
-| Serialization | `bluetape-rs-serde` | Safe serializer/deserializer interfaces and test helpers around serde-compatible formats. |
+| Serialization | `bluetape-rs-serde` | Cache-first binary payload SerDe first, then JSON, Protobuf, Avro, Fory, and cross-repo benchmarks across `0.5.x`. |
 | Testcontainers | `bluetape-rs-testcontainers` | PostgreSQL, Redis, MySQL, NATS, Kafka, and emulator fixture helpers behind explicit features. |
 | Leader | `bluetape-rs-leader` | Redis, SQL, etcd, and Kubernetes Lease leader election. |
 | SQL | `bluetape-rs-sql` | SQL AST, dialect rendering, bind collection, typed query construction. |
@@ -177,7 +177,8 @@ bluetape-rs-codec = "0.4.0"
 `bluetape-rs-codec` is the `0.4.0` crate boundary for strict hex, Base64,
 Base58, Base62, URL-safe encoding, and UTF-8 text/byte boundary helpers.
 Compression starts in the `0.4.0` milestone, and serde-oriented serialization
-remains deferred to `0.5.0`.
+starts in `0.5.0` with cache-first binary payload support before JSON,
+Protobuf, Avro, Fory, and cross-repo benchmark follow-ups across `0.5.x`.
 
 ```rust
 use bluetape_rs_codec::{decode_hex, encode_hex_lower, encode_hex_upper};
