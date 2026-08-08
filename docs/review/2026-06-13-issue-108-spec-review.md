@@ -1,44 +1,46 @@
-# 이슈 #108 Spec 검토 - SerDe 0.5.x 설계
+# 이슈 #108 사양 검토 - SerDe 0.5.x 설계
 
 날짜: 2026-06-13
 범위: `docs/superpowers/specs/2026-06-13-serde-0-5x-design.md`
-Gate: Step 2-R spec review
+게이트: Step 2-R 사양 검토
 
 ## 검토 범위
 
 - 이슈 #108: `Add the serialization workspace crate`
-- Milestone: `0.5.0`
-- Worktree: `.worktrees/issue-108-serialization-crate`
-- 기준: 승인된 `0.5.x` SerDe design과 이슈 #108 acceptance criteria
+- 마일스톤: `0.5.0`
+- 워크트리: `.worktrees/issue-108-serialization-crate`
+- 기준선: 승인된 `0.5.x` SerDe 설계와 이슈 #108 인수 기준
 
-## 검토 lane
+## 검토 레인
 
-| Lane | 최초 결과 | 최종 결과 | 근거 |
+| 레인 | 초기 결과 | 최종 결과 | 근거 |
 |---|---:|---:|---|
-| Performance | `P0=0 P1=0` | `P0=0 P1=0` | Feature-default, allocation, runtime-check 명확화를 요청했고 blocker는 없었습니다. |
-| Stability | `P0=0 P1=2` | `P0=0 P1=0` | Envelope/error contract, no-silent-fallback rule, feature matrix, resource-bound 요구 사항을 추가했습니다. |
-| Security | `P0=0 P1=2` | `P0=0 P1=0` | Malicious payload 방어, unsafe/dynamic deserialization 금지, hidden global/default adapter 정책 금지를 추가했습니다. |
-| Operator/Ops | `P0=0 P1=3` | `P0=0 P1=0` | Crate/workspace/root-facade checklist, rollback/version 정책, 안전한 metadata 진단, docs parity를 추가했습니다. |
-| Developer/API | `P0=0 P1=2` | `P0=0 P1=0` | Package/lib name, workspace dependency contract, root feature/re-export 형태, additive feature 정책을 추가했습니다. |
-| User/Caller | `P0=0 P1=2` | `P0=0 P1=0` | 이슈 #108 bootstrap slice, 완전한 non-goal list, README/Rustdoc/example acceptance, migration note를 추가했습니다. |
+| 성능 | `P0=0 P1=0` | `P0=0 P1=0` | feature 기본값, 할당, 런타임 확인을 명확히 하도록 요청했으며 차단 요소는 없었다. |
+| 안정성 | `P0=0 P1=2` | `P0=0 P1=0` | envelope/오류 계약, 조용한 fallback 금지 규칙, feature 매트릭스, 리소스 한도 요구 사항을 추가했다. |
+| 보안 | `P0=0 P1=2` | `P0=0 P1=0` | 악의적인 페이로드 방어, 안전하지 않은/동적 역직렬화 금지, 숨겨진 전역/기본 어댑터 정책 금지를 추가했다. |
+| 운영자/Ops | `P0=0 P1=3` | `P0=0 P1=0` | 크레이트/워크스페이스/루트 파사드 체크리스트, 롤백/버전 정책, 안전한 메타데이터 진단, 문서 동등성을 추가했다. |
+| 개발자/API | `P0=0 P1=2` | `P0=0 P1=0` | 패키지/라이브러리 이름, 워크스페이스 의존성 계약, 루트 feature/re-export 형태, 추가형 feature 정책을 추가했다. |
+| 사용자/호출자 | `P0=0 P1=2` | `P0=0 P1=0` | 이슈 #108 부트스트랩 범위, 완전한 비목표 목록, README/Rustdoc/예제 인수 기준, 마이그레이션 메모를 추가했다. |
 
 ## 통합 발견 사항
 
 | 우선순위 | 영역 | 해결 |
 |---|---|---|
-| P1 | Bootstrap 범위 | Spec이 `0.5.0` milestone과 좁은 이슈 #108 crate/facade/docs bootstrap slice를 분리합니다. |
-| P1 | Feature/default 경계 | Root default를 변경하지 않고 opt-in root `serialization` feature를 사용하며 default format/infra dependency를 두지 않도록 했습니다. |
-| P1 | Payload 복구 | Typed failure, silent fallback 금지, 명시적 unknown-version 동작, caller-owned eviction/rebuild 정책을 요구합니다. |
-| P1 | Security 경계 | Payload-selected Rust type, unsafe deserialization, dynamic registry, hidden global serializer, env-selected adapter를 금지합니다. |
-| P1 | Operational 진단 | Payload byte를 log하지 않고 안전한 expected/observed metadata 진단을 요구합니다. |
+| P1 | 부트스트랩 범위 | 사양이 이제 `0.5.0` 마일스톤과 더 좁은 이슈 #108 크레이트/파사드/문서 부트스트랩 범위를 분리한다. |
+| P1 | Feature/기본값 경계 | 사양이 변경되지 않은 루트 기본값, 옵트인 루트 `serialization` feature, 기본 형식/인프라 의존성 없음을 요구한다. |
+| P1 | 페이로드 복구 | 사양이 타입 지정 실패, 조용한 fallback 금지, 명시적인 알 수 없는 버전 동작, 호출자 소유 제거/재구축 정책을 요구한다. |
+| P1 | 보안 경계 | 사양이 페이로드가 선택하는 Rust 타입, 안전하지 않은 역직렬화, 동적 레지스트리, 숨겨진 전역 serializer, 환경 변수 선택 어댑터를 금지한다. |
+| P1 | 운영 진단 | 사양이 페이로드 바이트를 로깅하지 않고 안전한 예상/관측 메타데이터 진단을 사용하도록 요구한다. |
 
-## Step 3을 위한 보류 P2
+## Step 3을 위해 보류한 P2 항목
 
-- Implementation plan은 release-readiness 주장 전에 구체적인 encoded-size, decompressed-size, ratio, depth, collection-bound 검사 방법을 정의해야 합니다.
-- Implementation plan은 direct crate usage, root facade feature-gated usage, default facade 부재에 대한 구체적인 doc/example 검증을 포함해야 합니다.
+- 구현 계획은 릴리스 준비 상태를 주장하기 전에 구체적인 인코딩 크기,
+  압축 해제 크기, 비율, 깊이, 컬렉션 한도 확인을 정의해야 한다.
+- 구현 계획은 직접 크레이트 사용, feature로 제한된 루트 파사드 사용,
+  기본 파사드 부재에 대한 구체적인 문서/예제 검증을 포함해야 한다.
 
-## Gate 판정
+## 게이트 판정
 
-Spec 수정 후 Step 2-R 통과
+사양을 개정한 뒤 Step 2-R을 통과했다.
 
 P0=0 P1=0

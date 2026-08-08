@@ -1,33 +1,47 @@
-# 교훈: Serialization contract
+# 교훈: 직렬화 계약
 
 날짜: 2026-06-13
-범위: 이슈 #109, serialization format/error/metadata/config contract
+범위: 이슈 #109, 직렬화 형식·오류·메타데이터·구성 계약
 
 ## 변경 사항
 
-- 이슈에서 JSON, Protobuf, Avro, Fory 또는 구체적인 binary adapter를 선택하지 않고 호출자가 제공하는 `serde` type을 중심으로 Rust-native serialization trait를 정의했습니다.
-- Typed format, content type, adapter id, payload version, trust profile, metadata, metadata policy, config, error contract를 추가했습니다.
-- Payload bytes와 metadata는 함께 유지하되, 기본 진단에는 payload를 포함하지 않았습니다.
-- Adapter dependency 경계를 보존했습니다. Contract crate는 `serde`와 `thiserror`를 사용하지만 구체적인 adapter crate는 사용하지 않습니다.
+- 호출자가 제공한 `serde` 타입을 중심으로 Rust 네이티브 직렬화 트레이트를
+  정의했으며, 이 이슈에서는 JSON, Protobuf, Avro, Fory 또는 구체적인 바이너리
+  어댑터를 선택하지 않았다.
+- 타입이 지정된 형식, 콘텐츠 타입, 어댑터 ID, 페이로드 버전, 신뢰 프로파일,
+  메타데이터, 메타데이터 정책, 구성, 오류 계약을 추가했다.
+- 페이로드 바이트와 메타데이터는 함께 유지하되, 진단 정보에는 기본적으로 페이로드를
+  포함하지 않았다.
+- 어댑터 의존성 경계를 유지했다. 계약 크레이트는 `serde`와 `thiserror`를
+  사용하지만 구체적인 어댑터 크레이트는 사용하지 않는다.
 
 ## 교훈
 
-- 공개 metadata struct는 첫 contract 릴리스에서 모든 field를 노출하면 안 됩니다. private field와 typed accessor를 사용하면 caller를 struct literal에 고정하지 않고 metadata를 확장할 여지가 남습니다.
-- Cache payload를 담을 수 있는 payload container에는 `Debug`를 derive하면 안 됩니다. Custom debug 출력에는 raw bytes 대신 길이와 metadata를 노출해야 합니다.
-- Trust-profile vocabulary만으로는 충분하지 않습니다. Safe setter는 unsafe legacy mode를 거부해야 하며, migration-only opt-in은 의도가 드러나는 이름으로 지정해야 합니다.
-- README code fence와 Rustdoc example은 요구 사항이 다릅니다. 숨김 Rustdoc marker는 Rustdoc에서 유효하지만 일반 README example은 일반적인 코드처럼 읽혀야 합니다.
+- 첫 계약 릴리스에서 공개 메타데이터 구조체의 모든 필드를 노출해서는 안 된다.
+  비공개 필드와 타입이 지정된 접근자를 사용하면 호출자를 구조체 리터럴에
+  고정하지 않고 메타데이터를 확장할 여지를 남길 수 있다.
+- 캐시 페이로드를 담을 수 있는 페이로드 컨테이너는 `Debug`를 파생해서는
+  안 된다. 사용자 지정 디버그 출력에는 원시 바이트가 아니라 길이와 메타데이터를
+  노출해야 한다.
+- 신뢰 프로파일 용어만으로는 충분하지 않다. 안전한 세터는 안전하지 않은
+  레거시 모드를 거부해야 하고 마이그레이션 전용 옵트인은 의도가 드러나는
+  이름을 사용해야 한다.
+- README 코드 펜스와 Rustdoc 예제에는 서로 다른 요구 사항이 있다. 숨겨진
+  Rustdoc 마커는 Rustdoc에서 사용할 수 있지만, 일반 README 예제는 일반적인
+  코드처럼 읽혀야 한다.
 
-## 누락을 발견한 검사
+## 차이를 발견한 검사
 
-- Step 6-R architecture review에서 PR 전에 public-field metadata 형태를 발견했습니다.
-- Step 6-R security review에서 raw payload debug 위험을 발견했습니다.
-- Step 6-R library-user review에서 README snippet 품질과 config setter ergonomics 문제를 발견했습니다.
-- Step 6-R verifier review에서 공개 `Result` API에 필요한 `# Errors` Rustdoc section이 빠진 것을 발견했습니다.
+- Step 6-R 아키텍처 검토에서 PR 전에 공개 필드 메타데이터 형태를 발견했다.
+- Step 6-R 보안 검토에서 원시 페이로드 디버그 위험을 발견했다.
+- Step 6-R 라이브러리 사용자 검토에서 README 조각의 품질과 구성 세터의
+  사용 편의성 문제를 발견했다.
+- Step 6-R 검증자 검토에서 공개 API의 `# Errors` Rustdoc 섹션이
+  누락된 문제를 발견했다. 해당 API는 `Result`를 반환한다.
 
-## 앞으로의 규칙
+## 앞으로 적용할 규칙
 
-향후 serialization adapter는 각각 별도 milestone 뒤에 두고, 동일한 scenario
-matrix를 요구합니다. Matrix에는 metadata mismatch, version mismatch,
-trust-profile mismatch, oversized payload, malformed bytes, safe 및 redacted
-adapter failure, README parity, 성능을 주장할 때의 benchmark 근거를
-포함합니다.
+향후 직렬화 어댑터는 각각 별도의 마일스톤 뒤에 두고 다음 시나리오 매트릭스를
+동일하게 요구한다. 메타데이터 불일치, 버전 불일치, 신뢰 프로파일 불일치,
+대형 페이로드, 잘못된 바이트, 안전한 어댑터 실패와 비공개 처리한 어댑터
+실패의 비교, README 동등성, 성능을 주장할 때의 벤치마크 근거를 포함한다.

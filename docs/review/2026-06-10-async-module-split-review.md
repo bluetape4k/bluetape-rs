@@ -1,20 +1,20 @@
-# Async 모듈 분리 검토
+# 비동기 모듈 분할 검토
 
 ## 범위
 
 - 이슈: #42
-- Milestone: 0.2.0
-- 변경 대상: `bluetape-rs-async` source layout
+- 마일스톤: 0.2.0
+- 변경 표면: `bluetape-rs-async` 소스 배치
 
 ## 7-Tier 검토
 
-| Tier | 결과 | 근거 |
+| 단계 | 결과 | 근거 |
 | --- | --- | --- |
-| 모듈 구조 | 통과 | `lib.rs`가 목적별 `control` 및 `task_group` 모듈을 감싸는 facade입니다. |
-| API 호환성 | 통과 | 공개 이름은 `bluetape_rs_async::*`에서 계속 re-export되고, crate test와 doctest가 통과합니다. |
-| 동작 | 통과 | 기존 async unit, integration, workspace, all-feature test가 통과합니다. |
-| 문서 | 통과 | 공개 Rustdoc이 crate facade와 목적별 구현 모듈에 남아 있고 rustdoc warning은 거부됩니다. |
-| 위험 | 낮음 | 공개 API를 바꾸지 않는 refactor-only 분리입니다. |
+| 모듈 구조 | Pass | `lib.rs`는 집중된 `control` 및 `task_group` 모듈의 파사드다. |
+| API 호환성 | Pass | 공개 이름은 `bluetape_rs_async::*`에서 계속 재내보내며 크레이트 테스트와 doctest가 통과한다. |
+| 동작 | Pass | 기존 비동기 단위, 통합, 워크스페이스, 전체 feature 테스트가 통과한다. |
+| 문서 | Pass | 공개 Rustdoc은 크레이트 파사드와 집중 구현 모듈에 유지되며 rustdoc 경고는 거부된다. |
+| 위험 | 낮음 | 공개 API를 변경하지 않는 리팩터링 전용 분할이다. |
 
 ## 발견 사항
 

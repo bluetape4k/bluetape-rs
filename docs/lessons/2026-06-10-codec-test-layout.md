@@ -5,8 +5,8 @@
 
 ## 결정
 
-공개 `bluetape-rs-codec` 동작 테스트는
-`crates/codec/tests/` 아래 integration test로 유지합니다.
+공개 `bluetape-rs-codec` 동작 테스트는 다음과 같이
+`crates/codec/tests/` 아래의 통합 테스트로 유지한다.
 
 - `base58.rs`
 - `base62.rs`
@@ -14,15 +14,16 @@
 - `hex.rs`
 - `text.rs`
 
-이 구조는 downstream 사용자가 호출하는 공개 crate 경계를 검증합니다.
+이렇게 하면 다운스트림 사용자가 호출하는 공개 크레이트 경계를 검증할 수
+있다.
 
 ## 예외
 
-비공개 구현 세부 사항은 source-local test로 유지할 수 있습니다. 공유
-`base_n` converter는 crate 비공개이므로 해당 알고리즘 테스트는
-`crates/codec/src/base_n.rs`에 둡니다.
+비공개 구현 세부 사항은 소스 가까이에 테스트를 둘 수 있다. 공유
+`base_n` 변환기는 크레이트 비공개로 유지하므로 알고리즘 테스트는
+`crates/codec/src/base_n.rs`에 둔다.
 
-## 기각한 대안
+## 채택하지 않은 안
 
-모든 workspace test를 한 번에 옮기면 crate 전반에 무관한 변경이 발생합니다.
-#57의 범위는 코덱 milestone의 테스트 배치로 한정합니다.
+모든 워크스페이스 테스트를 한 번에 옮기면 크레이트 전반에 관련 없는 변경이
+생긴다. #57의 범위는 코덱 마일스톤의 테스트 배치로 한정한다.

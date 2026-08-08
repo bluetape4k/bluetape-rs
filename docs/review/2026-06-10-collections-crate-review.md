@@ -1,4 +1,4 @@
-# Collections crate 검토
+# 컬렉션 크레이트 검토
 
 이슈: #19
 브랜치: `feat/issue-19-collections-crate`
@@ -6,45 +6,45 @@
 
 ## 범위
 
-첫 `0.2.0` workspace crate 경계를 추가합니다.
+첫 번째 `0.2.0` 워크스페이스 크레이트 경계를 추가한다.
 
 - `crates/collections`
-- root workspace 등록
-- root `collections` facade feature
-- crate README 및 Rustdoc namespace 문서
+- 루트 워크스페이스 등록
+- 루트 `collections` 파사드 feature
+- 크레이트 README 및 Rustdoc 네임스페이스 문서
 
 ## 7-Tier 검토
 
-### Tier 1 - Rust API 형태
+### 단계 1 - Rust API 형태
 
-통과. Crate는 namespace module만으로 시작하며 집중된 helper API 이슈(#20)
-전에는 가짜 helper function을 추가하지 않습니다. Root facade feature는
-optional이고 additive입니다.
+PASS. 크레이트는 네임스페이스 모듈로만 시작하고 집중 헬퍼 API 이슈(#20)
+전에 가짜 헬퍼 함수를 도입하지 않는다. 루트 파사드 feature는 선택적이고
+추가형이다.
 
-### Tier 2 - Workspace 및 Cargo metadata
+### 단계 2 - 워크스페이스 및 Cargo 메타데이터
 
-통과. `crates/collections`를 workspace member로 등록하고 목적이 분명한
-package name을 사용하며 workspace edition/rust-version/license/repository
-metadata를 사용하고 workspace dependency로 연결했습니다.
+PASS. `crates/collections`가 워크스페이스 멤버로 등록되고 집중된 패키지
+이름을 가지며 워크스페이스 edition/rust-version/license/repository
+메타데이터를 사용하고 워크스페이스 의존성으로 연결된다.
 
-### Tier 3 - Feature flag
+### 단계 3 - Feature 플래그
 
-통과. Root `collections` feature는 optional이고 default feature에 포함되지
-않아 좁은 default facade를 보존합니다.
+PASS. 루트 `collections` feature는 선택적이며 기본 feature에 포함되지 않아
+좁은 기본 파사드를 보존한다.
 
-### Tier 4 - 문서
+### 단계 4 - 문서
 
-통과. Crate README와 crate/module Rustdoc이 의도한 helper namespace를
-설명하고, 명확한 경우 표준 library API를 우선한다는 규칙을 보존합니다.
+PASS. 크레이트 README와 크레이트/모듈 Rustdoc이 의도한 헬퍼 네임스페이스를
+설명하고 표준 라이브러리 API가 명확하면 우선한다는 규칙을 유지한다.
 
-### Tier 5 - 동작 위험
+### 단계 5 - 동작 위험
 
-통과. 아직 collection helper 동작을 주장하지 않습니다. Diff는 crate 구조와
-facade wiring만 추가합니다.
+PASS. 아직 컬렉션 헬퍼 동작을 주장하지 않는다. diff는 크레이트 구조와
+파사드 연결만 추가한다.
 
-### Tier 6 - 검증
+### 단계 6 - 검증
 
-통과.
+PASS.
 
 - `git diff --check`
 - `cargo fmt --all --check`
@@ -54,18 +54,18 @@ facade wiring만 추가합니다.
 - `cargo doc --workspace --no-deps`
 - `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps`
 
-### Tier 7 - Release/Milestone 적합성
+### 단계 7 - 릴리스/마일스톤 적합성
 
-통과. 변경은 crate 경계만으로 milestone `0.2.0`을 시작합니다. Helper API는
-이슈 #20으로 보류합니다.
+PASS. 변경은 크레이트 경계만 추가해 `0.2.0` 마일스톤을 시작한다. 헬퍼 API는
+이슈 #20으로 미룬다.
 
 ## 발견 사항
 
-P0/P1/P2/P3 발견 사항이 없습니다.
+P0/P1/P2/P3 발견 사항 없음.
 
 ## 판정
 
-PASS
+PASS.
 
-P0 개수: 0
-P1 개수: 0
+P0 count: 0
+P1 count: 0

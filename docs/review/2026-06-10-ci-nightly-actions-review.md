@@ -1,23 +1,30 @@
-# CI 및 Nightly Actions 검토
+# CI 및 nightly actions 검토
 
 ## 범위
 
 - 이슈: #36
-- 기준점: `origin/develop`의 `926ca2c`
+- 기준선: `926ca2c`의 `origin/develop`
 - 검토 diff: `.github/workflows/ci.yml`, `.github/workflows/nightly-tests.yml`
 
-## 참고 근거
+## 참조 근거
 
-- `bluetape-go/.github/workflows/ci.yml`: compact CI, `develop`/`main`, concurrency, checkout/setup/cache/test 흐름
-- `bluetape-go/.github/workflows/nightly-tests.yml`: scheduled smoke/full 계획, workflow dispatch 범위, 무거운 test 재시도
-- `bluetape4k-projects/.github/workflows/ci.yml`: permission, paths-ignore, concurrency, workflow dispatch, 분리된 validation job
-- `exposed-workshop/.github/workflows/ci.yml`: paths-ignore와 validation/test aggregation을 사용하는 더 작은 repository CI 형태
+- `bluetape-go/.github/workflows/ci.yml`: 간결한 CI, `develop`/`main`, 동시성,
+  checkout/setup/cache/test 흐름.
+- `bluetape-go/.github/workflows/nightly-tests.yml`: 예약된 smoke/full 계획,
+  workflow dispatch 범위 및 무거운 테스트 재시도.
+- `bluetape4k-projects/.github/workflows/ci.yml`: 권한, paths-ignore,
+  동시성, workflow dispatch 및 별도 검증 작업.
+- `exposed-workshop/.github/workflows/ci.yml`: paths-ignore와 validation/test
+  aggregation을 사용하는 작은 저장소 CI 형태.
 - `actionlint .github/workflows/ci.yml .github/workflows/nightly-tests.yml`: PASS
 - `cargo fmt --all --check`: PASS
-- `cargo check --workspace --all-targets --all-features --locked`: PASS, 기본 Rust 1.96 및 MSRV 1.85.0
-- `cargo test --workspace --all-features --locked`: PASS, 기본 Rust 1.96 및 MSRV 1.85.0
-- `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`: PASS, 기본 Rust 1.96 및 MSRV 1.85.0
-- `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked`: PASS, 기본 Rust 1.96 및 MSRV 1.85.0
+- `cargo check --workspace --all-targets --all-features --locked`: 기본 Rust 1.96 및
+  MSRV 1.85.0에서 PASS
+- `cargo test --workspace --all-features --locked`: 기본 Rust 1.96 및 MSRV 1.85.0에서 PASS
+- `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`:
+  기본 Rust 1.96 및 MSRV 1.85.0에서 PASS
+- `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps --locked`: 기본 Rust
+  1.96 및 MSRV 1.85.0에서 PASS
 - `git diff --check`: PASS
 
 ## 발견 사항
@@ -29,18 +36,18 @@
 
 ## 7-Tier 검토
 
-| Tier | 결과 | 근거 |
+| 단계 | 결과 | 근거 |
 | --- | --- | --- |
-| Trigger contract | PASS | `develop` 및 `main`에 대한 `push`/`pull_request`와 manual dispatch가 활성화되어 있습니다. |
-| Permission 경계 | PASS | `contents: read`만 사용합니다. |
-| Rust toolchain | PASS | Workspace MSRV와 일치하는 `RUST_VERSION=1.85.0`입니다. |
-| Validation coverage | PASS | fmt, check, test, clippy, rustdoc warning을 검증합니다. |
-| Nightly 형태 | PASS | smoke/full/docs 범위와 매일 smoke, 매주 full schedule이 있습니다. |
-| Dependency surface | PASS | 공식 checkout/cache action과 runner `rustup`만 사용하며 별도 Rust setup action은 없습니다. |
-| 로컬 검증 | PASS | actionlint, fmt, check, test, clippy, rustdoc, diff whitespace를 실행했습니다. |
+| 트리거 계약 | PASS | `develop` 및 `main`의 `push`/`pull_request`, 수동 dispatch 활성화 |
+| 권한 경계 | PASS | `contents: read`만 사용 |
+| Rust 툴체인 | PASS | `RUST_VERSION=1.85.0`, 워크스페이스 MSRV와 일치 |
+| 검증 커버리지 | PASS | fmt, check, test, clippy, rustdoc 경고 검사 |
+| nightly 형태 | PASS | 매일 smoke와 매주 full을 예약한 smoke/full/docs 범위 |
+| 의존성 표면 | PASS | 공식 checkout/cache actions와 runner `rustup`; 추가 Rust setup action 없음 |
+| 로컬 검증 | PASS | actionlint, fmt, check, test, clippy, rustdoc, diff 공백 검사 |
 
-## Gate
+## 게이트
 
 P0=0 P1=0
 
-판정: PASS
+판정: PASS.

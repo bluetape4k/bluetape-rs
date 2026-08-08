@@ -1,22 +1,26 @@
-# Workspace 릴리스 버전 정렬에서 얻은 교훈
+# 워크스페이스 릴리스 버전 정렬에서 얻은 교훈
 
 ## 교훈
 
-Milestone 릴리스는 단일 crate 릴리스와 같지 않습니다. bluetape-rs의
-stable milestone publish가 완료되었다고 판단하기 전에는 root crate와 현재
-workspace member를 모두 검증해야 하며, tag, GitHub Release, crates.io
-publish도 확인해야 합니다.
+마일스톤 릴리스는 단일 크레이트 릴리스와 다르다. bluetape-rs의 안정
+마일스톤을 게시할 때는 태그, GitHub Release, crates.io 게시를 완료했다고
+말하기 전에 루트 크레이트와 현재 워크스페이스의 모든 멤버를 검증해야 한다.
 
 ## 계기
 
-`v0.3.0`은 `0.3.0` milestone으로 릴리스되었지만
-`bluetape-rs-codec@0.3.0`만 publish되었습니다. 다른 workspace crate의
-manifest version은 여전히 `0.1.1` 또는 `0.2.0`이었고 crates.io에도
-없었습니다.
+`v0.3.0`은 `0.3.0` 마일스톤으로 릴리스되었지만
+`bluetape-rs-codec@0.3.0`만 게시되었다. 다른 워크스페이스 크레이트는
+여전히 `0.1.1` 또는 `0.2.0` 매니페스트 버전을 사용했고 crates.io에는
+존재하지 않았다.
 
 ## 규칙
 
-- Milestone 릴리스를 publish하기 전에 `cargo metadata`를 실행하고, publish 가능한 모든 workspace package가 의도한 릴리스 버전을 갖는지 확인합니다.
-- `cargo info`가 local path package metadata를 crates.io 상태처럼 보고하지 않도록 repository 외부에서 registry 검사를 실행합니다.
-- `cargo publish --workspace --dry-run --locked`는 preflight로 취급하되 실제 crate는 dependency 순서로 publish하고 `/tmp`에서 각각 확인합니다.
-- 현재 milestone의 root crate, member crate, GitHub Release, tag, registry visibility가 모두 일치하기 전에는 다음 milestone을 시작하지 않습니다.
+- 마일스톤 릴리스를 게시하기 전에 `cargo metadata`를 실행하고 게시 가능한
+  모든 워크스페이스 패키지가 의도한 릴리스 버전을 사용하는지 확인한다.
+- `cargo info`가 로컬 경로 패키지 메타데이터를 crates.io 상태로 잘못
+  보고하지 않도록 저장소 밖에서 레지스트리 검사를 실행한다.
+- `cargo publish --workspace --dry-run --locked`를 사전 점검으로 사용하되,
+  실제 크레이트는 의존성 순서대로 게시하고 `/tmp`에서 각각을 검증한다.
+- 현재 마일스톤의 루트 크레이트, 멤버 크레이트, GitHub Release, 태그,
+  레지스트리 노출 상태가 모두 일치하기 전에는 다음 마일스톤을 시작하지
+  않는다.

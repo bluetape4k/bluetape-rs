@@ -1,23 +1,24 @@
-# Pagination value type 검토
+# 페이지 매김 값 타입 검토
 
 ## 범위
 
 - 이슈: #33
-- Milestone: 0.2.0
-- 변경 대상: `bluetape-rs-collections`
-- 확인한 참고: `bluetape4k-projects/bluetape4k/core`의 `PaginatedList.kt` 및 `PaginatedListTest.kt`
+- 마일스톤: 0.2.0
+- 변경 표면: `bluetape-rs-collections`
+- 확인한 참조: 다음의 `PaginatedList.kt`, `PaginatedListTest.kt`
+  `bluetape4k-projects/bluetape4k/core`
 
 ## 7-Tier 검토
 
-| Tier | 결과 | 근거 |
+| 단계 | 결과 | 근거 |
 | --- | --- | --- |
-| API contract | 통과 | `Page<T>`는 명시적인 page metadata를 가진 value type이며 DB, SQL, cursor pagination은 범위 밖입니다. |
-| Rust 관용성 | 통과 | 음수가 아닌 metadata에 `u64`, typed `PageError`, `Result` constructor, borrowed access에 slice, materialized page에 owned `Vec<T>`를 사용합니다. |
-| Error 처리 | 통과 | `page_size == 0`은 `PageError::InvalidPageSize`를 반환하고 음수는 type으로 제외됩니다. |
-| 문서 | 통과 | 공개 API에 Rustdoc 예시와 README 사용법이 있습니다. |
-| 테스트 | 통과 | Unit test가 default, total-page rounding, zero total, invalid page size, owned item extraction을 다룹니다. |
-| 호환성 | 통과 | 새 dependency나 feature flag가 없습니다. |
-| 위험 | 낮음 | 새 module과 export만 추가했고 기존 helper는 변경하지 않았습니다. |
+| API 계약 | Pass | `Page<T>`가 명시적인 페이지 메타데이터를 갖는 값 타입이며 DB, SQL, cursor 페이지 매김은 범위 밖이다. |
+| Rust 관용 | Pass | 음수가 아닌 메타데이터에 `u64`, 타입 지정 `PageError`, `Result` 생성자, 빌린 접근에 slice, 실체화한 페이지에 소유 `Vec<T>`를 사용한다. |
+| 오류 처리 | Pass | `page_size == 0`은 `PageError::InvalidPageSize`를 반환하며 음수 값은 타입으로 제외한다. |
+| 문서 | Pass | 공개 API에 Rustdoc 예제와 README 사용법이 있다. |
+| 테스트 | Pass | 단위 테스트가 기본값, 전체 페이지 반올림, 0 합계, 잘못된 페이지 크기, 소유 항목 추출을 커버한다. |
+| 호환성 | Pass | 새 의존성이나 feature flag가 없다. |
+| 위험 | 낮음 | 새 모듈과 export만 추가하고 기존 헬퍼는 변경하지 않는다. |
 
 ## 발견 사항
 

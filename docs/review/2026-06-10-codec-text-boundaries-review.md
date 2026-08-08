@@ -6,39 +6,39 @@
 
 ## 범위
 
-`bluetape-rs-codec`에 필요한 최소 binary/text helper 경계를 정의하고
-구현합니다.
+`bluetape-rs-codec`의 최소 바이너리/텍스트 헬퍼 경계를 정의하고 구현한다.
 
-- Binary encoder 이전에 UTF-8 text를 owned bytes로 변환
-- Decode한 bytes를 typed non-lossy error와 함께 UTF-8 text로 변환
-- 이름에서 lossy 동작을 명시하는 UTF-8 replacement helper
-- Compression, serialization, 광범위한 text utility, encryption, signing, checksum, random string, database bind encoding에 대한 README/Rustdoc non-goal
+- binary encoder 전에 UTF-8 text를 owned bytes로 변환
+- typed non-lossy error와 함께 decoded bytes를 UTF-8 text로 변환
+- 이름이 명시된 lossy UTF-8 replacement helper
+- 압축, 직렬화, 광범위한 텍스트 유틸리티, 암호화, 서명, 체크섬,
+  임의 문자열 및 데이터베이스 bind 인코딩에 대한 README/Rustdoc 비목표
 
 ## 7-Tier 검토
 
-| Tier | 판정 | 근거 |
+| 단계 | 판정 | 근거 |
 |---|---|---|
-| 1. 공개 API / Contract | PASS | `encode_utf8_text`, `decode_utf8_text`, `decode_utf8_text_lossy`가 UTF-8 text/byte 경계 동작만 노출합니다. Non-lossy decode는 `Result<String, TextDecodeError>`를 반환합니다. |
-| 2. Architecture / Boundary | PASS | 변경은 `crates/codec`와 README/review docs에 머뭅니다. General string utility, normalization, compression, serialization, encryption, signing, checksum, random string, database bind encoding은 범위 밖입니다. |
-| 3. Rust API 형태 | PASS | API가 owned `Vec<u8>`/`String` output, `impl AsRef` 또는 `impl Into<Vec<u8>>` input, 순수 변환에 대한 `#[must_use]`, non-exhaustive 공개 error enum을 사용합니다. |
-| 4. 테스트 | PASS | 공개 API test가 `crates/codec/tests/text.rs`에 있으며 빈/비 ASCII text encoding, Base64 decode 이후 text conversion, invalid UTF-8 rejection, incomplete UTF-8 진단, 명시적 lossy replacement, error formatting을 다룹니다. |
-| 5. 정적 검사 / 문서 | PASS | Rustdoc 예시가 컴파일됩니다. README.md, README.ko.md, `crates/codec/README.md`가 UTF-8 및 lossy/non-lossy 동작을 설명합니다. |
-| 6. Release / Cargo | PASS | Cargo metadata와 dependency 변경이 없습니다. 광범위한 utility-bag module을 추가하지 않았습니다. |
-| 7. 근거 무결성 | PASS | Codegraph review context가 `origin/develop` 대비 risk가 낮고 source/doc 변경 파일 7개, 영향 node 0개, test gap 0개라고 보고했습니다. `git diff --cached --name-only`에 새 integration test file도 포함되어 있습니다. Base64 UTF-8 예시 vector를 수정한 뒤 로컬 validation을 실행했습니다. |
+| 1. 공개 API / 계약 | PASS | `encode_utf8_text`, `decode_utf8_text`, `decode_utf8_text_lossy`는 UTF-8 텍스트/바이트 경계 동작만 노출한다. 손실 없는 디코드는 `Result<String, TextDecodeError>`를 반환한다. |
+| 2. 아키텍처 / 경계 | PASS | 변경은 `crates/codec`과 README/검토 문서로 한정된다. 일반 문자열 유틸리티, 정규화, 압축, 직렬화, 암호화, 서명, checksum, 임의 문자열, 데이터베이스 bind 인코딩은 범위 밖이다. |
+| 3. Rust API 형태 | PASS | API는 소유 `Vec<u8>`/`String` 출력, `impl AsRef` 또는 `impl Into<Vec<u8>>` 입력, 순수 변환에 `#[must_use]`, non-exhaustive 공개 오류 열거형을 사용한다. |
+| 4. 테스트 | PASS | 공개 API 테스트는 `crates/codec/tests/text.rs`에 있고 빈/비ASCII 텍스트 인코딩, Base64 디코드 후 텍스트 변환, 잘못된 UTF-8 거부, 불완전한 UTF-8 진단, 명시적 손실 대체, 오류 형식을 커버한다. |
+| 5. 정적 검사 / 문서 | PASS | Rustdoc 예제가 컴파일된다. README.md, README.ko.md, `crates/codec/README.md`가 UTF-8 및 손실/손실 없는 동작을 문서화한다. |
+| 6. 릴리스 / Cargo | PASS | Cargo 메타데이터나 의존성을 변경하지 않았다. 광범위한 유틸리티 모듈을 도입하지 않았다. |
+| 7. 근거 무결성 | PASS | Codegraph 검토 맥락에서 `origin/develop` 대비 낮은 위험, 소스/문서 변경 파일 7개, 영향 노드 0개, 테스트 공백 0개를 보고했다. `git diff --cached --name-only`에 추가된 통합 테스트 파일이 포함된다. Base64 UTF-8 예제 벡터를 수정한 뒤 로컬 검증을 실행했다. |
 
-## P0/P1 Gate
+## P0/P1 게이트
 
 P0=0 P1=0
 
-#56에는 P2/P3 후속 작업이 필요하지 않습니다.
+#56에는 P2/P3 후속 작업이 필요하지 않다.
 
-이번 실행에서는 사용 가능한 subagent 도구가 명시적인 사용자 위임으로
-제한되어 native subagent를 생성하지 않았습니다. Code-review-graph context와
-전체 workspace validation으로 검토 gate를 로컬에서 완료했습니다.
+이번 실행에서는 사용 가능한 서브에이전트 도구가 명시적으로 요청한 위임으로
+제한되어 네이티브 서브에이전트를 생성하지 않았다. code-review-graph 맥락과
+전체 워크스페이스 검증으로 로컬 검토 게이트를 완료했다.
 
 ## 검증
 
-- `cargo test -p bluetape-rs-codec --all-features --locked`: PASS, unit test 41개 + integration test 6개 + doctest 18개
+- `cargo test -p bluetape-rs-codec --all-features --locked`: PASS, 41 unit tests + 6 integration tests + 18 doctests
 - `git diff --check`: PASS
 - `cargo fmt --all --check`: PASS
 - `cargo test --workspace --all-features --locked`: PASS

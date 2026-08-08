@@ -1,23 +1,24 @@
-# Async timeout 및 shutdown 검토
+# 비동기 타임아웃 및 종료 검토
 
 ## 범위
 
 - 이슈: #22
-- Milestone: 0.2.0
-- 변경 대상: `bluetape-rs-async`
-- 외부 참고: `tokio::time::timeout`, `timeout_at`, `watch`, `select!` cancellation pattern에 대한 Tokio 1.49 문서
+- 마일스톤: 0.2.0
+- 변경 표면: `bluetape-rs-async`
+- 외부 참조: `tokio::time::timeout`,
+  `timeout_at`, `watch` 및 `select!` cancellation pattern
 
 ## 7-Tier 검토
 
-| Tier | 결과 | 근거 |
+| 단계 | 결과 | 근거 |
 | --- | --- | --- |
-| API contract | 통과 | `AsyncControlError`가 timeout과 cancellation을 구분하고, timeout/deadline helper가 typed error를 반환합니다. |
-| Cancellation 동작 | 통과 | `run_until_cancelled`와 `with_timeout_or_cancel`이 호출자 소유 token을 사용하며, drop된 wrapper future를 synthetic error로 바꾸지 않습니다. |
-| Cleanup | 통과 | 테스트가 in-flight future drop과 shutdown listener notification을 증명합니다. |
-| Runtime 경계 | 통과 | Crate README가 Tokio 가정을 설명하고 core async task에서 blocking work를 제외합니다. |
-| 문서 | 통과 | 공개 Rustdoc과 README가 timeout, deadline, cancellation, shutdown 범위를 설명합니다. |
-| 테스트 | 통과 | Unit test가 success, timeout, deadline, cancellation, timeout-vs-cancel precedence, shutdown notification을 다룹니다. |
-| 위험 | 보통 | 새 async crate를 확장하지만 기본 root facade feature는 변경하지 않습니다. |
+| API 계약 | Pass | `AsyncControlError`가 타임아웃과 취소를 구분하며 타임아웃/기한 헬퍼가 타입 지정 오류를 반환한다. |
+| 취소 동작 | Pass | `run_until_cancelled`와 `with_timeout_or_cancel`은 호출자가 소유한 토큰을 사용하고 drop된 wrapper future를 인공 오류로 변환하지 않는다. |
+| 정리 | Pass | 테스트에서 취소가 진행 중인 future를 drop하고 종료 listener에 알림을 보내는지 증명한다. |
+| 런타임 경계 | Pass | 크레이트 README가 Tokio 전제를 문서화하고 핵심 비동기 작업의 blocking 작업을 제외한다. |
+| 문서 | Pass | 공개 Rustdoc과 README가 타임아웃, 기한, 취소, 종료 범위를 설명한다. |
+| 테스트 | Pass | 단위 테스트가 성공, 타임아웃, 기한, 취소, 타임아웃 대 취소 우선순위, 종료 알림을 커버한다. |
+| 위험 | 보통 | 새 비동기 크레이트를 확장하지만 기본 루트 파사드 feature는 변경하지 않는다. |
 
 ## 발견 사항
 

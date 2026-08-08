@@ -1,29 +1,42 @@
-# 교훈: Serialization crate 초기 구성
+# 교훈: 직렬화 크레이트 부트스트랩
 
 날짜: 2026-06-13
-범위: 이슈 #108, `bluetape-rs-serialization` 초기 구성
+범위: 이슈 #108, `bluetape-rs-serialization` 부트스트랩
 
 ## 변경 사항
 
-- `crates/serialization` workspace crate를 package `bluetape-rs-serialization` 및 library `bluetape_rs_serialization`으로 추가했습니다.
-- 기본 root 동작은 변경하지 않고 opt-in root `serialization` facade feature를 추가했습니다.
-- 이슈 #108은 crate/facade/docs 초기 구성으로만 유지했습니다. Serializer trait, adapter, runtime binary encoding은 이후 `0.5.0` 작업입니다.
+- `crates/serialization` 워크스페이스 크레이트를 패키지
+  `bluetape-rs-serialization` 및 라이브러리 `bluetape_rs_serialization`으로
+  추가했다.
+- 루트 기본값은 변경하지 않고 옵트인 루트 `serialization` 파사드 피처를
+  추가했다.
+- 이슈 #108의 범위를 크레이트/파사드/docs 부트스트랩으로만 유지했다. 직렬화
+  트레이트, 어댑터, 런타임 바이너리 인코딩은 이후 `0.5.0` 작업으로 남겨 둔다.
 
 ## 교훈
 
-- 새 crate의 `lib.rs`는 먼저 sibling crate style을 따라야 합니다. 긴 roadmap, 이슈 이력, 사용 가이드, non-goal 설명은 crate root가 아니라 README/spec/plan artifact에 둡니다.
-- 아직 release되지 않은 crate의 공개 README snippet은 새 crate나 feature가 없는 이미 publish된 version을 caller에게 가리키면 안 됩니다. Release 준비에서 version을 갱신하기 전에는 git/path 또는 명시적인 post-release 예시를 사용합니다.
-- Bootstrap 이슈에서도 WIP/roadmap 추적성이 중요합니다. Milestone 범위를 설명하는 곳에 package, library, root feature, non-goal을 명시합니다.
-- Step 6-R 근거 파일은 사후 장식이 아니라 gate의 일부입니다. Gate가 닫혔다고 주장하기 전에 구현 review artifact를 추가합니다.
+- 새 크레이트의 `lib.rs`는 먼저 자매 크레이트의 스타일을 따라야 한다. 긴
+  로드맵, 이슈 이력, 사용 안내, 비목표 설명은 크레이트 루트가 아니라
+  README/spec/plan 아티팩트에 작성한다.
+- 릴리스되지 않은 크레이트의 공개 README 조각은 새 크레이트 또는 피처가
+  없는 이미 배포된 버전을 호출자에게 가리켜서는 안 된다. 릴리스 준비에서
+  버전을 갱신할 때까지 git/path 또는 명시적인 릴리스 후 예제를 사용한다.
+- 부트스트랩 이슈에서도 WIP/로드맵 추적성이 중요하다. 마일스톤 범위를
+  설명하는 곳에 패키지, 라이브러리, 루트 피처, 비목표를 명시한다.
+- Step 6-R 근거 파일은 사후 꾸미기가 아니라 게이트의 일부다. 게이트가
+  닫혔다고 말하기 전에 구현 검토 아티팩트를 추가한다.
 
-## 누락을 발견한 검사
+## 차이를 발견한 검사
 
-- Step 6-R user/caller review에서 publish되지 않은 `0.4.0` Cargo snippet을 발견했습니다.
-- Step 6-R operator review에서 추적되는 review 및 lesson artifact가 빠진 것을 발견했습니다.
-- Step 6-R stability review에서 `WIP.md`의 crate/facade 추적성이 약한 것을 발견했습니다.
+- Step 6-R 사용자/호출자 검토에서 배포되지 않은 `0.4.0` Cargo 조각을
+  발견했다.
+- Step 6-R 운영자 검토에서 추적되지 않은 검토 및 lesson 아티팩트의 누락을
+  발견했다.
+- Step 6-R 안정성 검토에서 `WIP.md`의 크레이트/파사드 추적성이 약한 문제를
+  발견했다.
 
-## 앞으로의 규칙
+## 앞으로 적용할 규칙
 
-향후 `bluetape-rs` crate bootstrap마다 최소 두 개의 sibling crate root를
-비교한 뒤 `lib.rs`를 작성하고, 공개 Cargo snippet이 release 상태를
-반영하는지 확인하며, PR 생성 전에 Step 6-R review artifact를 만듭니다.
+앞으로 `bluetape-rs`에서 크레이트를 부트스트랩할 때마다 `lib.rs`를 작성하기
+전에 최소 두 개의 자매 크레이트 루트를 비교하고, 공개 Cargo 조각이 릴리스
+상태를 반영하도록 유지하며, PR 생성 전에 Step 6-R 검토 아티팩트를 만든다.

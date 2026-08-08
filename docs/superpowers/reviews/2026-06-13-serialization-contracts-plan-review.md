@@ -1,66 +1,74 @@
-# Serialization contract 계획 검토
+# 직렬화 계약 계획 검토
 
 날짜: 2026-06-13
-범위: 이슈 #109, Step 3-R plan review
-Plan: `docs/superpowers/plans/2026-06-13-serialization-contracts-plan.md`
-Spec: `docs/superpowers/specs/2026-06-13-serialization-contracts-design.md`
+범위: 이슈 #109, Step 3-R 계획 검토
+계획: `docs/superpowers/plans/2026-06-13-serialization-contracts-plan.md`
+사양: `docs/superpowers/specs/2026-06-13-serialization-contracts-design.md`
 
-## 검토 lane
+## 검토 레인
 
-Step 3-R은 여섯 개의 독립적인 read-only 관점 lane과 main-session 통합으로
-실행했습니다.
+Step 3-R에서는 다음 여섯 개의 독립적인 읽기 전용 관점 레인과 주 세션
+통합을 수행했다.
 
-- Performance/runtime stability
-- Stability/failure-path
-- Security
-- Operator/Ops
-- Developer/API
-- User/caller
+- 성능/런타임 안정성
+- 안정성/실패 경로
+- 보안
+- 운영자/Ops
+- 개발자/API
+- 사용자/호출자
 
-검토 lane은 파일을 편집하거나 무거운 cargo 명령을 실행하지 않았습니다.
+어떤 검토 레인도 파일을 편집하거나 고비용 Cargo 명령을 실행하지 않았다.
 
-## 최초 발견 사항
+## 초기 발견 사항
 
-| 우선순위 | 영역 | 발견 사항 | 필요한 plan 수정 |
+| 우선순위 | 영역 | 발견 사항 | 필요한 계획 수정 |
 |---|---|---|---|
-| P1 | Metadata policy | `adapter_id`를 policy에 저장했지만 검증하지 않았습니다. | Strict `Some(expected)` adapter-id validation, `None` wildcard 동작, typed error mapping, test를 추가합니다. |
-| P1 | Error API | Adapter source 처리가 안전한 source 진단을 버리거나 raw-source bypass 위험을 허용했습니다. | Safe-source 및 redacted-source constructor를 추가하고 source를 wrap하며 raw source alias를 private으로 유지하고 `Display`/`Debug`/`source()` 동작을 테스트합니다. |
-| P1 | Error API | 공개 mismatch error가 encode/decode 방향을 보존하지 않았습니다. | `SerializationOperation`, operation-bearing constructor, test를 추가합니다. |
-| P1 | Config/API | `UnsafeLegacyCompatibility`가 vocabulary이지만 config에서 도달할 수 없었습니다. | Safe default를 유지하고 이름이 명시된 migration-only opt-in method를 추가합니다. |
-| P1 | Operator | Payload-free diagnostic/runbook field가 실행 가능한 plan gate가 아니었습니다. | README/README.ko diagnostic field 요구 사항과 Step 6-R 검증을 추가합니다. |
-| P2 | Test matrix | Metadata policy test가 format mismatch만 다뤘습니다. | Content type, trust profile, adapter id, version, exact-limit, oversized-payload test를 추가합니다. |
-| P2 | API semantics | `SerializedPayload::new`가 처음에는 일반적인 metadata mismatch에 decode operation을 사용했습니다. | Byte/metadata size mismatch에는 operation-neutral `InvalidMetadata`를 사용합니다. |
-| P2 | 문서 | Doctest 검증이 `cargo doc`에 암시되어 있었습니다. | 명시적인 `cargo test --doc` gate와 compile-fail Rustdoc coverage를 추가합니다. |
-| P2 | Workflow | PR readiness gate가 plan에 나열되지 않았습니다. | Step 6-R, PR `## DoD Status`, Step 7-R, `P0=0 P1=0` 요구 사항을 추가합니다. |
+| P1 | 메타데이터 정책 | `adapter_id`를 정책에 저장했지만 검증하지 않았다. | 엄격한 `Some(expected)` 어댑터 ID 검증, `None` 와일드카드 동작, 타입이 지정된 오류 매핑과 테스트를 추가한다. |
+| P1 | 오류 API | 어댑터 소스 처리가 안전한 소스 진단을 버리거나 원시 소스 우회 위험을 허용했다. | 안전 소스 및 삭제된 소스 생성자, 소스 래핑, 비공개 원시 소스 별칭을 추가하고 `Display`/`Debug`/`source()` 동작을 테스트한다. |
+| P1 | 오류 API | 공개 불일치 오류가 인코드/디코드 방향을 보존하지 않았다. | `SerializationOperation`, 연산을 포함하는 생성자와 테스트를 추가한다. |
+| P1 | 구성/API | `UnsafeLegacyCompatibility`는 용어로만 존재하고 구성에서 사용할 수 없었다. | 안전한 기본값을 유지하고 마이그레이션 전용 옵트인 메서드를 명시적인 이름으로 추가한다. |
+| P1 | 운영 | 페이로드를 포함하지 않는 진단/런북 필드가 실행 가능한 계획 게이트가 아니었다. | README/README.ko의 진단 필드 요구 사항과 Step 6-R 검증을 추가한다. |
+| P2 | 테스트 매트릭스 | 메타데이터 정책 테스트가 형식 불일치만 다뤘다. | 콘텐츠 타입, 신뢰 프로파일, 어댑터 ID, 버전, 정확한 한도, 초과 페이로드 테스트를 추가한다. |
+| P2 | API 의미론 | `SerializedPayload::new`가 일반 메타데이터 불일치에 디코드 연산을 사용했다. | 바이트/메타데이터 크기 불일치에는 연산 중립적인 `InvalidMetadata`를 사용한다. |
+| P2 | 문서 | `cargo doc`가 doctest 검증을 암묵적으로 포함한다고 보았다. | 명시적인 `cargo test --doc` 게이트와 컴파일 실패 Rustdoc 커버리지를 추가한다. |
+| P2 | 워크플로 | PR 준비 상태 게이트가 계획에 나열되지 않았다. | Step 6-R, PR `## DoD Status`, Step 7-R, `P0=0 P1=0` 요구 사항을 추가한다. |
 
-## 적용한 수정
+## 적용한 개정 사항
 
-- `SerializationOperation`과 operation-bearing error constructor를 추가했습니다.
-- `AdapterIdMismatch`와 strict/wildcard adapter-id policy test를 추가했습니다.
-- Safe-source와 redacted-source adapter failure 경로를 추가하고 raw source alias는 private으로 유지했습니다.
-- Content type, trust profile, adapter id, unsupported version, exact payload limit, oversized payload에 대한 mismatch 및 boundary test를 확장했습니다.
-- `/json`, `application/` 같은 빈 content-type media type segment를 거부했습니다.
-- Safe default를 유지하면서 명시적인 unsafe legacy migration opt-in을 추가했습니다.
-- 계획한 `SerializedPayload` type에서 `Clone`을 제거하고 Step 6-R allocation/copy review 근거를 추가했습니다.
-- Doctest, compile-fail Rustdoc, README/README.ko example, payload-free diagnostic, Step 6-R/Step 7-R gate를 추가했습니다.
+- `SerializationOperation`과 연산을 포함하는 오류 생성자를 추가했다.
+- `AdapterIdMismatch`와 엄격/와일드카드 어댑터 ID 정책 테스트를 추가했다.
+- 원시 소스 별칭은 비공개로 유지하면서 안전 소스와 삭제된 소스를 사용하는
+  어댑터 실패 경로를 추가했다.
+- 콘텐츠 타입, 신뢰 프로파일, 어댑터 ID, 지원하지 않는 버전, 정확한
+  페이로드 한도, 초과 페이로드에 대한 불일치 및 경계 테스트를 확장했다.
+- `/json`, `application/`과 같은 비어 있는 콘텐츠 타입 미디어 타입 세그먼트를
+  거부했다.
+- 안전한 기본값은 유지하면서 안전하지 않은 레거시 마이그레이션 옵트인을
+  명시적으로 추가했다.
+- 계획한 `SerializedPayload` 타입에서 `Clone`을 제거하고 Step 6-R 할당/복사
+  검토 근거를 추가했다.
+- doctest, 컴파일 실패 Rustdoc, README/README.ko 예제, 페이로드 없는 진단,
+  Step 6-R/Step 7-R 게이트를 추가했다.
 
 ## 재실행 판정
 
-| Lane | P0 | P1 | 판정 |
+| 레인 | P0 | P1 | 판정 |
 |---|---:|---:|---|
-| Performance/runtime stability | 0 | 0 | PASS |
-| Stability/failure-path | 0 | 0 | PASS |
-| Security | 0 | 0 | PASS |
-| Operator/Ops | 0 | 0 | PASS |
-| Developer/API | 0 | 0 | PASS |
-| User/caller | 0 | 0 | PASS |
-| Main-session integration | 0 | 0 | PASS |
+| 성능/런타임 안정성 | 0 | 0 | PASS |
+| 안정성/실패 경로 | 0 | 0 | PASS |
+| 보안 | 0 | 0 | PASS |
+| 운영자/Ops | 0 | 0 | PASS |
+| 개발자/API | 0 | 0 | PASS |
+| 사용자/호출자 | 0 | 0 | PASS |
+| 주 세션 통합 | 0 | 0 | PASS |
 
-Step 3-R은 `P0=0 P1=0`으로 종료되었습니다.
+Step 3-R은 `P0=0 P1=0`으로 종료되었다.
 
-## 이어서 확인할 항목
+## 후속 확인 항목
 
-- Step 6-R은 구현에 공개 raw `Box<dyn Error>` 또는 raw `AdapterSource` attachment 경로가 없는지 확인해야 합니다.
-- Step 6-R은 strict 및 wildcard adapter-id policy 동작을 확인해야 합니다.
-- Step 6-R은 operation semantics, source redaction, payload-free diagnostic, doctest, README parity, dependency exclusion을 확인해야 합니다.
-- Step 7-R은 PR 생성 후 CI/merge-ready 주장을 하기 전에 실행해야 합니다.
+- Step 6-R에서는 구현에 공개 원시 `Box<dyn Error>` 또는 원시 `AdapterSource`
+  첨부 경로가 여전히 없는지 확인해야 한다.
+- Step 6-R에서는 엄격 및 와일드카드 어댑터 ID 정책 동작을 확인해야 한다.
+- Step 6-R에서는 연산 의미론, 소스 삭제, 페이로드 없는 진단, doctest,
+  README 동등성, 의존성 제외를 확인해야 한다.
+- PR을 생성한 뒤 CI/병합 준비 상태를 주장하기 전에 Step 7-R을 실행해야 한다.

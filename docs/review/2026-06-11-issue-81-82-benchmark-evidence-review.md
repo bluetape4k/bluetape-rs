@@ -1,24 +1,24 @@
 # 이슈 #81/#82 Step 6-R 검토
 
-범위: `origin/develop` 대비 `issue-81-82-benchmark-evidence`
+범위: `origin/develop` 대비 `issue-81-82-benchmark-evidence`.
 
-기준점: `5b211ccaa2e2967179580260095e05690c2319f5`
+기준선: `5b211ccaa2e2967179580260095e05690c2319f5`.
 
-## 검토 대상
+## 검토 표면
 
 - `benchmark/compression-benchmark`
 - `docs/benchmark`
 - `docs/images/readme-charts`
 - `README.md`, `README.ko.md`
 
-## Subagent lane
+## 서브에이전트 레인
 
-| lane | 역할 | 최종 결과 | 메모 |
+| 레인 | 역할 | 최종 결과 | 비고 |
 |---|---|---|---|
-| General diff | `code-reviewer` | `P0=0 P1=0` | Matrix row 누락 시 fail-fast 동작과 Rust revision provenance를 수정했습니다. |
-| Acceptance verifier | `verifier` | `P0=0 P1=0` | #81/#82를 위한 ecosystem별 section, winner summary, full matrix 근거를 추가했습니다. |
-| Benchmark/runtime | `performance-reviewer` | `P0=0 P1=0` | Provenance와 chart scale을 수정했고, 잔여 P2 메모리 snapshot date/host는 고정 metadata입니다. |
-| Library user/docs | `library-user-reviewer` | `P0=0 P1=0` | cwd, sibling checkout 가정, Go local replace, JVM rerun BLOCKED 상태를 문서화했습니다. |
+| 일반 diff | `code-reviewer` | `P0=0 P1=0` | 매트릭스 행 누락 시 fail-fast 동작을 수정하고 Rust revision 출처를 갱신했다. |
+| 인수 검증 | `verifier` | `P0=0 P1=0` | #81/#82에 생태계별 섹션, 승자 요약, 전체 매트릭스 근거를 추가했다. |
+| 벤치마크/런타임 | `performance-reviewer` | `P0=0 P1=0` | 출처와 차트 스케일을 수정했다. 잔여 P2 메모의 snapshot 날짜/host는 고정 메타데이터다. |
+| 라이브러리 사용자/문서 | `library-user-reviewer` | `P0=0 P1=0` | cwd, 자매 checkout 전제, Go 로컬 replace, JVM 재실행 BLOCKED 상태를 문서화했다. |
 
 ## 로컬 검증 근거
 
@@ -30,25 +30,25 @@
 - `(cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads --output-dir /tmp/bluetape-compression-bench/payloads --manifest ../../../docs/benchmark/compression-fixtures-manifest.csv)`
 - `cargo run -p compression-benchmark --release --locked -- --payload-dir /tmp/bluetape-compression-bench/payloads --output /tmp/bluetape-compression-bench/rust-schema-check.csv`
 - `python3 benchmark/compression-benchmark/scripts/render_report.py`
-- `rsvg-convert`가 SVG에서 throughput 및 ratio PNG chart를 재생성
+- `rsvg-convert` regenerated throughput and ratio PNG charts from SVG.
 - `git diff --check`
 
-## 초기 검토에서 수정한 내용
+## 초기 검토에서 수정한 사항
 
-- Rust benchmark runner가 normalized `timing_provenance` column을 직접 출력하도록 수정했습니다.
-- 필요한 matrix row가 없으면 report rendering이 fail-fast하도록 수정했습니다.
-- Benchmark fixture와 동일한 payload byte에서 fixture manifest를 재생성했습니다.
-- Normalized comparison 전에 ecosystem별 large-payload section을 추가했습니다.
-- Throughput winner와 compression-ratio winner를 구분하는 winner summary를 추가했습니다.
-- Full payload matrix에 payload kind, size, compressor, ecosystem, direction을 추가했습니다.
-- 현재 large-payload throughput value를 포함하도록 chart scale을 갱신했습니다.
-- Go-only allocation 근거와 non-normalized Rust/JVM memory data를 명확히 했습니다.
-- Rust, Go, JVM 근거에 cwd와 sibling checkout 가정을 문서화했습니다.
-- 기록된 `bluetape4k-projects` revision에 추적되는 동일 조건 compression benchmark selector가 없으므로 JVM rerun을 BLOCKED로 표시했습니다.
-- 전체 matrix를 탐색하는 benchmark 문구와 README 및 README.ko.md를 동기화했습니다.
+- Rust 벤치마크 실행기가 정규화된 `timing_provenance` 열을 직접 내보내도록 했다.
+- 필요한 매트릭스 행이 없으면 보고서 렌더링이 즉시 실패하도록 했다.
+- 벤치마크 fixture와 동일한 페이로드 바이트로 fixture manifest를 다시 생성했다.
+- 정규화된 비교 전에 생태계별 대형 페이로드 섹션을 추가했다.
+- 처리량 승자와 압축 비율 승자를 분리한 승자 요약을 추가했다.
+- 전체 페이로드 매트릭스에 페이로드 종류, 크기, compressor, 생태계, 방향을 추가했다.
+- 현재 대형 페이로드 처리량 값을 포함하도록 차트 스케일을 갱신했다.
+- Go 전용 할당 근거와 정규화하지 않은 Rust/JVM 메모리 데이터를 명확히 했다.
+- Rust, Go, JVM 근거의 cwd 및 자매 checkout 전제를 문서화했다.
+- 기록된 `bluetape4k-projects` revision에 동일 조건 압축 벤치마크 selector가 추적되지 않아 JVM 재실행을 BLOCKED로 표시했다.
+- 전체 매트릭스에 맞춰 README와 README.ko.md의 벤치마크 탐색 문구를 동기화했다.
 
-## Gate 판정
+## 게이트 판정
 
 `P0=0 P1=0`
 
-Step 6-R local/native 7-Tier review가 PR 생성 기준을 통과합니다.
+Step 6-R 로컬/네이티브 7-Tier 검토가 PR 생성 기준으로 통과했다.

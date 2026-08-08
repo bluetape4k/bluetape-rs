@@ -2,51 +2,53 @@
 
 이슈: #47
 브랜치: `feat/issue-47-test-hardening`
-기준점: `origin/develop`
+기준선: `origin/develop`
 날짜: 2026-06-10
 
 ## 범위
 
-이 검토는 0.2.0 async 및 collections 테스트 강화 diff를 다룹니다.
+이 검토는 0.2.0 비동기 및 컬렉션 테스트 강화 diff를 다룬다.
 
-- Async cancellation, timeout, shutdown, bounded task-group, join-failure, task-cleanup 동작
-- Collections error formatting, iterator helper 경계 사례, `HashMap` ordering contract, page metadata 정책
-- 새로 강화한 동작의 Rustdoc 예시와 공개 API contract 주석
+- 비동기 취소, 타임아웃, 종료, 제한된 task-group, join-failure 및
+  task-cleanup 동작.
+- 컬렉션 오류 형식 지정, iterator helper edge case, `HashMap` 순서
+  계약 및 page metadata policy.
+- 새로 강화한 동작을 위한 Rustdoc 예제와 공개 API 계약 주석.
 
 ## 7-Tier 검토 결과
 
-| Tier | Gate | 결과 | 근거 |
+| 단계 | 게이트 | 결과 | 근거 |
 | --- | --- | --- | --- |
-| 1 | 범위 및 API contract | PASS | cancellation source drop, join failure index 정책, `HashMap` ordering, page metadata 보존을 공개 contract에 기록했습니다. |
-| 2 | Error contract | PASS | `AsyncControlError`, `TaskGroupError`, `CollectionError`, `PageError`의 formatting과 `source()` 동작을 테스트로 검증했습니다. |
-| 3 | Async lifecycle | PASS | bounded Tokio test로 cancellation, shutdown, join failure drain, future-drop task cleanup을 검증했습니다. |
-| 4 | Stress 및 결정성 | PASS | bounded concurrency stress test가 정확한 peak limit과 완료 수를 검증하고, scheduler 의존 join test는 `Notify`로 동기화했습니다. |
-| 5 | 공개 문서 | PASS | Rustdoc이 source-drop semantics, `TaskJoinFailed.index`, `try_map_values` 순서, `chunked_by`, `frequencies`, `group_by`, `Page::with_meta`를 설명합니다. |
-| 6 | 로컬 검증 | PASS | Format, whitespace, workspace test, clippy, rustdoc, llvm-cov를 성공적으로 완료했습니다. |
-| 7 | Subagent 검토 | PASS | Code review subagent는 P0=0 P1=0을 보고했습니다. Test review subagent의 초기 P1/P2는 모두 수정하고 재검토해 P0=0 P1=0이 되었습니다. |
+| 1 | 범위 및 API 계약 | PASS | 취소 소스 drop, join 실패 인덱스 정책, `HashMap` 순서, 페이지 메타데이터 보존에 대한 공개 계약을 문서화했다. |
+| 2 | 오류 계약 | PASS | `AsyncControlError`, `TaskGroupError`, `CollectionError`, `PageError`의 형식 지정과 `source()` 동작을 테스트로 커버했다. |
+| 3 | 비동기 수명 주기 | PASS | 제한된 Tokio 테스트로 취소, 종료, join 실패 drain, future-drop 작업 정리를 커버했다. |
+| 4 | 스트레스 및 결정성 | PASS | 제한된 동시성 스트레스 테스트가 정확한 최대치와 완료 수를 검증하며, 스케줄러 의존 join 테스트는 `Notify`로 동기화했다. |
+| 5 | 공개 문서 | PASS | Rustdoc에서 source-drop 의미론, `TaskJoinFailed.index`, `try_map_values` 순서, `chunked_by`, `frequencies`, `group_by`, `Page::with_meta`를 명확히 했다. |
+| 6 | 로컬 검증 | PASS | 포맷, 공백, 워크스페이스 테스트, clippy, rustdoc, llvm-cov를 성공적으로 완료했다. |
+| 7 | 서브에이전트 검토 | PASS | 코드 검토 서브에이전트: P0=0 P1=0. 테스트 검토 서브에이전트: 초기 P1/P2를 모두 수정하고 재검토에서 P0=0 P1=0으로 확인했다. |
 
 ## 발견 사항
 
 P0=0 P1=0
 
-최종 검토 이후 남은 P0/P1/P2/P3 발견 사항은 없습니다.
+최종 검토 후 남은 P0/P1/P2/P3 발견 사항은 없다.
 
-Test-review subagent는 처음에 join-failure drain test의 P1 scheduler dependency와
-`map_bounded_collect` future-drop cleanup test 누락을 보고했습니다. sibling
-startup을 panic 전에 동기화하고 누락된 공개 helper cleanup test를 추가해
-수정했습니다.
+테스트 검토 서브에이전트는 처음에 join-failure drain 테스트의 P1 스케줄러
+의존성과 P2 `map_bounded_collect` future-drop 정리 테스트 누락을 보고했다.
+수정에서는 panic 전에 형제 작업의 시작을 동기화하고 누락된 공개 헬퍼 정리
+테스트를 추가했다.
 
-## Coverage
+## 커버리지
 
-이전 0.2.0 coverage 보고서의 기준점:
+이전 0.2.0 커버리지 보고서의 기준선:
 
-- Workspace: 1379/1585, 87.00%
+- 워크스페이스: 1379/1585, 87.00%
 - `collections`: 349/359, 97.21%
 - `async`: 424/481, 88.15%
 
-`coverage/lcov.info`에서 얻은 최종 로컬 coverage:
+`coverage/lcov.info`의 최종 로컬 커버리지:
 
-- Workspace: 1693/1912, 88.55%
+- 워크스페이스: 1693/1912, 88.55%
 - `async`: 708/768, 92.19%
 - `collections`: 378/388, 97.42%
 - `core`: 178/209, 85.17%
@@ -70,8 +72,8 @@ startup을 panic 전에 동기화하고 누락된 공개 helper cleanup test를 
 
 | 항목 | 상태 | 근거 |
 | --- | --- | --- |
-| 이슈 #47 범위 구현 | PASS | Async 및 collections test, stress coverage, Rustdoc contract를 강화했습니다. |
-| Subagent를 포함한 7-Tier 검토 | PASS | `code-reviewer`와 `test-engineer`가 P0=0 P1=0으로 최종 검토했습니다. |
-| P0/P1 blocker 해소 | PASS | 초기 test-review P1을 수정하고 PASS로 재검토했습니다. |
-| Coverage 보고서 생성 | PASS | `coverage/lcov.info`에 workspace line coverage 88.55%가 생성되었습니다. |
-| Rust 검증 | PASS | fmt, diff check, workspace test, clippy, rustdoc가 통과했습니다. |
+| 이슈 #47 범위 구현 | PASS | 비동기 및 컬렉션 테스트, 스트레스 커버리지, Rustdoc 계약을 강화했다. |
+| 서브에이전트와 7-Tier 검토 | PASS | `code-reviewer`와 `test-engineer` 서브에이전트가 P0=0 P1=0으로 최종 검토를 완료했다. |
+| P0/P1 차단 요소 해결 | PASS | 초기 테스트 검토 P1을 수정하고 PASS로 재검토했다. |
+| 커버리지 보고서 생성 | PASS | `coverage/lcov.info`, 워크스페이스 라인 커버리지 88.55%. |
+| Rust 검증 | PASS | fmt, diff 검사, 워크스페이스 테스트, clippy, rustdoc가 통과했다. |

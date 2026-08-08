@@ -1,4 +1,4 @@
-# 코덱 crate 초기 구성 검토
+# 코덱 크레이트 부트스트랩 검토
 
 날짜: 2026-06-10
 이슈: #53
@@ -6,32 +6,32 @@
 
 ## 범위
 
-코덱 동작을 구현하지 않고 `0.3.0` 코덱 crate 경계를 추가합니다.
+코덱 동작은 구현하지 않고 `0.3.0` 코덱 크레이트 경계를 추가한다.
 
 - `crates/codec`
-- root workspace 등록
-- root optional facade feature
+- 루트 워크스페이스 등록
+- 루트 선택적 파사드 feature
 - README 및 README.ko 사용 메모
-- `Cargo.lock` workspace package 항목
+- `Cargo.lock` 워크스페이스 패키지 항목
 
 ## 7-Tier 검토
 
-| Tier | 판정 | 근거 |
+| 단계 | 판정 | 근거 |
 |---|---|---|
-| 1. 공개 API / Contract | PASS | 아직 encoder API를 노출하지 않습니다. 유일한 공개 변경은 opt-in root facade feature `codec`이며 `default = ["core"]`는 그대로입니다. |
-| 2. Architecture / Boundary | PASS | `crates/codec`는 목적이 분명한 crate 경계입니다. Hex/Base64 작업은 후속 범위로 기록했고 compression과 serde serialization은 각각 `0.4.0`, `0.5.0`으로 명시적으로 보류했습니다. |
-| 3. Rust API 형태 | PASS | 새 crate가 Rust 2024 workspace metadata를 사용하고 Kotlin/JVM 또는 Go 형태 API, 광범위한 utility module, unsafe code, runtime/global state를 도입하지 않습니다. |
-| 4. 테스트 | PASS | `cargo test -p bluetape-rs-codec --all-features --locked`가 metadata smoke test와 함께 통과하고 전체 workspace test도 통과합니다. |
-| 5. 정적 검사 / 문서 | PASS | `cargo fmt --all --check`, `git diff --check`, `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`, `-D warnings` rustdoc이 통과합니다. |
-| 6. Release / Cargo | PASS | `Cargo.toml`이 새 workspace member, workspace dependency, optional root dependency, additive feature를 등록합니다. `Cargo.lock`은 `bluetape-rs-codec` `0.3.0`을 기록합니다. |
-| 7. 근거 무결성 | PASS | code-review-graph가 `origin/develop` 대비 staged diff를 분석해 파일 8개, risk score 0.00, 변경 함수 0개, test gap 0을 보고했습니다. |
+| 1. 공개 API / 계약 | PASS | 아직 encoder API를 노출하지 않는다. 유일한 공개 변경은 옵트인 루트 파사드 feature `codec`이며 `default = ["core"]`는 변경하지 않았다. |
+| 2. 아키텍처 / 경계 | PASS | `crates/codec`은 집중된 크레이트 경계다. Hex/Base64 작업은 후속 범위로 문서화했고 압축 및 serde 직렬화는 `0.4.0`, `0.5.0`으로 명시적으로 미뤘다. |
+| 3. Rust API 형태 | PASS | 새 크레이트가 Rust 2024 워크스페이스 메타데이터를 사용하고 Kotlin/JVM 또는 Go 형태의 API, 광범위한 유틸리티 모듈, 안전하지 않은 코드, 런타임/전역 상태를 사용하지 않는다. |
+| 4. 테스트 | PASS | `cargo test -p bluetape-rs-codec --all-features --locked`가 메타데이터 스모크 테스트와 함께 통과한다. 전체 워크스페이스 테스트도 통과한다. |
+| 5. 정적 검사 / 문서 | PASS | `cargo fmt --all --check`, `git diff --check`, `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`, `-D warnings`를 적용한 rustdoc이 통과한다. |
+| 6. 릴리스 / Cargo | PASS | `Cargo.toml`이 새 워크스페이스 멤버, 워크스페이스 의존성, 선택적 루트 의존성, 추가형 feature를 등록한다. `Cargo.lock`에 `bluetape-rs-codec` `0.3.0`이 기록된다. |
+| 7. 근거 무결성 | PASS | code-review-graph가 `origin/develop` 대비 staged diff를 분석했다. 파일 8개, 위험 점수 0.00, 변경 함수 0개, 테스트 공백 0이다. |
 
-## P0/P1 Gate
+## P0/P1 게이트
 
 P0=0 P1=0
 
-#53에는 P2/P3 후속 작업이 필요하지 않습니다. 구현 작업은 이미 생성된
-하위 이슈 #54와 #55에 남아 있습니다.
+#53에는 P2/P3 후속 작업이 필요하지 않다. 구현 작업은 이미 생성된 하위
+이슈 #54와 #55에 남긴다.
 
 ## 검증
 

@@ -1,18 +1,18 @@
-# 이슈 #108 구현 검토 - Serialization crate 초기 구성
+# 이슈 #108 구현 검토 - 직렬화 크레이트 부트스트랩
 
 날짜: 2026-06-13
 범위: `origin/develop` 대비 이슈 #108 구현 diff
-Gate: Step 6-R implemented diff review
+게이트: Step 6-R 구현 diff 검토
 
 ## 검토 범위
 
-- `Cargo.toml`, `Cargo.lock`, root `src/lib.rs`
+- `Cargo.toml`, `Cargo.lock` 및 루트 `src/lib.rs`
 - 새 `crates/serialization/**`
-- Root `README.md` 및 `README.ko.md`
+- 루트 `README.md` 및 `README.ko.md`
 - `WIP.md`
 - `docs/superpowers/specs/2026-06-13-serde-0-5x-design.md`
 - `docs/superpowers/plans/2026-06-13-serialization-crate-bootstrap-plan.md`
-- Step 2-R 및 Step 3-R review artifact
+- Step 2-R 및 Step 3-R 검토 산출물
 
 ## 검증 근거
 
@@ -30,35 +30,40 @@ Gate: Step 6-R implemented diff review
 - `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked`
 - `git diff --check`
 
-## 검토 lane
+## 검토 레인
 
-| Lane | 최초 결과 | 최종 결과 | 근거 |
+| 레인 | 초기 결과 | 최종 결과 | 근거 |
 |---|---:|---:|---|
-| Performance | `P0=0 P1=0` | `P0=0 P1=0` | Empty serialization default, 새 dependency 없음, opt-in root facade만 사용, bootstrap에 대한 benchmark claim 없음 |
-| Stability | `P0=0 P1=0` | `P0=0 P1=0` | Feature tree가 default/no-default build에서 serialization을 제외함을 증명하고 WIP traceability P2를 수정했습니다. |
-| Security | `P0=0 P1=0` | `P0=0 P1=0` | Serializer 구현과 unsafe path가 없고 hidden global/default/env-selected serializer 및 unsafe deserialization을 문서에서 거부합니다. |
-| Operator/Ops | `P0=0 P1=1` | `P0=0 P1=0` | 이 추적 Step 6-R artifact와 plan이 요구한 lesson artifact를 추가했습니다. |
-| Developer/API | `P0=0 P1=0` | `P0=0 P1=0` | Crate root가 sibling style을 따르고 Cargo feature/root facade 형태가 additive이며 artifact P2는 이 파일로 수정했습니다. |
-| User/Caller | `P0=0 P1=1` | `P0=0 P1=0` | 미출시 `0.4.0` registry example을 git/pre-release 및 `0.5` post-release example으로 바꾸고 root README에 bootstrap-only 범위를 명시했습니다. |
+| 성능 | `P0=0 P1=0` | `P0=0 P1=0` | 비어 있는 직렬화 기본값, 새 의존성 없음, 옵트인 루트 파사드만 사용, 부트스트랩에 대한 벤치마크 주장 없음. |
+| 안정성 | `P0=0 P1=0` | `P0=0 P1=0` | feature tree가 기본/기본 feature를 끈 빌드에서 직렬화를 제외함을 증명하고 WIP 추적성 P2를 수정했다. |
+| 보안 | `P0=0 P1=0` | `P0=0 P1=0` | serializer 구현이나 안전하지 않은 경로가 없으며 문서가 숨겨진 전역/기본/환경 선택 serializer와 안전하지 않은 역직렬화를 거부한다. |
+| 운영자/Ops | `P0=0 P1=1` | `P0=0 P1=0` | 추적하는 Step 6-R 산출물과 계획이 요구한 lesson 산출물을 추가했다. |
+| 개발자/API | `P0=0 P1=0` | `P0=0 P1=0` | 크레이트 루트가 자매 스타일을 따르고 Cargo feature/루트 파사드 형태가 추가형이며 이 파일로 산출물 P2를 수정했다. |
+| 사용자/호출자 | `P0=0 P1=1` | `P0=0 P1=0` | 게시하지 않은 `0.4.0` 레지스트리 조각을 git/사전 릴리스 및 `0.5` 게시 후 예제로 교체했고 루트 README가 부트스트랩 전용 범위를 명시한다. |
 
 ## 통합 발견 사항 및 수정
 
 | 우선순위 | 영역 | 해결 |
 |---|---|---|
-| P1 | Review 근거 | Commit/PR 전에 `docs/review/2026-06-13-issue-108-serialization-crate-review.md`와 `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`를 추가했습니다. |
-| P1 | 공개 version snippet | 미출시 serialization feature/crate의 공개 `0.4.0` registry example을 git dependency 및 post-`0.5.0` release example으로 교체했습니다. |
-| P2 | WIP traceability | `0.5.0` WIP section에 `bluetape-rs-serialization`, `bluetape_rs_serialization`, root `serialization` feature, bootstrap-only 범위를 추가했습니다. |
-| P2 | Root README 과장 | Root package table의 implemented SerDe 문구를 reserved boundary로 바꾸고 bootstrap-only caveat를 추가했습니다. |
-| P3 | 집중 crate 예시 | Trait 또는 adapter가 생길 때까지 `bluetape-rs-serialization`을 호출 가능한 API 예시에서 제외한다고 문서화했습니다. |
+| P1 | 검토 근거 | 커밋/PR 전에 `docs/review/2026-06-13-issue-108-serialization-crate-review.md`와 `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`를 추가했다. |
+| P1 | 공개 버전 조각 | 아직 릴리스하지 않은 직렬화 feature/크레이트의 공개 `0.4.0` 레지스트리 예제를 git 의존성 예제와 `0.5.0` 게시 후 예제로 교체했다. |
+| P2 | WIP 추적성 | `0.5.0` WIP 섹션에 `bluetape-rs-serialization`, `bluetape_rs_serialization`, 루트 `serialization` feature, 부트스트랩 전용 범위를 추가했다. |
+| P2 | 루트 README 과장 | 루트 패키지 표의 문구를 구현된 SerDe에서 예약된 경계로 바꾸고 부트스트랩 전용 주의 사항을 추가했다. |
+| P3 | 집중 크레이트 예제 | 트레이트나 어댑터가 존재하기 전까지 `bluetape-rs-serialization`을 호출 가능한 API 예제에서 제외한다고 문서화했다. |
 
-## 보류 후속 검사
+## 보류한 후속 확인
 
-- 후속 adapter PR은 corrupt byte, truncated byte, trailing byte, empty byte, unknown format id, content-type mismatch, unsupported version, wrong target type, trust-profile mismatch, oversized payload, compressed-invalid payload, adapter failure case에 대한 negative test를 추가해야 합니다.
-- 후속 release-readiness 작업은 package version을 갱신하고 실제 publish version에 맞춰 crates.io/docs.rs example을 검증해야 합니다.
-- Cross-repo 동일 조건 benchmark 작업은 adapter가 생긴 뒤 `0.5.5` milestone으로 보류합니다.
+- 이후 어댑터 PR은 손상된 바이트, 잘린 바이트, 후행 바이트, 빈 바이트,
+  알 수 없는 형식 ID, 콘텐츠 타입 불일치, 지원하지 않는 버전, 잘못된 대상
+  타입, 신뢰 프로파일 불일치, 초과 페이로드, 압축된 잘못된 페이로드,
+  어댑터 실패 사례에 대한 부정 테스트를 추가해야 한다.
+- 이후 릴리스 준비 작업은 패키지 버전을 갱신하고 실제 게시 버전에 맞춰
+  crates.io/docs.rs 예제를 검증해야 한다.
+- 저장소 간 동일 조건 벤치마크 작업은 어댑터가 존재한 뒤 `0.5.5`
+  마일스톤으로 미룬다.
 
-## Gate 판정
+## 게이트 판정
 
-문서 및 근거 수정 후 Step 6-R 통과
+문서 및 근거를 수정한 뒤 Step 6-R을 통과했다.
 
 P0=0 P1=0
