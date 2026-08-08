@@ -1,42 +1,60 @@
-# Serialization Crate Bootstrap Implementation Plan
+# 직렬화 크레이트 부트스트랩 구현 계획
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **에이전트 작업자:** 필수 하위 스킬: 이 계획을 작업별로 구현하려면
+> superpowers:subagent-driven-development(권장) 또는 superpowers:executing-plans를
+> 사용한다. 단계 추적에는 checkbox(`- [ ]`) 문법을 사용한다.
 
-**Goal:** Add the focused `bluetape-rs-serialization` workspace crate and optional root facade feature for issue #108 without expanding beyond the reviewed bootstrap slice.
+**목표:** 검토된 부트스트랩 범위를 벗어나지 않고 이슈 #108을 위한 집중형
+`bluetape-rs-serialization` workspace crate와 선택적 root facade feature를
+추가한다.
 
-**Architecture:** The new crate owns serialization vocabulary and documentation boundaries, while the root `bluetape-rs` crate only exposes it through an opt-in facade feature. Issue #108 intentionally stops before first binary adapter implementation; later `0.5.0` issues add contracts/adapters/tests after this crate boundary is reviewable.
+**아키텍처:** 새 크레이트가 serialization vocabulary와 문서 경계를 소유하고,
+root `bluetape-rs` crate는 opt-in facade feature를 통해서만 이를 노출한다.
+이슈 #108은 첫 바이너리 어댑터 구현 전에 의도적으로 멈추며, 이후 `0.5.0`
+이슈에서 이 크레이트 경계를 검토할 수 있게 된 뒤 계약/어댑터/테스트를
+추가한다.
 
-**Tech Stack:** Rust 2024, Cargo workspace resolver 3, additive Cargo features, Rustdoc, README/README.ko parity.
+**기술 스택:** Rust 2024, Cargo workspace resolver 3, additive Cargo feature,
+Rustdoc, README/README.ko 동등성.
 
 ---
 
-## File Structure
+## 파일 구조
 
-- Create `crates/serialization/Cargo.toml`: package metadata, crate name, default-empty feature set.
-- Create `crates/serialization/src/lib.rs`: concise crate-level Rustdoc that
-  follows sibling crate style; keep long boundary, migration, and non-goal
-  prose in README/spec/plan docs.
-- Create `crates/serialization/README.md`: English user-facing crate boundary, usage paths, mismatch semantics, migration note, and non-goals.
-- Create `crates/serialization/README.ko.md`: Korean localized crate boundary with the same sections and non-goal set.
-- Modify `Cargo.toml`: insert `crates/serialization` while preserving every existing workspace member, add workspace dependency, optional root dependency, and `serialization` feature.
-- Modify `Cargo.lock`: refresh after the local workspace package is added, then use `--locked` for subsequent verification.
-- Modify `src/lib.rs`: root facade re-export behind `#[cfg(feature = "serialization")]`.
-- Modify `README.md`: rename package table entry and add direct-crate vs root-facade guidance.
-- Modify `README.ko.md`: keep localized package table and guidance in sync.
-- Review `WIP.md`: confirm issue #108 does not require additional WIP edits after the merged `0.5.x` split.
+- `crates/serialization/Cargo.toml` 생성: 패키지 메타데이터, 크레이트 이름 및
+  비어 있는 기본 feature set.
+- `crates/serialization/src/lib.rs` 생성: 자매 크레이트 스타일을 따르는 간결한
+  crate-level Rustdoc. 긴 경계·마이그레이션·비목표 설명은 README/spec/plan
+  문서에 둔다.
+- `crates/serialization/README.md` 생성: 영어 사용자용 크레이트 경계, 사용 경로,
+  불일치 의미론, 마이그레이션 메모 및 비목표.
+- `crates/serialization/README.ko.md` 생성: 같은 섹션과 비목표 집합을 갖는
+  한국어 로컬라이즈 크레이트 경계.
+- `Cargo.toml` 수정: 기존 workspace member를 모두 보존하면서
+  `crates/serialization`을 삽입하고 workspace dependency, 선택적 root
+  dependency 및 `serialization` feature를 추가한다.
+- `Cargo.lock` 수정: 로컬 workspace package 추가 후 갱신하고 이후 검증에는
+  `--locked`를 사용한다.
+- `src/lib.rs` 수정: `#[cfg(feature = "serialization")]` 뒤에 root facade
+  re-export를 둔다.
+- `README.md` 수정: 패키지 표 항목 이름을 바꾸고 direct-crate와 root-facade
+  사용 지침을 추가한다.
+- `README.ko.md` 수정: 로컬라이즈된 패키지 표와 지침을 동기화한다.
+- `WIP.md` 검토: 병합된 `0.5.x` 분할 이후 이슈 #108에 추가 WIP 수정이 필요한지
+  확인한다.
 
-## Task 1: Serialization Crate Skeleton
+## 작업 1: 직렬화 크레이트 뼈대
 
-**Complexity:** low
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 낮음
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Create: `crates/serialization/Cargo.toml`
-- Create: `crates/serialization/src/lib.rs`
+**파일:**
+- 생성: `crates/serialization/Cargo.toml`
+- 생성: `crates/serialization/src/lib.rs`
 
-- [x] **Step 1: Create package metadata**
+- [x] **단계 1: 패키지 메타데이터 생성**
 
-Create `crates/serialization/Cargo.toml`:
+`crates/serialization/Cargo.toml`을 생성한다.
 
 ```toml
 [package]
@@ -61,14 +79,14 @@ default = []
 [dependencies]
 ```
 
-Version policy: issue #108 lands on the current development version line. The
-crate package stays at the current workspace version until release-preparation
-updates crate versions for `0.5.0`, but public README examples must not point
-callers at unpublished `0.4.0` registry artifacts.
+버전 정책: 이슈 #108은 현재 개발 버전 계열에 반영한다. 릴리스 준비에서
+크레이트 버전을 `0.5.0`으로 갱신할 때까지 패키지는 현재 workspace 버전을
+유지하지만, 공개 README 예제는 게시하지 않은 `0.4.0` registry artifact를
+호출자에게 가리켜서는 안 된다.
 
-- [x] **Step 2: Create concise crate Rustdoc**
+- [x] **단계 2: 간결한 크레이트 Rustdoc 생성**
 
-Create `crates/serialization/src/lib.rs`:
+`crates/serialization/src/lib.rs`를 생성한다.
 
 ```rust
 //! Rust-native serialization boundary for bluetape-rs.
@@ -92,80 +110,79 @@ mod tests {
 }
 ```
 
-This shape follows existing sibling crate roots such as `crates/core`,
-`crates/compression`, and `crates/logging`: short crate-level Rustdoc in
-`lib.rs`, focused exports/tests in the crate root, and detailed usage/non-goal
-material in README/spec/plan docs.
+이 형태는 `crates/core`, `crates/compression`, `crates/logging` 같은 기존 자매
+크레이트 루트를 따른다. `lib.rs`에는 짧은 crate-level Rustdoc을 두고, 크레이트
+루트에는 집중된 export/test를 두며, 자세한 사용법과 비목표는 README/spec/plan
+문서에 둔다.
 
-## Task 2: Workspace And Facade Wiring
+## 작업 2: Workspace 및 Facade 연결
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Modify: `Cargo.toml`
-- Modify: `Cargo.lock`
-- Modify: `src/lib.rs`
+**파일:**
+- 수정: `Cargo.toml`
+- 수정: `Cargo.lock`
+- 수정: `src/lib.rs`
 
-- [x] **Step 1: Insert the workspace member without replacing the array**
+- [x] **단계 1: 배열을 교체하지 않고 workspace member 삽입**
 
-In `Cargo.toml`, insert only this line after the existing `crates/logging`
-member and preserve every existing workspace member, including benchmark and
-test crates:
+`Cargo.toml`에서 기존 `crates/logging` member 다음에 아래 한 줄만 삽입하고,
+benchmark 및 test crate를 포함한 기존 workspace member를 모두 보존한다.
 
 ```toml
     "crates/serialization",
 ```
 
-- [x] **Step 2: Register the workspace dependency**
+- [x] **단계 2: workspace dependency 등록**
 
-In `[workspace.dependencies]`, add:
+`[workspace.dependencies]`에 다음을 추가한다.
 
 ```toml
 bluetape-rs-serialization = { path = "crates/serialization", version = "0.4.0" }
 ```
 
-- [x] **Step 3: Add the opt-in root feature**
+- [x] **단계 3: opt-in root feature 추가**
 
-In `[features]`, keep `default = ["core"]` unchanged and add:
+`[features]`에서 `default = ["core"]`는 그대로 두고 다음을 추가한다.
 
 ```toml
 serialization = ["dep:bluetape-rs-serialization"]
 ```
 
-- [x] **Step 4: Add the optional root dependency**
+- [x] **단계 4: 선택적 root dependency 추가**
 
-In `[dependencies]`, add:
+`[dependencies]`에 다음을 추가한다.
 
 ```toml
 bluetape-rs-serialization = { workspace = true, optional = true }
 ```
 
-- [x] **Step 5: Add the gated root facade**
+- [x] **단계 5: 게이트된 root facade 추가**
 
-In `src/lib.rs`, add:
+`src/lib.rs`에 다음을 추가한다.
 
 ```rust
 #[cfg(feature = "serialization")]
 pub use bluetape_rs_serialization as serialization;
 ```
 
-- [x] **Step 6: Refresh the lock file once before locked verification**
+- [x] **단계 6: locked 검증 전에 lock file을 한 번 갱신**
 
-Run:
+실행한다.
 
 ```bash
 cargo check -p bluetape-rs-serialization --all-features
 ```
 
-Expected:
+예상 결과:
 
-- `Cargo.lock` is refreshed if Cargo needs to record the new workspace package.
-- Subsequent verification commands use `--locked`.
+- Cargo가 새 workspace package를 기록해야 하면 `Cargo.lock`이 갱신된다.
+- 이후 검증 명령은 `--locked`를 사용한다.
 
-- [x] **Step 7: Verify feature wiring locally**
+- [x] **단계 7: 로컬에서 feature 연결 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo metadata --no-deps --format-version 1 --locked
@@ -174,31 +191,31 @@ cargo check -p bluetape-rs --no-default-features --locked
 cargo check -p bluetape-rs --features serialization --locked
 ```
 
-Expected:
+예상 결과:
 
-- Metadata includes every previous workspace member plus `crates/serialization`.
-- Metadata includes package `bluetape-rs-serialization` with readme, license,
-  repository, and version aligned to the current development version policy.
-- Plain default `cargo check -p bluetape-rs --locked` still uses the existing
-  default feature set and does not require the serialization facade.
-- `--no-default-features` does not require the facade.
-- `--features serialization` resolves the optional facade dependency.
+- 메타데이터에 기존 workspace member와 `crates/serialization`이 모두 포함된다.
+- 메타데이터의 `bluetape-rs-serialization` 패키지에서 readme, license,
+  repository 및 버전이 현재 개발 버전 정책과 일치한다.
+- 일반 기본 `cargo check -p bluetape-rs --locked`는 기존 default feature set을
+  계속 사용하며 serialization facade를 요구하지 않는다.
+- `--no-default-features`는 facade를 요구하지 않는다.
+- `--features serialization`은 선택적 facade dependency를 해석한다.
 
-## Task 3: User-Facing Documentation Parity
+## 작업 3: 사용자용 문서 동등성
 
-**Complexity:** low
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 낮음
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Create: `crates/serialization/README.md`
-- Create: `crates/serialization/README.ko.md`
-- Modify: `README.md`
-- Modify: `README.ko.md`
-- Review: `WIP.md`
+**파일:**
+- 생성: `crates/serialization/README.md`
+- 생성: `crates/serialization/README.ko.md`
+- 수정: `README.md`
+- 수정: `README.ko.md`
+- 검토: `WIP.md`
 
-- [x] **Step 1: Write English crate README**
+- [x] **단계 1: 영어 크레이트 README 작성**
 
-Create `crates/serialization/README.md` with these sections:
+다음 섹션으로 `crates/serialization/README.md`를 생성한다.
 
 ````markdown
 # bluetape-rs-serialization
@@ -289,36 +306,37 @@ enabling `features = ["serialization"]` on `bluetape-rs`.
 - Schema registry support
 ````
 
-- [x] **Step 2: Write Korean crate README with full parity**
+- [x] **단계 2: 완전한 동등성으로 한국어 크레이트 README 작성**
 
-Create `crates/serialization/README.ko.md` with the same section set as the
-English README:
+영어 README와 동일한 섹션 집합으로 `crates/serialization/README.ko.md`를
+생성한다.
 
-- `Usage`: direct dependency, `use bluetape_rs_serialization as serialization;`,
-  root facade dependency, `use bluetape_rs::serialization;`, default facade
-  unavailable note, and boundary-only bootstrap note.
-- `Boundary`: `Option<T>`, empty bytes, unsupported-version, wrong-format,
-  wrong-trust-profile typed failures, no `None` fallback, no alternate-adapter
-  fallback, caller-owned cache eviction/namespace migration/rebuild policy.
-- `Migration / Compatibility`: existing `bluetape-rs` users need no change;
-  opt in through the direct crate or `features = ["serialization"]`.
-- `Issue #108 Bootstrap Non-goals`: no traits/adapters, no runtime binary
-  payload encoding, no global registry.
+- `Usage`: 직접 의존성, `use bluetape_rs_serialization as serialization;`,
+  루트 파사드 의존성, `use bluetape_rs::serialization;`, 기본 파사드를
+  사용할 수 없다는 메모 및 경계만 포함하는 부트스트랩 메모.
+- `Boundary`: `Option<T>`, 빈 바이트, unsupported-version, wrong-format,
+  wrong-trust-profile의 타입 지정 실패, `None` fallback 금지, 대체 어댑터
+  fallback 금지, 호출자가 소유하는 캐시 제거/네임스페이스 마이그레이션/재구축
+  정책.
+- `Migration / Compatibility`: 기존 `bluetape-rs` 사용자는 변경할 필요가 없으며
+  직접 크레이트 또는 `features = ["serialization"]`으로 opt-in한다.
+- `Issue #108 Bootstrap Non-goals`: trait/adapter 없음, 런타임 바이너리 페이로드
+  인코딩 없음, 전역 레지스트리 없음.
 - `Not In The 0.5.0 Core/Binary Milestone`: JSON, Protobuf, Avro, Fory,
-  Testcontainers, SQL/SQLx, resilience/fallback policies, unsafe
-  deserialization, hidden global serializers, hidden default serializers,
-  env-selected adapters, dynamic type loading, and schema registry support.
+  Testcontainers, SQL/SQLx, resilience/fallback 정책, 안전하지 않은 역직렬화,
+  숨겨진 전역 serializer, 숨겨진 기본 serializer, 환경 선택 어댑터,
+  dynamic type loading 및 schema registry 지원 제외.
 
-- [x] **Step 3: Update root README package table**
+- [x] **단계 3: root README 패키지 표 갱신**
 
-In `README.md`, replace the serialization package name and pin benchmark wording
-to the later benchmark milestone:
+`README.md`에서 serialization 패키지 이름을 바꾸고 benchmark 문구를 이후
+benchmark 마일스톤으로 고정한다.
 
 ```markdown
 | Serialization | `bluetape-rs-serialization` | Reserves the cache-first binary payload SerDe boundary first, then adds JSON, Protobuf, Avro, Fory, and the cross-repo benchmark track in `0.5.5` after adapters exist. |
 ```
 
-Add a short note near the package table:
+패키지 표 근처에 짧은 메모를 추가한다.
 
 ```markdown
 Use `bluetape-rs-serialization` directly for crate-level docs, or enable
@@ -327,62 +345,62 @@ Issue #108 is a crate/facade/docs bootstrap only; serializer traits, concrete
 adapters, and runtime binary encoding arrive in later reviewed `0.5.0` issues.
 ```
 
-- [x] **Step 4: Update Korean README package table**
+- [x] **단계 4: 한국어 README 패키지 표 갱신**
 
-In `README.ko.md`, replace the serialization package name and pin benchmark
-wording to `0.5.5`:
+`README.ko.md`에서 serialization 패키지 이름을 바꾸고 benchmark 문구를
+`0.5.5`로 고정한다.
 
 ```markdown
 | Serialization | `bluetape-rs-serialization` | Cache-first binary payload SerDe를 먼저 제공하고, JSON, Protobuf, Avro, Fory를 순차 확장한 뒤 adapter가 준비되면 `0.5.5`에서 cross-repo benchmark track을 진행합니다. |
 ```
 
-Add the equivalent Korean note near the package table.
+패키지 표 근처에 이에 상응하는 한국어 메모를 추가한다.
 
 ```markdown
-crate-level 문서는 `bluetape-rs-serialization`을 직접 사용하고, root facade가
+크레이트 수준 문서는 `bluetape-rs-serialization`을 직접 사용하고, 루트 파사드가
 필요하면 `bluetape-rs`에서 `features = ["serialization"]`을 활성화하세요.
-Issue #108은 crate/facade/docs bootstrap만 수행합니다. Serializer trait,
-concrete adapter, runtime binary encoding은 review된 후속 `0.5.0` issue에서
+Issue #108은 크레이트/파사드/문서 부트스트랩만 수행합니다. Serializer 트레이트,
+구체 어댑터, 런타임 바이너리 인코딩은 검토된 후속 `0.5.0` 이슈에서
 추가합니다.
 ```
 
-- [x] **Step 5: Confirm WIP parity**
+- [x] **단계 5: WIP 동등성 확인**
 
-Run:
+실행한다.
 
 ```bash
 rg -n "bluetape-rs-serde|bluetape-rs-serialization|0\\.5\\.0|0\\.5\\.5" README.md README.ko.md WIP.md crates/serialization
 ```
 
-Expected:
+예상 결과:
 
-- No remaining `bluetape-rs-serde` references.
-- `README.md`, `README.ko.md`, `WIP.md`, crate README, and Rustdoc use the same
-  crate name, root feature name, and `0.5.0` non-goal list.
-- Root README files either contain the same direct-crate/root-facade guidance or
-  explicitly link to the crate README for the detailed `Option<T>`, empty bytes,
-  version/format/trust-profile mismatch, and no-fallback semantics.
-- `WIP.md` still documents the `0.5.x` split. If it lacks issue #108 bootstrap
-  text, the PR body must state that no additional WIP change was required
-  because the milestone split is already present.
+- 남은 `bluetape-rs-serde` 참조가 없다.
+- `README.md`, `README.ko.md`, `WIP.md`, 크레이트 README 및 Rustdoc이 같은
+  크레이트 이름, 루트 feature 이름 및 `0.5.0` 비목표 목록을 사용한다.
+- 루트 README 파일에 같은 직접 크레이트/루트 파사드 지침을 넣거나, 자세한
+  `Option<T>`, empty bytes, version/format/trust-profile mismatch 및 no-fallback
+  의미론을 설명하는 crate README를 명시적으로 연결한다.
+- `WIP.md`가 `0.5.x` 분할을 계속 문서화한다. 이슈 #108 부트스트랩 문구가
+  없으면 milestone 분할이 이미 존재하므로 추가 WIP 수정이 필요하지 않았음을
+  PR 본문에 기록한다.
 
-## Task 4: Feature And Documentation Verification
+## 작업 4: Feature 및 문서 검증
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Verify: `Cargo.toml`
-- Verify: `Cargo.lock`
-- Verify: `src/lib.rs`
-- Verify: `crates/serialization/**`
-- Verify: `README.md`
-- Verify: `README.ko.md`
-- Verify: `WIP.md`
+**파일:**
+- 검증: `Cargo.toml`
+- 검증: `Cargo.lock`
+- 검증: `src/lib.rs`
+- 검증: `crates/serialization/**`
+- 검증: `README.md`
+- 검증: `README.ko.md`
+- 검증: `WIP.md`
 
-- [x] **Step 1: Verify default dependency exclusion**
+- [x] **단계 1: 기본 dependency 제외 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo tree -e features -p bluetape-rs --locked
@@ -390,17 +408,17 @@ cargo tree -e features -p bluetape-rs --no-default-features --locked
 cargo tree -e features -p bluetape-rs --features serialization --locked
 ```
 
-Expected:
+예상 결과:
 
-- Plain default tree does not include `bluetape-rs-serialization`.
-- `--no-default-features` does not include `bluetape-rs-serialization`.
-- `--features serialization` includes `bluetape-rs-serialization`.
-- No tree includes JSON, Protobuf, Avro, Fory, Testcontainers, SQL, or
-  resilience dependencies from this bootstrap.
+- 일반 기본 tree에는 `bluetape-rs-serialization`이 포함되지 않는다.
+- `--no-default-features`에도 `bluetape-rs-serialization`이 포함되지 않는다.
+- `--features serialization`에는 `bluetape-rs-serialization`이 포함된다.
+- 어떤 tree에도 이 부트스트랩의 JSON, Protobuf, Avro, Fory, Testcontainers,
+  SQL 또는 resilience dependency가 포함되지 않는다.
 
-- [x] **Step 2: Verify facade absence and presence**
+- [x] **단계 2: facade 부재 및 존재 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo check -p bluetape-rs --locked
@@ -408,57 +426,57 @@ cargo check -p bluetape-rs --no-default-features --locked
 cargo check -p bluetape-rs --features serialization --locked
 ```
 
-Expected:
+예상 결과:
 
-- Default and no-default builds do not require `bluetape_rs::serialization`.
-- The root facade path is available only when `features = ["serialization"]` is
-  enabled. If no executable doc/example can prove the negative case yet, Step
-  6-R must inspect `src/lib.rs` and verify the `#[cfg(feature = "serialization")]`
-  guard before PR creation.
+- default 및 no-default build는 `bluetape_rs::serialization`을 요구하지 않는다.
+- root facade path는 `features = ["serialization"]`을 활성화한 경우에만
+  사용할 수 있다. 아직 실행 가능한 doc/example으로 부재를 증명할 수 없다면,
+  PR 생성 전에 Step 6-R에서 `src/lib.rs`를 검사하고
+  `#[cfg(feature = "serialization")]` guard를 확인해야 한다.
 
-- [x] **Step 3: Verify docs and examples**
+- [x] **단계 3: 문서 및 예제 검증**
 
-Run:
+실행한다.
 
 ```bash
 RUSTDOCFLAGS="-D warnings" cargo doc -p bluetape-rs-serialization --all-features --no-deps --locked
 RUSTDOCFLAGS="-D warnings" cargo doc -p bluetape-rs --features serialization --no-deps --locked
 ```
 
-Expected:
+예상 결과:
 
-- Rustdoc builds with warnings denied.
-- Direct crate usage, root facade usage, default-unavailable note,
-  no-fallback/mismatch behavior, and migration/compatibility text appear in the
-  crate README/Rustdoc pair and localized README.
+- Rustdoc이 경고를 거부한 상태로 빌드된다.
+- direct crate usage, root facade usage, default-unavailable 메모,
+  no-fallback/mismatch 동작 및 migration/compatibility 문구가 crate
+  README/Rustdoc 쌍과 로컬라이즈 README에 나타난다.
 
-- [x] **Step 4: Verify formatting and whitespace**
+- [x] **단계 4: 포맷 및 공백 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo fmt --all --check
 git diff --check
 ```
 
-Expected:
+예상 결과:
 
-- Formatting is stable.
-- No whitespace errors.
+- 포맷이 안정적이다.
+- 공백 오류가 없다.
 
-## Task 5: Workspace Validation And Review Preparation
+## 작업 5: Workspace 검증 및 검토 준비
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Verify all changed files.
-- Create: `docs/review/2026-06-13-issue-108-serialization-crate-review.md`
-- Create: `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`
+**파일:**
+- 모든 변경 파일 검증.
+- 생성: `docs/review/2026-06-13-issue-108-serialization-crate-review.md`
+- 생성: `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`
 
-- [x] **Step 1: Run issue acceptance validation**
+- [x] **단계 1: 이슈 인수 검증 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo metadata --no-deps --format-version 1 --locked
@@ -472,90 +490,90 @@ RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --lock
 git diff --check
 ```
 
-Expected:
+예상 결과:
 
-- All commands pass before Step 5 verification and Step 6-R code review.
-- Metadata confirms previous workspace members are preserved and
-  `bluetape-rs-serialization` is added.
+- Step 5 검증 및 Step 6-R 코드 검토 전에 모든 명령이 통과한다.
+- 메타데이터로 기존 workspace member가 보존되고
+  `bluetape-rs-serialization`이 추가되었음을 확인한다.
 
-- [x] **Step 2: Record release-readiness boundary**
+- [x] **단계 2: 릴리스 준비 상태 경계 기록**
 
-Issue #108 does not claim release readiness for the whole `0.5.0` serializer
-line. Before any later release-ready claim, run or record the release-guide
-dry-run requirement such as:
+이슈 #108은 전체 `0.5.0` serializer 계열의 릴리스 준비 상태를 주장하지
+않는다. 이후 릴리스 준비 상태를 주장하기 전에 다음과 같은 release-guide
+dry-run 요구 사항을 실행하거나 기록한다.
 
 ```bash
 cargo publish --workspace --dry-run --locked
 ```
 
-For this PR, record package metadata evidence from `cargo metadata` and state
-that publish dry-run belongs to the later `0.5.0` release-readiness issue.
+이 PR에는 `cargo metadata`의 패키지 메타데이터 근거를 기록하고 게시
+dry-run은 이후 `0.5.0` 릴리스 준비 상태 이슈의 범위임을 명시한다.
 
-- [x] **Step 3: Carry Step 2-R deferred P2 items into later issues**
+- [x] **단계 3: Step 2-R 보류 P2 항목을 후속 이슈로 전달**
 
-Do not implement binary adapter bounds in issue #108. Record in
-`docs/review/2026-06-13-issue-108-serialization-crate-review.md` and the PR body
-that later `0.5.0` adapter/release-readiness issues must track:
+이슈 #108에서는 바이너리 어댑터 bound를 구현하지 않는다.
+`docs/review/2026-06-13-issue-108-serialization-crate-review.md`와 PR 본문에
+이후 `0.5.0` 어댑터/릴리스 준비 상태 이슈가 다음 항목을 추적해야 한다고
+기록한다.
 
-- encoded-size limit
-- decompressed-size limit
-- compression ratio limit
-- collection bound
-- nesting/depth bound
-- corrupt bytes
-- truncated bytes
-- trailing bytes
-- empty bytes
-- unknown format id
-- content-type mismatch
-- unsupported version
-- wrong target type
-- trust-profile mismatch
-- oversized payload
-- compressed-invalid payload
-- adapter failure cases
-- executable doc/example checks once examples expose real APIs
+- 인코딩 크기 제한(encoded-size limit)
+- 압축 해제 크기 제한(decompressed-size limit)
+- 압축 비율 제한(compression ratio limit)
+- 컬렉션 경계(collection bound)
+- 중첩/깊이 경계(nesting/depth bound)
+- 손상된 바이트(corrupt bytes)
+- 잘린 바이트(truncated bytes)
+- 후행 바이트(trailing bytes)
+- 빈 바이트(empty bytes)
+- 알 수 없는 format id(unknown format id)
+- content-type 불일치(content-type mismatch)
+- 지원하지 않는 버전(unsupported version)
+- 잘못된 대상 타입(wrong target type)
+- trust-profile 불일치(trust-profile mismatch)
+- 과도하게 큰 페이로드(oversized payload)
+- 압축된 잘못된 페이로드(compressed-invalid payload)
+- 어댑터 실패 사례(adapter failure cases)
+- 실제 API가 노출된 뒤 실행하는 문서/예제 검사
 
-These items block later adapter issue closure or `0.5.0` release-readiness, not
-issue #108 bootstrap completion.
+이 항목들은 이후 어댑터 이슈 종료 또는 `0.5.0` 릴리스 준비 상태를
+차단하지만, 이슈 #108 부트스트랩 완료를 차단하지는 않는다.
 
-- [x] **Step 4: Prepare Step 6-R code review evidence**
+- [x] **단계 4: Step 6-R 코드 검토 근거 준비**
 
-Review scope:
+검토 범위:
 
-- Cargo workspace and feature wiring.
-- Root facade gating.
-- Crate Rustdoc/README boundary.
-- Root README locale parity.
-- Default dependency exclusion.
-- No adapter code, no unsafe deserialization path, no global/default registry.
+- Cargo 워크스페이스 및 feature 연결.
+- 루트 파사드 게이트.
+- 크레이트 Rustdoc/README 경계.
+- 루트 README 로케일 동등성.
+- 기본 dependency 제외.
+- 어댑터 코드 없음, 안전하지 않은 역직렬화 경로 없음, 전역/기본 레지스트리 없음.
 
-Expected Step 6-R gate:
+예상 Step 6-R 게이트:
 
-- Six review perspectives plus current-session integration.
-- `P0=0 P1=0` before lessons, commit, or PR creation.
-- Review evidence saved to
-  `docs/review/2026-06-13-issue-108-serialization-crate-review.md`.
-- Lessons saved to
-  `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`.
-- PR body final section is `## DoD Status` and includes `P0=0 P1=0` evidence.
+- 여섯 검토 관점과 현재 세션 통합.
+- lesson, commit 또는 PR 생성 전에 `P0=0 P1=0`.
+- 검토 근거를 `docs/review/2026-06-13-issue-108-serialization-crate-review.md`에
+  저장.
+- lesson을 `docs/lessons/2026-06-13-serialization-crate-bootstrap.md`에 저장.
+- PR 본문 마지막 섹션은 `## DoD Status`이며 `P0=0 P1=0` 근거를 포함.
 
-## Self-Review
+## 자체 검토
 
-1. Spec coverage:
-   - Issue #108 crate bootstrap, workspace registration, root facade gating,
-     unchanged defaults, docs, README parity, and explicit non-goals all map to
-     tasks above.
-   - The plan intentionally does not implement the first binary adapter because
-     the reviewed issue #108 slice excludes it.
-   - Step 2-R deferred resource-bound and doc/example checks are trackable for
-     later adapter/release-readiness work.
-2. Placeholder scan:
-   - No `TBD`, `TODO`, or vague implementation placeholders are present.
-   - Deferred binary-adapter runtime-bound work is explicitly assigned to later
-     `0.5.0` issues, not hidden in this bootstrap.
-3. Type consistency:
-   - Package: `bluetape-rs-serialization`.
-   - Library: `bluetape_rs_serialization`.
-   - Root feature: `serialization`.
-   - Root facade path: `bluetape_rs::serialization`.
+1. 사양 범위:
+   - 이슈 #108 크레이트 부트스트랩, 워크스페이스 등록, 루트 파사드 게이트, 변경하지
+     않은 기본값, 문서, README 동등성 및 명시적인 비목표가 위 작업에 모두
+     대응한다.
+   - 검토된 이슈 #108 범위에서 첫 바이너리 어댑터를 제외하므로 계획은 이를
+     의도적으로 구현하지 않는다.
+   - Step 2-R 보류 리소스 한도 및 문서/예제 검사는 이후
+     어댑터/릴리스 준비 상태 작업에서 추적할 수 있다.
+2. Placeholder 검사:
+   - `TBD`, `TODO` 또는 모호한 구현 placeholder가 없다.
+   - 보류한 binary-adapter runtime-bound 작업은 이 부트스트랩에 숨기지 않고
+     이후 `0.5.0` 이슈에 명시적으로 배정했다.
+3. 타입 일관성:
+   - 패키지: `bluetape-rs-serialization`.
+   - 라이브러리: `bluetape_rs_serialization`.
+   - 루트 feature: `serialization`.
+   - 루트 파사드 경로: `bluetape_rs::serialization`.
