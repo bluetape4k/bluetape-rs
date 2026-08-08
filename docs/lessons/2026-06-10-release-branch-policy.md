@@ -1,23 +1,22 @@
-# Release Branch Policy Lessons
+# 릴리스 브랜치 정책에서 얻은 교훈
 
-Date: 2026-06-10
-Issue: #60
+날짜: 2026-06-10
+이슈: #60
 
-## What Happened
+## 발생한 일
 
-`develop` was already the GitHub default branch, but `main` did not exist. To
-match the bluetape-go release shape, `main` was created at the latest stable
-release commit, which is the peeled `v0.2.0` tag commit.
+`develop`은 이미 GitHub 기본 브랜치였지만 `main`은 존재하지 않았다.
+bluetape-go의 릴리스 형태에 맞추기 위해 최신 안정 릴리스 커밋, 즉
+벗겨낸 `v0.2.0` 태그 커밋에서 `main`을 생성했다.
 
-## What Surprised Us
+## 예상 밖의 문제
 
-`git rev-parse v0.2.0` returns the annotated tag object SHA, not the release
-commit SHA. For branch alignment evidence, use `git rev-parse 'v0.2.0^{}'`.
+`git rev-parse v0.2.0`은 릴리스 커밋 SHA가 아니라 주석 태그 객체 SHA를
+반환한다. 브랜치 정렬 근거에는 `git rev-parse 'v0.2.0^{}'`를 사용한다.
 
-## Next Time
+## 다음번에 적용할 규칙
 
-- Verify both the tag object and peeled commit when checking annotated release
-  tags.
-- Keep `develop` as default and use `main` only for stable release source.
-- Do not call a milestone release-complete until `main`, tag, GitHub Release,
-  and local sync evidence are all recorded.
+- 주석 릴리스 태그를 확인할 때 태그 객체와 벗겨낸 커밋을 모두 검증한다.
+- `develop`을 기본 브랜치로 유지하고 `main`은 안정 릴리스 소스에만 사용한다.
+- `main`, 태그, GitHub Release, 로컬 동기화 근거를 모두 기록하기 전에는
+  마일스톤 릴리스를 완료했다고 말하지 않는다.

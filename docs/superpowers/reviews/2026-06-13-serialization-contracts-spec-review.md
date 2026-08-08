@@ -1,79 +1,79 @@
-# Serialization Contracts Spec Review
+# 직렬화 계약 사양 검토
 
-Date: 2026-06-13
-Gate: Step 2-R
-Spec: `docs/superpowers/specs/2026-06-13-serialization-contracts-design.md`
-Issue: #109
+날짜: 2026-06-13
+게이트: Step 2-R
+사양: `docs/superpowers/specs/2026-06-13-serialization-contracts-design.md`
+이슈: #109
 
-## Scope
+## 범위
 
-Reviewed the issue #109 contract-only spec for `bluetape-rs-serialization`.
-The review applied `bluetape-rs-patterns` and the
-`bluetape4k-full-feature` Step 2-R reference. The gate used six independent
-read-only native review lanes plus current-session integration.
+`bluetape-rs-serialization`의 이슈 #109 계약 전용 사양을 검토했다.
+검토에는 `bluetape-rs-patterns`와 `bluetape4k-full-feature` Step 2-R 참조를
+적용했다. 이 게이트는 여섯 개의 독립적인 읽기 전용 네이티브 검토 레인과
+현재 세션 통합으로 진행했다.
 
-## Initial Findings
+## 초기 발견 사항
 
-| Lane | P0 | P1 | P2 | P3 | Verdict |
+| 레인 | P0 | P1 | P2 | P3 | 판정 |
 |---|---:|---:|---:|---:|---|
-| Performance | 0 | 0 | 2 | 1 | PASS |
-| Stability | 0 | 0 | 2 | 1 | PASS |
-| Security | 0 | 0 | 1 | 1 | PASS |
-| Operator/Ops | 0 | 1 | 2 | 1 | BLOCKED |
-| Developer/API | 0 | 0 | 3 | 2 | PASS |
-| User/Caller | 0 | 1 | 3 | 1 | BLOCKED |
-| Main integration | 0 | 2 | 6 | 2 | BLOCKED |
+| 성능 | 0 | 0 | 2 | 1 | PASS |
+| 안정성 | 0 | 0 | 2 | 1 | PASS |
+| 보안 | 0 | 0 | 1 | 1 | PASS |
+| 운영자/Ops | 0 | 1 | 2 | 1 | BLOCKED |
+| 개발자/API | 0 | 0 | 3 | 2 | PASS |
+| 사용자/호출자 | 0 | 1 | 3 | 1 | BLOCKED |
+| 주 통합 | 0 | 2 | 6 | 2 | BLOCKED |
 
-Blocking findings:
+차단 발견 사항:
 
-- Operator/Ops P1: cache namespace/version rollout semantics were too
-  deferred for a metadata contract.
-- User/Caller P1: `Serializer::metadata(payload_size)` allowed caller-supplied
-  metadata size to diverge from encoded bytes.
+- 운영자/Ops P1: 메타데이터 계약에 비해 캐시 네임스페이스/버전 롤아웃
+  의미론이 지나치게 보류되어 있었다.
+- 사용자/호출자 P1: `Serializer::metadata(payload_size)`가 호출자가 제공한
+  메타데이터 크기를 인코딩된 바이트와 다르게 만들 수 있었다.
 
-## Spec Changes
+## 사양 변경
 
-- Replaced caller-supplied payload-size metadata with `SerializedPayload`, whose
-  constructor derives or validates `metadata.payload_size == bytes.len()`.
-- Added deterministic `PayloadMetadataPolicy` matching rules.
-- Added exact max lengths and allowed bytes for format id, content type, and
-  adapter id.
-- Added a default max payload size of `16 * 1024 * 1024` bytes with inclusive
-  boundary behavior.
-- Added adapter source-error redaction requirements and `Display`/`Debug`/
-  `source()` leakage tests.
-- Added cache rollout and operator guidance for namespace/key-prefix
-  versioning, hard-reject mismatch behavior, evict/rebuild/migrate/alert
-  actions, rollback behavior, and payload-free observability fields.
-- Added README/Rustdoc/README.ko acceptance criteria for compile-checked
-  examples, contract-only scope, adapter deferral, no dynamic registry, and
-  unsafe legacy migration warnings.
+- 호출자가 제공하던 페이로드 크기 메타데이터를 `SerializedPayload`로
+  교체했다. 생성자는 `metadata.payload_size == bytes.len()`을 계산하거나
+  검증한다.
+- 결정적인 `PayloadMetadataPolicy` 일치 규칙을 추가했다.
+- 형식 ID, 콘텐츠 타입, 어댑터 ID의 정확한 최대 길이와 허용 바이트를
+  추가했다.
+- `16 * 1024 * 1024`바이트의 기본 최대 페이로드 크기와 포괄적인 경계
+  동작을 추가했다.
+- 어댑터 소스 오류 삭제 요구 사항과 `Display`/`Debug`/`source()` 누출
+  테스트를 추가했다.
+- 네임스페이스/키 접두사 버전 관리, 불일치 즉시 거부 동작, 제거/재구축/
+  마이그레이션/알림 조치, 롤백 동작, 페이로드 없는 관측 필드에 대한 캐시
+  롤아웃 및 운영자 지침을 추가했다.
+- 컴파일 검증 예제, 계약 전용 범위, 어댑터 보류, 동적 레지스트리 금지,
+  안전하지 않은 레거시 마이그레이션 경고를 위한 README/Rustdoc/README.ko
+  인수 기준을 추가했다.
 
-## Rerun Findings
+## 재실행 발견 사항
 
-| Lane | P0 | P1 | P2 | P3 | Verdict |
+| 레인 | P0 | P1 | P2 | P3 | 판정 |
 |---|---:|---:|---:|---:|---|
-| Operator/Ops rerun | 0 | 0 | 0 | 1 | PASS |
-| User/Caller rerun | 0 | 0 | 0 | 0 | PASS |
-| Main integration rerun | 0 | 0 | 0 | 1 | PASS |
+| 운영자/Ops 재실행 | 0 | 0 | 0 | 1 | PASS |
+| 사용자/호출자 재실행 | 0 | 0 | 0 | 0 | PASS |
+| 주 통합 재실행 | 0 | 0 | 0 | 1 | PASS |
 
-Remaining non-blocking item:
+남은 비차단 항목:
 
-- P3: release evidence remains generic at the spec stage. This is acceptable
-  because Step 7-P, Step 7-R, Step 8, and Step 9 own PR, CI, and final release
-  evidence.
+- P3: 사양 단계의 릴리스 근거가 여전히 일반적이다. PR, CI, 최종 릴리스
+  근거는 Step 7-P, Step 7-R, Step 8, Step 9가 담당하므로 허용된다.
 
-## Convergence Verdict
+## 수렴 판정
 
-Step 2-R passes with `P0=0` and `P1=0`.
+Step 2-R은 `P0=0`, `P1=0`으로 통과했다.
 
-### Step 2-R Checklist Completion Report
+### Step 2-R 체크리스트 완료 보고
 
-| Item | Status | Notes |
+| 항목 | 상태 | 비고 |
 |---|---|---|
-| Six perspective lanes complete | Done | performance, stability, security, operator, developer/API, user/caller |
-| Main integration complete | Done | Current session integrated findings and normalized severity |
-| P0 findings fixed and rerun | N/A | No P0 findings |
-| P1 findings fixed and rerun | Done | Operator/Ops and User/Caller reruns passed |
-| P2/P3 disposition recorded | Done | P2 items incorporated into spec; one P3 deferred to PR/CI evidence gates |
-| Convergence reached | Done | Final P0=0 P1=0 |
+| 여섯 관점 레인 완료 | Done | 성능, 안정성, 보안, 운영자, 개발자/API, 사용자/호출자 |
+| 주 통합 완료 | Done | 현재 세션에서 발견 사항을 통합하고 심각도를 정규화함 |
+| P0 발견 사항 수정 및 재실행 | N/A | P0 발견 사항 없음 |
+| P1 발견 사항 수정 및 재실행 | Done | 운영자/Ops와 사용자/호출자 재실행 통과 |
+| P2/P3 처리 기록 | Done | P2 항목은 사양에 반영했고, P3 하나는 PR/CI 근거 게이트로 보류함 |
+| 수렴 달성 | Done | 최종 P0=0 P1=0 |

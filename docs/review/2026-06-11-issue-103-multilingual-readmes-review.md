@@ -1,35 +1,35 @@
-# Issue 103 Multilingual README Review
+# 이슈 #103 다국어 README 검토
 
-## Scope
+## 범위
 
-- Add `README.md` / `README.ko.md` pairs for every workspace module that did
-  not already have them.
-- Add the shared `English | 한국어` navigation format to existing crate README
-  files.
-- Keep diagram assets single-source; no localized diagram files were added.
-- Exclude `bluetape-rs-workshop`.
+- 아직 README가 없는 모든 workspace 모듈에 `README.md` / `README.ko.md`
+  쌍을 추가한다.
+- 기존 crate README 파일에 공통 `English | 한국어` 탐색 형식을 추가한다.
+- 다이어그램 자산은 단일 소스로 유지하며 로컬라이즈된 다이어그램 파일은
+  추가하지 않는다.
+- `bluetape-rs-workshop`은 제외한다.
 
-## Evidence
+## 근거
 
-| Check | Result |
+| 확인 항목 | 결과 |
 |---|---|
 | `git diff --check` | Pass |
-| Workspace member README matrix check | Pass |
-| README language navigation check | Pass |
-| Diagram diff check | Pass: no files under `docs/images/readme-diagrams` changed |
-| Workshop exclusion check | Pass: no `workshop` path changed |
+| workspace member README matrix 검사 | Pass |
+| README 언어 탐색 검사 | Pass |
+| 다이어그램 diff 검사 | Pass: `docs/images/readme-diagrams` 아래 파일은 변경하지 않음 |
+| workshop 제외 검사 | Pass: `workshop` 경로는 변경하지 않음 |
 | `cargo metadata --no-deps --format-version 1` | Pass |
 | `cargo fmt --all --check` | Pass |
 | `cargo test --workspace` | Pass |
 
-## DoD Status
+## DoD 상태
 
-| Item | Status |
+| 항목 | 상태 |
 |---|---|
-| Issue-scoped worktree used | Done |
-| All workspace modules have English README | Done |
-| All workspace modules have Korean README | Done |
-| README navigation uses `English | 한국어` format | Done |
-| Diagram localization avoided | Done |
-| No workshop changes | Done |
-| Docs-only validation completed | Done |
+| 이슈 전용 worktree 사용 | 완료 |
+| 모든 workspace 모듈에 English README 존재 | 완료 |
+| 모든 workspace 모듈에 Korean README 존재 | 완료 |
+| README 탐색에 `English | 한국어` 형식 사용 | 완료 |
+| 다이어그램 로컬라이제이션 제외 | 완료 |
+| workshop 변경 없음 | 완료 |
+| docs-only 검증 완료 | 완료 |

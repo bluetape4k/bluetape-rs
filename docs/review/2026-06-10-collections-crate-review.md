@@ -1,49 +1,48 @@
-# Collections Crate Review
+# 컬렉션 크레이트 검토
 
-Issue: #19
-Branch: `feat/issue-19-collections-crate`
-Date: 2026-06-10
+이슈: #19
+브랜치: `feat/issue-19-collections-crate`
+날짜: 2026-06-10
 
-## Scope
+## 범위
 
-Add the first `0.2.0` workspace crate boundary:
+첫 번째 `0.2.0` 워크스페이스 크레이트 경계를 추가한다.
 
 - `crates/collections`
-- root workspace registration
-- root `collections` facade feature
-- crate README and Rustdoc namespace documentation
+- 루트 워크스페이스 등록
+- 루트 `collections` 파사드 feature
+- 크레이트 README 및 Rustdoc 네임스페이스 문서
 
-## 7-Tier Review
+## 7-Tier 검토
 
-### Tier 1 - Rust API Shape
+### 단계 1 - Rust API 형태
 
-PASS. The crate starts with namespace modules only and does not introduce fake
-helper functions before the focused helper API issue (#20). The root facade
-feature is optional and additive.
+PASS. 크레이트는 네임스페이스 모듈로만 시작하고 집중 헬퍼 API 이슈(#20)
+전에 가짜 헬퍼 함수를 도입하지 않는다. 루트 파사드 feature는 선택적이고
+추가형이다.
 
-### Tier 2 - Workspace And Cargo Metadata
+### 단계 2 - 워크스페이스 및 Cargo 메타데이터
 
-PASS. `crates/collections` is registered as a workspace member, has a focused
-package name, uses workspace edition/rust-version/license/repository metadata,
-and is wired through a workspace dependency.
+PASS. `crates/collections`가 워크스페이스 멤버로 등록되고 집중된 패키지
+이름을 가지며 워크스페이스 edition/rust-version/license/repository
+메타데이터를 사용하고 워크스페이스 의존성으로 연결된다.
 
-### Tier 3 - Feature Flags
+### 단계 3 - Feature 플래그
 
-PASS. The root `collections` feature is optional and not included in default
-features, preserving the narrow default facade.
+PASS. 루트 `collections` feature는 선택적이며 기본 feature에 포함되지 않아
+좁은 기본 파사드를 보존한다.
 
-### Tier 4 - Documentation
+### 단계 4 - 문서
 
-PASS. The crate README and crate/module Rustdoc explain the intended helper
-namespaces and preserve the rule to prefer standard library APIs when they are
-clear.
+PASS. 크레이트 README와 크레이트/모듈 Rustdoc이 의도한 헬퍼 네임스페이스를
+설명하고 표준 라이브러리 API가 명확하면 우선한다는 규칙을 유지한다.
 
-### Tier 5 - Behavior Risk
+### 단계 5 - 동작 위험
 
-PASS. No collection helper behavior is claimed yet. The diff adds crate
-structure and facade wiring only.
+PASS. 아직 컬렉션 헬퍼 동작을 주장하지 않는다. diff는 크레이트 구조와
+파사드 연결만 추가한다.
 
-### Tier 6 - Validation
+### 단계 6 - 검증
 
 PASS.
 
@@ -55,16 +54,16 @@ PASS.
 - `cargo doc --workspace --no-deps`
 - `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps`
 
-### Tier 7 - Release/Milestone Fit
+### 단계 7 - 릴리스/마일스톤 적합성
 
-PASS. The change starts milestone `0.2.0` with a crate boundary only. Helper
-APIs remain deferred to issue #20.
+PASS. 변경은 크레이트 경계만 추가해 `0.2.0` 마일스톤을 시작한다. 헬퍼 API는
+이슈 #20으로 미룬다.
 
-## Findings
+## 발견 사항
 
-No P0/P1/P2/P3 findings.
+P0/P1/P2/P3 발견 사항 없음.
 
-## Verdict
+## 판정
 
 PASS.
 

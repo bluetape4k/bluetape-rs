@@ -1,277 +1,271 @@
-# SerDe 0.5.x Design
+# SerDe 0.5.x 설계
 
-Date: 2026-06-13
-Status: approved design
-Scope: Rust-native serializer/deserializer milestones for `0.5.x`.
+날짜: 2026-06-13
+상태: 승인된 설계
+범위: `0.5.x` Rust 네이티브 serializer/deserializer 마일스톤
 
-## Decision
+## 결정
 
-The `0.5.x` serialization line starts with cache-first binary payload support.
-The first milestone must provide the smallest useful binary serializer
-foundation for internal cache storage before adding schema, JSON, or
-cross-language formats. Cross-repo benchmarks and measured performance tuning
-are deferred to a dedicated `0.5.5` milestone after the core adapters exist.
+`0.5.x` 직렬화 라인은 캐시 우선 바이너리 페이로드 지원으로 시작한다.
+첫 마일스톤에서는 스키마, JSON, 다언어 형식을 추가하기 전에 내부 캐시
+저장에 필요한 가장 작은 유용한 바이너리 serializer 기반을 제공해야 한다.
+저장소 간 벤치마크와 측정 기반 성능 조정은 핵심 어댑터가 마련된 뒤 전용
+`0.5.5` 마일스톤으로 미룬다.
 
-This design intentionally does not mechanically port Kotlin/JVM APIs. It uses
-Rust-native contracts: typed errors, `Result`, `Option`, explicit target types,
-small traits, additive feature flags, and no dynamic type loading by default.
+이 설계는 Kotlin/JVM API를 기계적으로 이식하지 않는다. 타입이 지정된 오류,
+`Result`, `Option`, 명시적인 대상 타입, 작은 트레이트, 추가형 feature flag,
+기본적으로 동적 타입 로딩을 사용하지 않는 Rust 네이티브 계약을 사용한다.
 
-## Reference Evidence
+## 참조 근거
 
-The Kotlin `bluetape4k-projects` serialization modules provide useful domain
-boundaries but not direct API shapes:
+Kotlin `bluetape4k-projects` 직렬화 모듈은 유용한 도메인 경계를 제공하지만
+직접 가져올 API 형태를 제공하지는 않는다.
 
-- `io/io` defines a `BinarySerializer` boundary, trust profiles, compression
-  composition, and Kryo/Fory/JDK implementations.
-- `io/json` defines a bytes-first JSON serializer contract with string helpers.
-- `io/jackson3` and `io/fastjson2` provide concrete JSON implementations; the
-  Fastjson2 module also exposes JSONB byte helpers.
-- `io/protobuf` uses Protobuf `Any` packing with an allowlist for type URLs and
-  a fallback serializer for mixed stores.
-- `io/avro` splits schema-first generic records, specific records, reflection,
-  codec selection, and schema evolution tests.
-- Apache Fory is valuable for cross-language payloads, but it needs separate
-  compatibility and safety validation before becoming a production default.
+- `io/io`는 `BinarySerializer` 경계, 신뢰 프로파일, 압축 조합, Kryo/Fory/JDK
+  구현을 정의한다.
+- `io/json`은 문자열 헬퍼를 포함한 바이트 우선 JSON serializer 계약을
+  정의한다.
+- `io/jackson3`과 `io/fastjson2`는 구체적인 JSON 구현을 제공하며,
+  Fastjson2 모듈은 JSONB 바이트 헬퍼도 노출한다.
+- `io/protobuf`는 타입 URL 허용 목록과 혼합 저장소용 대체 serializer를
+  포함한 Protobuf `Any` 패킹을 사용한다.
+- `io/avro`는 스키마 우선 일반 레코드, 특정 레코드, 리플렉션, 코덱 선택,
+  스키마 진화 테스트를 분리한다.
+- Apache Fory는 다언어 페이로드에 유용하지만 운영 기본값이 되기 전 별도의
+  호환성 및 안전성 검증이 필요하다.
 
-## Milestone Split
+## 마일스톤 분할
 
-### `0.5.0` - Core + Binary SerDe
+### `0.5.0` - 코어 + 바이너리 SerDe
 
-Goal: provide the internal cache payload foundation.
+목표: 내부 캐시 페이로드 기반을 제공한다.
 
-Scope:
+범위:
 
-- Add the serialization crate boundary under `crates/serialization`.
-- Define core traits for serialization and deserialization.
-- Define binary payload contracts for cache storage and restoration.
-- Define typed error, format id, content type, version, and trust profile
-  vocabulary.
-- Select and implement the first binary adapter.
-- Keep compression composition explicit and compatible with the existing
-  `0.4.0` compression crate.
-- Add round-trip, invalid input, empty payload, version mismatch, and format
-  mismatch tests.
+- `crates/serialization` 아래에 직렬화 크레이트 경계를 추가한다.
+- 직렬화와 역직렬화를 위한 핵심 트레이트를 정의한다.
+- 캐시 저장과 복원을 위한 바이너리 페이로드 계약을 정의한다.
+- 타입이 지정된 오류, 형식 ID, 콘텐츠 타입, 버전, 신뢰 프로파일 용어를
+  정의한다.
+- 첫 바이너리 어댑터를 선택하고 구현한다.
+- 압축 조합은 명시적으로 유지하고 기존 `0.4.0` 압축 크레이트와 호환되게
+  한다.
+- 왕복, 잘못된 입력, 빈 페이로드, 버전 불일치, 형식 불일치 테스트를
+  추가한다.
 
-Issue #108 bootstrap slice:
+이슈 #108 부트스트랩 범위:
 
-- Create `crates/serialization` with package name `bluetape-rs-serialization`
-  and library name `bluetape_rs_serialization`.
-- Register the crate in `[workspace].members` and `[workspace.dependencies]`.
-- Add a root optional dependency and root facade feature:
+- 패키지 이름 `bluetape-rs-serialization`, 라이브러리 이름
+  `bluetape_rs_serialization`으로 `crates/serialization`을 생성한다.
+- `[workspace].members`와 `[workspace.dependencies]`에 크레이트를 등록한다.
+- 루트 선택적 의존성과 루트 파사드 feature를 추가한다.
   `serialization = ["dep:bluetape-rs-serialization"]`.
-- Re-export the crate from `bluetape-rs` only behind
-  `#[cfg(feature = "serialization")]`.
-- Keep the root default feature set unchanged.
-- Keep the serialization crate default feature set minimal and free of JSON,
-  Protobuf, Avro, Fory, Testcontainers, SQL, and resilience dependencies.
-- Stop at crate bootstrap, facade wiring, README/Rustdoc boundary text, and
-  roadmap parity. The first binary adapter is still part of the `0.5.0`
-  milestone, but not part of issue #108 unless the issue scope is expanded.
+- `#[cfg(feature = "serialization")]` 뒤에서만 `bluetape-rs`가 크레이트를
+  재내보내도록 한다.
+- 루트 기본 feature 집합은 변경하지 않는다.
+- 직렬화 크레이트의 기본 feature 집합은 최소로 유지하고 JSON, Protobuf,
+  Avro, Fory, Testcontainers, SQL, resilience 의존성을 포함하지 않는다.
+- 크레이트 부트스트랩, 파사드 연결, README/Rustdoc 경계 문구, 로드맵
+  동등성까지만 진행한다. 첫 바이너리 어댑터는 여전히 `0.5.0` 마일스톤의
+  일부이지만, 이슈 범위를 넓히지 않는 한 이슈 #108의 일부는 아니다.
 
-Feature policy:
+Feature 정책:
 
-- Format integrations must be additive, opt-in features when they are added in
-  later milestones.
-- Future `json`, `protobuf`, `avro`, and `fory` features must not be enabled by
-  the root crate default feature set.
-- Hidden global registries, env-selected adapters, and default serializers are
-  not allowed in `0.5.0`.
+- 이후 마일스톤에서 추가하는 형식 통합은 추가형 옵트인 feature여야 한다.
+- 향후 `json`, `protobuf`, `avro`, `fory` feature는 루트 크레이트의 기본
+  feature 집합에서 활성화하지 않는다.
+- 숨겨진 전역 레지스트리, 환경 변수로 선택하는 어댑터, 기본 serializer는
+  `0.5.0`에서 허용하지 않는다.
 
-Cache payload contract:
+캐시 페이로드 계약:
 
-- The cache envelope records format id, content type, payload version, trust
-  profile, adapter id, and payload size without requiring payload bytes in
-  diagnostics.
-- Decode failures are typed. At minimum, the plan must account for invalid
-  payload, unsupported version, format mismatch, content-type mismatch, trust
-  profile mismatch, oversized payload, and adapter failure cases.
-- Corrupt, unknown-version, wrong-format, wrong-trust-profile, truncated, or
-  trailing-byte payloads must not silently decode, fall back to `None`, or try
-  alternate adapters. Eviction, cache flush, namespace migration, or rebuild is
-  caller policy.
-- Old-reader/new-writer and rollback behavior must be explicit: unknown versions
-  fail with typed metadata diagnostics, and cache namespace/version migration is
-  documented instead of hidden behind best-effort fallback.
-- The first binary adapter must use caller-supplied target types only. Payloads
-  never select Rust types dynamically.
-- Unsafe deserialization, dynamic registries, unbounded collection/depth decode,
-  and unbounded decompressed size are not allowed.
-- The implementation plan must define buffer ownership, copy boundaries,
-  compact header/envelope expectations, and small/medium/large payload runtime
-  checks without claiming cross-repo benchmark superiority before `0.5.5`.
+- 캐시 envelope은 진단에 페이로드 바이트를 포함하지 않고 형식 ID, 콘텐츠
+  타입, 페이로드 버전, 신뢰 프로파일, 어댑터 ID, 페이로드 크기를 기록한다.
+- 디코드 실패는 타입이 지정되어야 한다. 계획은 최소한 잘못된 페이로드,
+  지원하지 않는 버전, 형식 불일치, 콘텐츠 타입 불일치, 신뢰 프로파일
+  불일치, 초과 페이로드, 어댑터 실패를 다뤄야 한다.
+- 손상되었거나 알 수 없는 버전, 잘못된 형식 또는 신뢰 프로파일, 잘린
+  페이로드, 후행 바이트가 있는 페이로드를 조용히 디코드하거나 `None`으로
+  대체하거나 다른 어댑터로 시도해서는 안 된다. 제거, 캐시 비우기,
+  네임스페이스 마이그레이션, 재구축은 호출자 정책이다.
+- 구형 reader/신형 writer와 롤백 동작은 명시해야 한다. 알 수 없는 버전은
+  타입이 지정된 메타데이터 진단으로 실패하고 캐시 네임스페이스/버전
+  마이그레이션은 최선 노력 fallback 뒤에 숨기지 않고 문서화한다.
+- 첫 바이너리 어댑터는 호출자가 제공한 대상 타입만 사용해야 한다.
+  페이로드가 Rust 타입을 동적으로 선택해서는 안 된다.
+- 안전하지 않은 역직렬화, 동적 레지스트리, 제한 없는 컬렉션/깊이 디코드,
+  제한 없는 압축 해제 크기는 허용하지 않는다.
+- 구현 계획은 버퍼 소유권, 복사 경계, 간결한 헤더/envelope 기대치,
+  소형/중형/대형 페이로드 런타임 검사를 정의해야 한다. `0.5.5` 이전에는
+  저장소 간 벤치마크 우위를 주장해서는 안 된다.
 
-Out of scope:
+범위 제외:
 
-- JSON, Protobuf, Avro, and Fory production adapters.
-- Schema registry or schema evolution support.
-- JSON as the primary cache payload format.
-- Testcontainers or external service integration.
-- SQL, SQLx, database adapters, or ORM integration.
-- Resilience, retry, circuit-breaker, or fallback policy APIs.
-- Hidden global registries, hidden default serializers, or env-selected
-  adapters.
-- Dynamic type loading.
+- JSON, Protobuf, Avro, Fory 운영 어댑터.
+- 스키마 레지스트리 또는 스키마 진화 지원.
+- 기본 캐시 페이로드 형식으로서의 JSON.
+- Testcontainers 또는 외부 서비스 통합.
+- SQL, SQLx, 데이터베이스 어댑터, ORM 통합.
+- resilience, 재시도, circuit-breaker, fallback 정책 API.
+- 숨겨진 전역 레지스트리, 숨겨진 기본 serializer, 환경 변수로 선택하는
+  어댑터.
+- 동적 타입 로딩.
 
 ### `0.5.1` - JSON SerDe
 
-Goal: add a portable, human-readable SerDe adapter after the binary foundation.
+목표: 바이너리 기반 이후 이식 가능하고 사람이 읽을 수 있는 SerDe 어댑터를
+추가한다.
 
-Scope:
+범위:
 
-- Use `serde_json` as the default JSON backend.
-- Provide bytes-first APIs plus UTF-8 string helpers.
-- Keep typed decode explicit through `serde::Deserialize`.
-- Add tests for malformed JSON, target type mismatch, UTF-8 boundaries, and
-  pretty/compact output where supported.
+- `serde_json`을 기본 JSON backend로 사용한다.
+- 바이트 우선 API와 UTF-8 문자열 헬퍼를 제공한다.
+- `serde::Deserialize`를 통해 타입이 지정된 디코드를 명시적으로 유지한다.
+- 잘못된 JSON, 대상 타입 불일치, UTF-8 경계, 지원되는 경우 pretty/compact
+  출력을 테스트한다.
 
-Out of scope:
+범위 제외:
 
-- Jackson/Fastjson-style module parity.
-- JSONB or binary JSON adoption as a default.
+- Jackson/Fastjson 스타일 모듈 동등성.
+- JSONB 또는 바이너리 JSON을 기본값으로 채택하는 것.
 
 ### `0.5.2` - Protobuf SerDe
 
-Goal: add typed Protobuf serialization without allowing payload-selected Rust
-types by default.
+목표: 페이로드가 선택한 Rust 타입을 기본적으로 허용하지 않으면서 타입이
+지정된 Protobuf 직렬화를 추가한다.
 
-Scope:
+범위:
 
-- Use the Rust Protobuf ecosystem, likely `prost`, for typed messages.
-- Provide typed encode/decode APIs where the caller supplies the target type.
-- Treat `Any` and type URL support as opt-in because dynamic type selection is a
-  security boundary.
-- Add compatibility fixtures and failure tests for corrupted messages and wrong
-  target types.
+- 타입이 지정된 메시지에는 Rust Protobuf 생태계, 아마도 `prost`를 사용한다.
+- 호출자가 대상 타입을 제공하는 타입 지정 인코드/디코드 API를 제공한다.
+- 동적 타입 선택은 보안 경계이므로 `Any` 및 타입 URL 지원은 옵트인으로
+  취급한다.
+- 손상된 메시지와 잘못된 대상 타입에 대한 호환성 fixture 및 실패 테스트를
+  추가한다.
 
-Out of scope:
+범위 제외:
 
-- gRPC transport concerns.
-- General mixed-object fallback serialization.
+- gRPC 전송 문제.
+- 일반적인 혼합 객체 fallback 직렬화.
 
 ### `0.5.3` - Avro SerDe
 
-Goal: add schema-first serialization with explicit schema evolution tests.
+목표: 명시적인 스키마 진화 테스트와 함께 스키마 우선 직렬화를 추가한다.
 
-Scope:
+범위:
 
-- Use the Rust Avro ecosystem, likely `apache-avro`.
-- Support schema-bound records first.
-- Define how writer and reader schemas are supplied.
-- Add schema evolution fixtures equivalent to v1-to-v2 and v2-to-v1 tests.
-- Add codec/compression interaction tests where Avro supports it directly.
+- Rust Avro 생태계, 아마도 `apache-avro`를 사용한다.
+- 먼저 스키마에 바인딩된 레코드를 지원한다.
+- writer 및 reader 스키마를 제공하는 방식을 정의한다.
+- v1-to-v2 및 v2-to-v1 테스트에 해당하는 스키마 진화 fixture를 추가한다.
+- Avro가 직접 지원하는 경우 코덱/압축 상호작용 테스트를 추가한다.
 
-Out of scope:
+범위 제외:
 
-- A full schema registry.
-- Reflection-like JVM parity.
+- 완전한 스키마 레지스트리.
+- 리플렉션과 유사한 JVM 동등성.
 
-### `0.5.4` - Apache Fory Cross-Language
+### `0.5.4` - Apache Fory 다언어
 
-Goal: evaluate and optionally add Fory for cross-language binary payloads.
+목표: 다언어 바이너리 페이로드를 위해 Fory를 평가하고 필요하면 추가한다.
 
-Scope:
+범위:
 
-- Verify Rust, Go, Kotlin, Java, and Python interoperability claims with a
-  compatibility matrix.
-- Measure payload size and throughput against the `0.5.0` binary adapter.
-- Document trust, compatibility mode, schema consistency, and upgrade
-  constraints.
-- Keep any adapter opt-in until production safety is proven.
+- 호환성 매트릭스로 Rust, Go, Kotlin, Java, Python 상호 운용성 주장을
+  검증한다.
+- `0.5.0` 바이너리 어댑터와 비교해 페이로드 크기와 처리량을 측정한다.
+- 신뢰, 호환성 모드, 스키마 일관성, 업그레이드 제약을 문서화한다.
+- 운영 안전성이 입증될 때까지 모든 어댑터를 옵트인으로 유지한다.
 
-Out of scope:
+범위 제외:
 
-- Making Fory the default binary serializer without benchmark and compatibility
-  evidence.
+- 벤치마크 및 호환성 근거 없이 Fory를 기본 바이너리 serializer로 만드는 것.
 
-### `0.5.5` - Cross-Repo Benchmark and Performance Tuning
+### `0.5.5` - 저장소 간 벤치마크 및 성능 조정
 
-Goal: compare `bluetape-rs`, `bluetape-go`, and `bluetape4k-projects` SerDe
-behavior under the same environment and scenarios, then tune only measured
-bottlenecks.
+목표: 동일한 환경과 시나리오에서 `bluetape-rs`, `bluetape-go`,
+`bluetape4k-projects`의 SerDe 동작을 비교한 뒤 측정된 병목만 조정한다.
 
-Scope:
+범위:
 
-- Define shared payload fixtures and scenario matrix across Rust, Go, and
-  Kotlin/JVM.
-- Run benchmarks for the same scenario cells under the same machine/run
-  conditions.
-- Record repository commit SHA, toolchain/runtime versions, benchmark command,
-  raw output path, timestamp, warmup/iteration settings, and environment.
-- Compare payload size, encode time, decode time, throughput, allocation/GC
-  notes, and compression interaction where practical.
-- Publish a recommendation matrix for cache-internal, human-readable,
-  schema-first, and cross-language use cases.
-- Execute focused performance tuning follow-ups only when before/after
-  measurements justify the change.
+- Rust, Go, Kotlin/JVM 전반에서 공유할 페이로드 fixture와 시나리오 매트릭스를
+  정의한다.
+- 동일한 머신/실행 조건에서 같은 시나리오 셀의 벤치마크를 실행한다.
+- 저장소 커밋 SHA, 툴체인/런타임 버전, 벤치마크 명령, 원시 출력 경로,
+  타임스탬프, 워밍업/반복 설정, 환경을 기록한다.
+- 가능한 경우 페이로드 크기, 인코드 시간, 디코드 시간, 처리량, 할당/GC
+  메모, 압축 상호작용을 비교한다.
+- 캐시 내부, 사람이 읽을 수 있는 형식, 스키마 우선, 다언어 사용 사례에
+  대한 권장 매트릭스를 게시한다.
+- 전후 측정이 변경을 정당화할 때만 성능 조정 후속 작업을 실행한다.
 
-Out of scope:
+범위 제외:
 
-- Declaring a global default serializer from one local benchmark run.
-- Comparing unlike scenarios without caveats.
-- Trading away correctness, security, compatibility, or API clarity for
-  microbenchmark gains.
+- 한 번의 로컬 벤치마크 실행으로 전역 기본 serializer를 선언하는 것.
+- 주의 사항 없이 서로 다른 시나리오를 비교하는 것.
+- 마이크로벤치마크 향상을 위해 정확성, 보안, 호환성, API 명확성을 희생하는
+  것.
 
-## API Direction
+## API 방향
 
-The public API should separate payload format from Rust type conversion:
+공개 API는 페이로드 형식과 Rust 타입 변환을 분리해야 한다.
 
-- `Serializer<T>` and `Deserializer<T>` are typed contracts.
-- `BinarySerializer<T>` is a bytes boundary for cache and infrastructure
-  payloads.
-- Format metadata is explicit and stable enough for cache invalidation,
-  migration, rollback, and debugging.
-- `Option<T>` represents absent values; empty bytes are treated as a payload
-  boundary decision, not a hidden null convention.
-- `SerializationTrustProfile` documents whether a format is trusted-internal,
-  allowlisted, statically typed, or unsafe legacy compatibility.
-- Error values expose safe metadata such as expected/observed format id,
-  content type, payload version, trust profile, adapter id, and payload size
-  without logging or returning payload bytes.
+- `Serializer<T>`와 `Deserializer<T>`는 타입이 지정된 계약이다.
+- `BinarySerializer<T>`는 캐시와 인프라 페이로드를 위한 바이트 경계다.
+- 형식 메타데이터는 명시적이며 캐시 무효화, 마이그레이션, 롤백, 디버깅에
+  충분히 안정적이어야 한다.
+- `Option<T>`는 값이 없음을 나타낸다. 빈 바이트는 숨겨진 null 관례가
+  아니라 페이로드 경계에 대한 결정으로 취급한다.
+- `SerializationTrustProfile`은 형식이 신뢰된 내부 형식인지, 허용 목록을
+  사용하는지, 정적으로 타입이 지정되었는지, 안전하지 않은 레거시 호환성인지
+  문서화한다.
+- 오류 값은 페이로드 바이트를 로깅하거나 반환하지 않고 예상/관측 형식 ID,
+  콘텐츠 타입, 페이로드 버전, 신뢰 프로파일, 어댑터 ID, 페이로드 크기와
+  같은 안전한 메타데이터를 노출한다.
 
-## GitHub Issue Rebalancing
+## GitHub 이슈 재조정
 
-Existing `0.5.0` issues should be narrowed instead of growing the first
-milestone:
+기존 `0.5.0` 이슈는 첫 마일스톤을 키우지 말고 범위를 좁혀야 한다.
 
-- Keep crate bootstrap, core contracts, and first binary adapter in `0.5.0`.
-- Keep issue #108 limited to crate bootstrap, root facade gating, and
-  documentation parity unless its GitHub scope is explicitly expanded.
-- Move JSON adapter work to `0.5.1`.
-- Split schema-drift checks into Protobuf and Avro follow-ups.
-- Move Fory cross-language work to `0.5.4`.
-- Add `0.5.5` issues for cross-repo benchmark fixtures, same-condition runners,
-  report publication, and measured performance tuning.
-- Keep documentation and release readiness issues milestone-specific.
+- 크레이트 부트스트랩, 핵심 계약, 첫 바이너리 어댑터는 `0.5.0`에 유지한다.
+- GitHub에서 범위를 명시적으로 확장하지 않는 한 이슈 #108은 크레이트
+  부트스트랩, 루트 파사드 게이팅, 문서 동등성으로 한정한다.
+- JSON 어댑터 작업은 `0.5.1`로 옮긴다.
+- 스키마 변경 감지를 Protobuf 및 Avro 후속 작업으로 분리한다.
+- Fory 다언어 작업은 `0.5.4`로 옮긴다.
+- 저장소 간 벤치마크 fixture, 동일 조건 실행기, 보고서 게시, 측정 기반
+  성능 조정을 위한 `0.5.5` 이슈를 추가한다.
+- 문서 및 릴리스 준비 상태 이슈는 마일스톤별로 유지한다.
 
-## Acceptance Criteria
+## 인수 기준
 
-- `WIP.md` documents the `0.5.x` split and matches this design.
-- Future implementation plans keep `0.5.0` cache-first and binary-first.
-- Issue #108 implementation plans name `crates/serialization`,
-  `bluetape-rs-serialization`, `bluetape_rs_serialization`, root
-  `serialization` feature gating, and unchanged root defaults.
-- Feature verification proves the root facade is unavailable by default and
-  available only with `features = ["serialization"]`.
-- Feature verification proves default builds do not pull JSON, Protobuf, Avro,
-  Fory, Testcontainers, SQL, or resilience dependencies.
-- `crates/serialization/README.md`, crate Rustdoc, `README.md`, `README.ko.md`,
-  and `WIP.md` use the same crate name, root facade feature name, and `0.5.0`
-  non-goal list.
-- Public docs state that JSON, Protobuf, Avro, Fory, Testcontainers, SQL,
-  resilience APIs, hidden globals, hidden default serializers, dynamic type
-  loading, and schema registry support are out of `0.5.0` scope.
-- Public docs show direct crate usage and root facade feature-gated usage, and
-  explain `Option<T>`, empty bytes, version mismatch, format mismatch, and
-  trust-profile mismatch behavior.
-- Tests or verification tasks cover corrupt bytes, truncated bytes, trailing
-  bytes, empty bytes, unknown format id, unsupported version, wrong target
-  type, trust-profile mismatch, oversized payload, and compressed-invalid
-  payloads before `0.5.0` release readiness is claimed.
-- Existing root crate users need no migration for issue #108 because
-  serialization is opt-in.
-- No milestone claims Protobuf, Avro, or Fory production readiness before their
-  dedicated validation milestones.
-- Benchmark claims use the same-environment `0.5.5` benchmark track when they
-  compare Rust, Go, and Kotlin/JVM project lines.
-- Public docs preserve Rust-native positioning and avoid Kotlin/JVM API parity
-  promises.
+- `WIP.md`가 `0.5.x` 분할을 문서화하고 이 설계와 일치한다.
+- 이후 구현 계획이 `0.5.0`을 캐시 우선 및 바이너리 우선으로 유지한다.
+- 이슈 #108 구현 계획에 `crates/serialization`,
+  `bluetape-rs-serialization`, `bluetape_rs_serialization`, 루트
+  `serialization` feature 게이팅, 변경되지 않은 루트 기본값이 명시된다.
+- feature 검증을 통해 루트 파사드가 기본적으로 사용 불가능하고
+  `features = ["serialization"]`을 사용할 때만 가능함을 증명한다.
+- feature 검증을 통해 기본 빌드가 JSON, Protobuf, Avro, Fory, Testcontainers,
+  SQL, resilience 의존성을 가져오지 않음을 증명한다.
+- `crates/serialization/README.md`, 크레이트 Rustdoc, `README.md`,
+  `README.ko.md`, `WIP.md`가 같은 크레이트 이름, 루트 파사드 feature 이름,
+  `0.5.0` 범위 제외 목록을 사용한다.
+- 공개 문서는 JSON, Protobuf, Avro, Fory, Testcontainers, SQL, resilience
+  API, 숨겨진 전역 상태, 숨겨진 기본 serializer, 동적 타입 로딩, 스키마
+  레지스트리 지원이 `0.5.0` 범위 밖임을 명시한다.
+- 공개 문서는 직접 크레이트 사용과 feature가 제한된 루트 파사드 사용을
+  보여 주고 `Option<T>`, 빈 바이트, 버전 불일치, 형식 불일치, 신뢰
+  프로파일 불일치 동작을 설명한다.
+- `0.5.0` 릴리스 준비 상태를 주장하기 전에 테스트 또는 검증 작업이 손상된
+  바이트, 잘린 바이트, 후행 바이트, 빈 바이트, 알 수 없는 형식 ID, 지원하지
+  않는 버전, 잘못된 대상 타입, 신뢰 프로파일 불일치, 초과 페이로드,
+  압축된 잘못된 페이로드를 다룬다.
+- 직렬화가 옵트인이므로 이슈 #108에 대해 기존 루트 크레이트 사용자는
+  마이그레이션할 필요가 없다.
+- 전용 검증 마일스톤 전에 어떤 마일스톤도 Protobuf, Avro, Fory 운영 준비
+  상태를 주장하지 않는다.
+- Rust, Go, Kotlin/JVM 프로젝트 라인을 비교할 때 벤치마크 주장은 동일
+  환경의 `0.5.5` 벤치마크 트랙을 사용한다.
+- 공개 문서는 Rust 네이티브 포지셔닝을 유지하고 Kotlin/JVM API 동등성을
+  약속하지 않는다.

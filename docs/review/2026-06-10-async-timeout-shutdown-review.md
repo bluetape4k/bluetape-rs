@@ -1,38 +1,38 @@
-# Async Timeout And Shutdown Review
+# 비동기 타임아웃 및 종료 검토
 
-## Scope
+## 범위
 
-- Issue: #22
-- Milestone: 0.2.0
-- Changed surface: `bluetape-rs-async`
-- External reference: Tokio 1.49 documentation for `tokio::time::timeout`,
-  `timeout_at`, `watch`, and `select!` cancellation patterns
+- 이슈: #22
+- 마일스톤: 0.2.0
+- 변경 표면: `bluetape-rs-async`
+- 외부 참조: `tokio::time::timeout`,
+  `timeout_at`, `watch` 및 `select!` cancellation pattern
 
-## 7-Tier Review
+## 7-Tier 검토
 
-| Tier | Result | Evidence |
+| 단계 | 결과 | 근거 |
 | --- | --- | --- |
-| API contract | Pass | `AsyncControlError` distinguishes timeout from cancellation; timeout/deadline helpers return typed errors. |
-| Cancellation behavior | Pass | `run_until_cancelled` and `with_timeout_or_cancel` use caller-owned tokens and do not convert dropped wrapper futures into synthetic errors. |
-| Cleanup | Pass | Tests prove cancellation drops the in-flight future and shutdown listeners are notified. |
-| Runtime boundary | Pass | Crate README documents Tokio assumptions and excludes blocking work on core async tasks. |
-| Documentation | Pass | Public Rustdoc and README describe timeout, deadline, cancellation, and shutdown scope. |
-| Tests | Pass | Unit tests cover success, timeout, deadline, cancellation, timeout-vs-cancel precedence, and shutdown notification. |
-| Risk | Moderate | Extends the new async crate but does not change default root facade features. |
+| API 계약 | Pass | `AsyncControlError`가 타임아웃과 취소를 구분하며 타임아웃/기한 헬퍼가 타입 지정 오류를 반환한다. |
+| 취소 동작 | Pass | `run_until_cancelled`와 `with_timeout_or_cancel`은 호출자가 소유한 토큰을 사용하고 drop된 wrapper future를 인공 오류로 변환하지 않는다. |
+| 정리 | Pass | 테스트에서 취소가 진행 중인 future를 drop하고 종료 listener에 알림을 보내는지 증명한다. |
+| 런타임 경계 | Pass | 크레이트 README가 Tokio 전제를 문서화하고 핵심 비동기 작업의 blocking 작업을 제외한다. |
+| 문서 | Pass | 공개 Rustdoc과 README가 타임아웃, 기한, 취소, 종료 범위를 설명한다. |
+| 테스트 | Pass | 단위 테스트가 성공, 타임아웃, 기한, 취소, 타임아웃 대 취소 우선순위, 종료 알림을 커버한다. |
+| 위험 | 보통 | 새 비동기 크레이트를 확장하지만 기본 루트 파사드 feature는 변경하지 않는다. |
 
-## Findings
+## 발견 사항
 
 - P0: 0
 - P1: 0
 - P2: 0
 - P3: 0
 
-## Validation
+## 검증
 
-- Pass: `cargo fmt --all --check`
-- Pass: `cargo check --workspace --all-targets --all-features --locked`
-- Pass: `cargo test -p bluetape-rs-async`
-- Pass: `cargo test --workspace --all-features --locked`
-- Pass: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
-- Pass: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
-- Pass: `git diff --check`
+- 통과: `cargo fmt --all --check`
+- 통과: `cargo check --workspace --all-targets --all-features --locked`
+- 통과: `cargo test -p bluetape-rs-async`
+- 통과: `cargo test --workspace --all-features --locked`
+- 통과: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- 통과: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
+- 통과: `git diff --check`

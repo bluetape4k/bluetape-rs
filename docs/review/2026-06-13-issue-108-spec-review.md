@@ -1,47 +1,46 @@
-# Issue #108 Spec Review - SerDe 0.5.x Design
+# 이슈 #108 사양 검토 - SerDe 0.5.x 설계
 
-Date: 2026-06-13
-Scope: `docs/superpowers/specs/2026-06-13-serde-0-5x-design.md`
-Gate: Step 2-R spec review
+날짜: 2026-06-13
+범위: `docs/superpowers/specs/2026-06-13-serde-0-5x-design.md`
+게이트: Step 2-R 사양 검토
 
-## Reviewed Scope
+## 검토 범위
 
-- Issue #108: `Add the serialization workspace crate`
-- Milestone: `0.5.0`
-- Worktree: `.worktrees/issue-108-serialization-crate`
-- Baseline: approved `0.5.x` SerDe design plus issue #108 acceptance criteria
+- 이슈 #108: `Add the serialization workspace crate`
+- 마일스톤: `0.5.0`
+- 워크트리: `.worktrees/issue-108-serialization-crate`
+- 기준선: 승인된 `0.5.x` SerDe 설계와 이슈 #108 인수 기준
 
-## Review Lanes
+## 검토 레인
 
-| Lane | Initial Result | Final Result | Evidence |
+| 레인 | 초기 결과 | 최종 결과 | 근거 |
 |---|---:|---:|---|
-| Performance | `P0=0 P1=0` | `P0=0 P1=0` | Requested feature-default, allocation, and runtime-check clarifications; no blocker. |
-| Stability | `P0=0 P1=2` | `P0=0 P1=0` | Added envelope/error contract, no-silent-fallback rule, feature matrix, resource-bound requirements. |
-| Security | `P0=0 P1=2` | `P0=0 P1=0` | Added malicious payload defenses, no unsafe/dynamic deserialization, no hidden global/default adapter policy. |
-| Operator/Ops | `P0=0 P1=3` | `P0=0 P1=0` | Added crate/workspace/root-facade checklist, rollback/version policy, safe metadata diagnostics, docs parity. |
-| Developer/API | `P0=0 P1=2` | `P0=0 P1=0` | Added package/lib names, workspace dependency contract, root feature/re-export shape, additive feature policy. |
-| User/Caller | `P0=0 P1=2` | `P0=0 P1=0` | Added issue #108 bootstrap slice, complete non-goal list, README/Rustdoc/example acceptance, migration note. |
+| 성능 | `P0=0 P1=0` | `P0=0 P1=0` | feature 기본값, 할당, 런타임 확인을 명확히 하도록 요청했으며 차단 요소는 없었다. |
+| 안정성 | `P0=0 P1=2` | `P0=0 P1=0` | envelope/오류 계약, 조용한 fallback 금지 규칙, feature 매트릭스, 리소스 한도 요구 사항을 추가했다. |
+| 보안 | `P0=0 P1=2` | `P0=0 P1=0` | 악의적인 페이로드 방어, 안전하지 않은/동적 역직렬화 금지, 숨겨진 전역/기본 어댑터 정책 금지를 추가했다. |
+| 운영자/Ops | `P0=0 P1=3` | `P0=0 P1=0` | 크레이트/워크스페이스/루트 파사드 체크리스트, 롤백/버전 정책, 안전한 메타데이터 진단, 문서 동등성을 추가했다. |
+| 개발자/API | `P0=0 P1=2` | `P0=0 P1=0` | 패키지/라이브러리 이름, 워크스페이스 의존성 계약, 루트 feature/re-export 형태, 추가형 feature 정책을 추가했다. |
+| 사용자/호출자 | `P0=0 P1=2` | `P0=0 P1=0` | 이슈 #108 부트스트랩 범위, 완전한 비목표 목록, README/Rustdoc/예제 인수 기준, 마이그레이션 메모를 추가했다. |
 
-## Integrated Findings
+## 통합 발견 사항
 
-| Priority | Area | Resolution |
+| 우선순위 | 영역 | 해결 |
 |---|---|---|
-| P1 | Bootstrap scope | The spec now separates the `0.5.0` milestone from the narrower issue #108 crate/facade/docs bootstrap slice. |
-| P1 | Feature/default boundary | The spec now requires unchanged root defaults, opt-in root `serialization` feature, and no default format/infra dependencies. |
-| P1 | Payload recovery | The spec now requires typed failures, no silent fallback, explicit unknown-version behavior, and caller-owned eviction/rebuild policy. |
-| P1 | Security boundary | The spec now forbids payload-selected Rust types, unsafe deserialization, dynamic registries, hidden global serializers, and env-selected adapters. |
-| P1 | Operational diagnostics | The spec now requires safe expected/observed metadata diagnostics without logging payload bytes. |
+| P1 | 부트스트랩 범위 | 사양이 이제 `0.5.0` 마일스톤과 더 좁은 이슈 #108 크레이트/파사드/문서 부트스트랩 범위를 분리한다. |
+| P1 | Feature/기본값 경계 | 사양이 변경되지 않은 루트 기본값, 옵트인 루트 `serialization` feature, 기본 형식/인프라 의존성 없음을 요구한다. |
+| P1 | 페이로드 복구 | 사양이 타입 지정 실패, 조용한 fallback 금지, 명시적인 알 수 없는 버전 동작, 호출자 소유 제거/재구축 정책을 요구한다. |
+| P1 | 보안 경계 | 사양이 페이로드가 선택하는 Rust 타입, 안전하지 않은 역직렬화, 동적 레지스트리, 숨겨진 전역 serializer, 환경 변수 선택 어댑터를 금지한다. |
+| P1 | 운영 진단 | 사양이 페이로드 바이트를 로깅하지 않고 안전한 예상/관측 메타데이터 진단을 사용하도록 요구한다. |
 
-## Deferred P2 Items For Step 3
+## Step 3을 위해 보류한 P2 항목
 
-- The implementation plan must define concrete encoded-size, decompressed-size,
-  ratio, depth, and collection-bound checks before release-readiness claims.
-- The implementation plan must include concrete doc/example verification for
-  direct crate usage, root facade feature-gated usage, and default facade
-  absence.
+- 구현 계획은 릴리스 준비 상태를 주장하기 전에 구체적인 인코딩 크기,
+  압축 해제 크기, 비율, 깊이, 컬렉션 한도 확인을 정의해야 한다.
+- 구현 계획은 직접 크레이트 사용, feature로 제한된 루트 파사드 사용,
+  기본 파사드 부재에 대한 구체적인 문서/예제 검증을 포함해야 한다.
 
-## Gate Verdict
+## 게이트 판정
 
-Step 2-R passed after spec revision.
+사양을 개정한 뒤 Step 2-R을 통과했다.
 
 P0=0 P1=0
