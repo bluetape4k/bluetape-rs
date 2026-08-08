@@ -1,41 +1,58 @@
-# Same-condition Compression Benchmark
+# 동일 조건 압축 Benchmark
 
-This report compares `bluetape-rs`, `bluetape-go`, and `bluetape4k-io` with the same payload fixtures.
-It is a local same-condition snapshot, not a production ranking or regression threshold.
+이 report는 동일한 payload fixture로 `bluetape-rs`, `bluetape-go`,
+`bluetape4k-io`를 비교합니다.
+local same-condition snapshot이며 production ranking이나 regression threshold가
+아닙니다.
 
-![Compression throughput](../images/readme-charts/compression-throughput-large-payloads.svg)
+![압축 처리량](../images/readme-charts/compression-throughput-large-payloads.svg)
 
-![Compression ratio](../images/readme-charts/compression-ratio-large-payloads.svg)
+![압축 비율](../images/readme-charts/compression-ratio-large-payloads.svg)
 
-## Run Conditions
+## 실행 조건
 
-- Date: 2026-06-11
-- Host: Apple M5, darwin/arm64
-- Repository root: `/Users/debop/work/bluetape4k/bluetape-rs`
-- Required sibling checkouts: `/Users/debop/work/bluetape4k/bluetape-go` and `/Users/debop/work/bluetape4k/bluetape4k-projects` at the revisions in metadata.
-- Fixtures: `(cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads --output-dir /tmp/bluetape-compression-bench/payloads --manifest ../../../docs/benchmark/compression-fixtures-manifest.csv)`
-- Rust cwd: repository root; command: `cargo run -p compression-benchmark --release --locked -- --payload-dir /tmp/bluetape-compression-bench/payloads --output docs/benchmark/compression-same-condition-rust.csv`
-- Go cwd: `benchmark/compression-benchmark/go`; command: `go test -run '^$' -bench '^BenchmarkSameConditionCompressors' -benchmem -benchtime=100ms -count=1 ./... > ../../../docs/benchmark/raw/go-same-condition.txt`
-- JVM: tracked CSV preserved from the same local snapshot; rerun is BLOCKED because the recorded `bluetape4k-projects` revision does not contain a tracked same-condition benchmark test selector.
-- Shared fixtures: `/tmp/bluetape-compression-bench/payloads`
-- Matrix: JSON/Text/Binary/Random x small 1 KiB, medium 64 KiB, large 512 KiB
-- Throughput: higher is better; all CSV/report/chart throughput values are normalized to MiB/s
-- Compression ratio: lower is better
-- Go allocation counters are preserved in `docs/benchmark/raw/go-same-condition.txt`; the normalized cross-ecosystem CSV keeps common metrics only.
-- Source revisions and fixture hashes: `docs/benchmark/compression-same-condition-metadata.md`
-- CSV schema is normalized across ecosystems; `timing_provenance` records the source harness.
+- 날짜: 2026-06-11
+- 호스트: Apple M5, darwin/arm64
+- repository root: `/Users/debop/work/bluetape4k/bluetape-rs`
+- 필요한 sibling checkout: metadata에 기록한 revision의
+  `/Users/debop/work/bluetape4k/bluetape-go` 및
+  `/Users/debop/work/bluetape4k/bluetape4k-projects`
+- fixture: `(cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads --output-dir /tmp/bluetape-compression-bench/payloads --manifest ../../../docs/benchmark/compression-fixtures-manifest.csv)`
+- Rust cwd: repository root; command:
+  `cargo run -p compression-benchmark --release --locked -- --payload-dir /tmp/bluetape-compression-bench/payloads --output docs/benchmark/compression-same-condition-rust.csv`
+- Go cwd: `benchmark/compression-benchmark/go`; command:
+  `go test -run '^$' -bench '^BenchmarkSameConditionCompressors' -benchmem -benchtime=100ms -count=1 ./... > ../../../docs/benchmark/raw/go-same-condition.txt`
+- JVM: 동일 local snapshot에서 보존한 tracked CSV. 기록된
+  `bluetape4k-projects` revision에 tracked same-condition benchmark test
+  selector가 없어 재실행은 BLOCKED입니다.
+- shared fixture: `/tmp/bluetape-compression-bench/payloads`
+- matrix: JSON/Text/Binary/Random x small 1 KiB, medium 64 KiB, large 512 KiB
+- throughput: 높을수록 좋습니다. 모든 CSV/report/chart throughput value는
+  MiB/s로 정규화했습니다.
+- compression ratio: 낮을수록 좋습니다.
+- Go allocation counter는 `docs/benchmark/raw/go-same-condition.txt`에
+  보존하며, 정규화한 cross-ecosystem CSV에는 공통 metric만 유지합니다.
+- source revision 및 fixture hash:
+  `docs/benchmark/compression-same-condition-metadata.md`
+- CSV schema는 ecosystem 간 정규화했으며, `timing_provenance`가 source
+  harness를 기록합니다.
 
-## Caveats
+## 주의 사항
 
-- This is a single local run on one host.
-- Rust, Go, and JVM use different lightweight harnesses, so short-window timing noise is expected.
-- Use the table for broad comparison under identical payload bytes, not for stable production rankings.
-- Allocation data is Go-only raw `-benchmem` evidence and is not normalized across Rust/JVM/Go.
-- `zlib` is preserved in Rust/Go raw CSVs but excluded from common charts because the JVM comparison set does not include zlib.
+- 한 호스트에서 실행한 단일 local run입니다.
+- Rust, Go, JVM이 서로 다른 lightweight harness를 사용하므로 짧은 window의
+  timing noise가 예상됩니다.
+- 동일 payload byte에 대한 broad comparison에만 table을 사용하고, 안정적인
+  production ranking에는 사용하지 않습니다.
+- allocation data는 Go 전용 raw `-benchmem` evidence이며
+  Rust/JVM/Go 간 정규화하지 않았습니다.
+- `zlib`은 Rust/Go raw CSV에 보존했지만 JVM comparison set에 zlib이 없어
+  common chart에서는 제외했습니다.
 
-## Per-Ecosystem Large Payload Snapshots
+## 생태계별 대용량 페이로드 스냅샷
 
-These per-ecosystem snapshots come first so raw ecosystem behavior stays visible before normalized comparisons.
+정규화한 비교 전에 raw ecosystem behavior를 확인할 수 있도록
+ecosystem별 snapshot을 먼저 배치했습니다.
 
 ### bluetape-rs
 
@@ -112,9 +129,10 @@ These per-ecosystem snapshots come first so raw ecosystem behavior stays visible
 | random | snappy | 5091.86 | 1.00005 |
 | random | zstd | 7008.52 | 1.00005 |
 
-## Winner Summary
+## 우승 요약
 
-Large-payload compression winners are separated by metric because faster compressors are not always the smallest-output compressors.
+대용량 payload의 compression winner는 metric별로 나누었습니다. 더 빠른
+compressor가 항상 가장 작은 output을 만드는 것은 아니기 때문입니다.
 
 | payload | throughput winner | MiB/s | ratio winner | ratio |
 |---|---:|---:|---:|---:|
@@ -123,19 +141,20 @@ Large-payload compression winners are separated by metric because faster compres
 | binary | bluetape-rs lz4 | 28756.29 | bluetape4k-io lz4 | 0.006504 |
 | random | bluetape-rs lz4 | 42060.99 | bluetape-go gzip | 1 |
 
-## Recommendation Notes
+## 권장 사항
 
-These recommendations are scoped to this local same-condition snapshot and should not be read as production rankings.
+이 권장 사항은 이 local same-condition snapshot에 한정하며 production
+ranking으로 해석해서는 안 됩니다.
 
 | use case | recommendation | excluded interpretation |
 |---|---|---|
-| Best compression ratio on compressible JSON/text/binary payloads | Prefer evaluating `zstd` first, then validate CPU cost with your service payloads. | This does not make `zstd` the default for every deployment or every payload size. |
-| Maximum throughput where modestly larger output is acceptable | Evaluate `lz4` and `snappy` first; they dominate many large-payload throughput rows. | Throughput wins do not imply smallest network/storage footprint. |
-| Interoperability with common gzip/deflate ecosystems | Keep `gzip` and `deflate` documented as compatibility choices. | Compatibility-oriented choices are not usually throughput or ratio winners in this snapshot. |
-| Random or already-compressed payloads | Avoid assuming compression helps; ratios are near or above 1.0 and CPU cost remains. | Random-payload results should not be generalized to structured service data. |
-| Cross-runtime comparison | Use the normalized tables for broad direction only and rerun in the target runtime before changing defaults. | The Rust, Go, and JVM harnesses are not statistically identical benchmark engines. |
+| compressible JSON/text/binary payload에서 최선의 compression ratio | 먼저 `zstd`를 평가한 뒤 service payload로 CPU cost를 검증합니다. | 모든 deployment나 payload size에서 `zstd`를 default로 삼는다는 뜻은 아닙니다. |
+| 조금 더 큰 output을 허용할 수 있을 때 최대 throughput | 먼저 `lz4`와 `snappy`를 평가합니다. 많은 대용량 payload throughput row에서 우세합니다. | throughput winner가 가장 작은 network/storage footprint를 뜻하지는 않습니다. |
+| 일반적인 gzip/deflate ecosystem과의 interoperability | `gzip`과 `deflate`를 compatibility choice로 문서화합니다. | 이 snapshot에서 compatibility 중심 choice가 throughput이나 ratio winner인 경우는 일반적이지 않습니다. |
+| random 또는 이미 압축된 payload | compression이 도움이 된다고 가정하지 않습니다. ratio가 1.0에 가깝거나 그 이상이고 CPU cost도 남습니다. | random-payload 결과를 구조화된 service data에 일반화해서는 안 됩니다. |
+| cross-runtime 비교 | normalized table은 방향을 확인하는 용도로만 사용하고, default를 바꾸기 전에 target runtime에서 다시 실행합니다. | Rust, Go, JVM harness는 통계적으로 동일한 benchmark engine이 아닙니다. |
 
-## Normalized Large Payload Comparison
+## 정규화된 대용량 Payload 비교
 
 | payload | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -160,11 +179,13 @@ These recommendations are scoped to this local same-condition snapshot and shoul
 | random | snappy | 34129.69 | 1.00005 | 4206.03 | 1 | 5091.86 | 1.00005 |
 | random | zstd | 9245.00 | 1.00004 | 1587.56 | 1 | 7008.52 | 1.00005 |
 
-## Full Payload Matrix
+## 전체 Payload Matrix
 
-The normalized tables below include compression and decompression throughput for every shared payload kind, payload size, compressor, ecosystem, and operation direction.
+아래 normalized table은 모든 shared payload kind, payload size, compressor,
+ecosystem, operation direction에 대한 compression 및 decompression throughput을
+포함합니다.
 
-### Compress
+### 압축
 
 | payload | size | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -229,7 +250,7 @@ The normalized tables below include compression and decompression throughput for
 | random | large | snappy | 34129.69 | 1.00005 | 4206.03 | 1 | 5091.86 | 1.00005 |
 | random | large | zstd | 9245.00 | 1.00004 | 1587.56 | 1 | 7008.52 | 1.00005 |
 
-### Decompress
+### 압축 해제
 
 | payload | size | compressor | rs MiB/s | rs ratio | go MiB/s | go ratio | jvm MiB/s | jvm ratio |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -295,7 +316,7 @@ The normalized tables below include compression and decompression throughput for
 | random | large | zstd | 11192.97 | 1.00004 | 1885.45 | 1 | 40885.75 | 1.00005 |
 
 
-## Raw CSV
+## 원시 CSV
 
 - `docs/benchmark/compression-same-condition-rust.csv`
 - `docs/benchmark/compression-same-condition-go.csv`

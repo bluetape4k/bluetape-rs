@@ -1,11 +1,11 @@
-# Compression Benchmark Metadata
+# 압축 벤치마크 메타데이터
 
-This benchmark data is a local same-condition snapshot, not a production
-ranking. It is intended to make `bluetape-rs`, `bluetape-go`, and
-`bluetape4k-io` comparable on the same payload bytes while the Rust compression
-crate is being shaped.
+이 benchmark data는 production ranking이 아닌 local same-condition snapshot입니다.
+Rust compression crate를 구성하는 동안 동일한 payload byte에서
+`bluetape-rs`, `bluetape-go`, `bluetape4k-io`를 비교할 수 있게 하는
+것이 목적입니다.
 
-## Source Revisions
+## 소스 리비전
 
 | ecosystem | repository | revision |
 |---|---|---|
@@ -13,34 +13,33 @@ crate is being shaped.
 | bluetape-go | `/Users/debop/work/bluetape4k/bluetape-go` | `076d6f98bd5670e8a7c2c3911ac28194541bf42b` |
 | bluetape4k-io | `/Users/debop/work/bluetape4k/bluetape4k-projects` | `aa7aa4171e520c90cf8418bfebb885990068021c` |
 
-## Reproducibility Files
+## 재현성 파일
 
 - Go benchmark harness: `benchmark/compression-benchmark/go`
-- Fixture generator: `benchmark/compression-benchmark/go/cmd/generate-payloads`
-- Fixture manifest generated with the payload files:
+- fixture generator: `benchmark/compression-benchmark/go/cmd/generate-payloads`
+- payload file로 생성한 fixture manifest:
   `docs/benchmark/compression-fixtures-manifest.csv`
-- Go raw benchmark capture: `docs/benchmark/raw/go-same-condition.txt`
+- Go 원시 벤치마크 캡처: `docs/benchmark/raw/go-same-condition.txt`
 - Rust CSV: `docs/benchmark/compression-same-condition-rust.csv`
 - Go CSV: `docs/benchmark/compression-same-condition-go.csv`
 - JVM CSV: `docs/benchmark/compression-same-condition-jvm.csv`
-- Report renderer: `benchmark/compression-benchmark/scripts/render_report.py`
+- report renderer: `benchmark/compression-benchmark/scripts/render_report.py`
 - CSV normalizer: `benchmark/compression-benchmark/scripts/normalize_csv.py`
 
-All CSV files use the same schema:
+모든 CSV 파일은 동일한 schema를 사용합니다.
 
 ```text
 ecosystem,compressor,direction,payload_kind,payload_size,original_bytes,compressed_bytes,ratio,iterations,total_ns,ns_op,mib_s,timing_provenance
 ```
 
-## Commands
+## 명령
 
-Run the Rust commands from `/Users/debop/work/bluetape4k/bluetape-rs`. The Go
-benchmark module uses a local `replace` to
-`/Users/debop/work/bluetape4k/bluetape-go`, so that sibling checkout must exist
-at the revision listed above. The JVM CSV is preserved as tracked snapshot data;
-rerunning it from `bluetape4k-projects` is currently BLOCKED because the
-recorded revision does not contain a tracked same-condition compression
-benchmark test selector.
+Rust command는 `/Users/debop/work/bluetape4k/bluetape-rs`에서 실행합니다. Go
+benchmark module은 `/Users/debop/work/bluetape4k/bluetape-go`를 가리키는
+local `replace`를 사용하므로 위에 기록한 revision의 sibling checkout이
+있어야 합니다. JVM CSV는 tracked snapshot data로 보존합니다.
+`bluetape4k-projects`에서 다시 실행하는 작업은 기록한 revision에 tracked
+same-condition compression benchmark test selector가 없어 현재 BLOCKED입니다.
 
 ```bash
 (cd benchmark/compression-benchmark/go && go run ./cmd/generate-payloads \
@@ -64,19 +63,21 @@ rsvg-convert -o docs/images/readme-charts/compression-ratio-large-payloads.png \
   docs/images/readme-charts/compression-ratio-large-payloads.svg
 ```
 
-## Caveats
+## 주의 사항
 
-- The run is a single local snapshot on Apple M5, darwin/arm64.
-- Throughput is normalized to MiB/s across all ecosystems.
-- The fixture generator writes the payload manifest from the same bytes used by
-  all three benchmark harnesses.
-- The harnesses are intentionally lightweight and not statistically equivalent:
-  Rust uses a fixed-iteration `Instant` loop, Go uses `testing.B`, and JVM uses
-  a Gradle/JUnit benchmark-style test.
-- Go benchmark allocation counters are kept in the raw `-benchmem` output; the
-  normalized CSV schema keeps only metrics that all harnesses can provide.
-  Rust/JVM allocation and memory counters are not collected in this snapshot.
-- Use the results to compare broad behavior under identical payload bytes, not
-  to claim stable production rankings or regression thresholds.
-- `zlib` exists in Rust and Go raw CSVs but is excluded from common charts
-  because the JVM comparison set does not include zlib.
+- run은 Apple M5, darwin/arm64에서 실행한 단일 local snapshot입니다.
+- 모든 ecosystem에서 throughput을 MiB/s로 정규화했습니다.
+- fixture generator는 세 benchmark harness가 사용하는 동일한 byte에서
+  payload manifest를 작성합니다.
+- harness는 의도적으로 lightweight하며 통계적으로 동등하지 않습니다.
+  Rust는 고정 iteration `Instant` loop, Go는 `testing.B`, JVM은
+  Gradle/JUnit benchmark-style test를 사용합니다.
+- Go benchmark allocation counter는 raw `-benchmem` output에 보존합니다.
+  normalized CSV schema에는 모든 harness가 제공할 수 있는 metric만
+  유지합니다. 이 snapshot에서는 Rust/JVM allocation 및 memory counter를
+  수집하지 않았습니다.
+- 결과는 동일한 payload byte에서 broad behavior를 비교하는 데 사용하고,
+  stable production ranking이나 regression threshold를 주장하는 데
+  사용하지 않습니다.
+- `zlib`은 Rust와 Go raw CSV에 존재하지만 JVM comparison set에 zlib이
+  없어 common chart에서는 제외합니다.

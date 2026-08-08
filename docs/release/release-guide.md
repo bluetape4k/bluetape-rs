@@ -1,67 +1,68 @@
-# Release Guide
+# 릴리스 가이드
 
-This repository uses the same branch role split as `bluetape-go`:
+이 repository는 `bluetape-go`와 동일한 branch role split을 사용합니다.
 
-- `develop` is the default branch and the center of active development.
-- `main` is the latest stable release source branch.
-- Stable releases promote the verified `develop` tree to `main`, then create
-  the signed version tag and GitHub Release from `main`.
+- `develop`은 default branch이자 active development center입니다.
+- `main`은 최신 안정 릴리스 소스 브랜치입니다.
+- stable release는 검증한 `develop` tree를 `main`으로 promote한 뒤
+  `main`에서 signed version tag와 GitHub Release를 생성합니다.
 
-## Branch Contract
+## 브랜치 계약
 
-| Branch | Role | Allowed changes |
+| 브랜치 | 역할 | 허용된 변경 |
 |---|---|---|
-| `develop` | Integration and development branch | Normal feature, fix, docs, CI, and release-prep PRs. |
-| `main` | Stable release branch | Release promotion commits only; it should match the latest published stable tag. |
+| `develop` | Integration 및 development branch | 일반 feature, fix, docs, CI, release-prep PR. |
+| `main` | Stable release branch | Release promotion commit만 허용하며 latest published stable tag와 일치해야 합니다. |
 
-Do not use `main` for ordinary development. Open normal work against `develop`.
+`main`을 일반 개발에 사용하지 않습니다. 일반 작업은 `develop`을
+대상으로 엽니다.
 
-## Stable Release Flow
+## 안정 릴리스 절차
 
-1. Finish the target GitHub milestone on `develop`.
-2. Confirm there are no unintended open PRs for the release scope.
-3. Update `CHANGELOG.md`, package versions, README files, and release evidence
-   on a release-prep branch targeting `develop`.
-4. Run the full local quality bar:
+1. `develop`에서 target GitHub milestone을 완료합니다.
+2. release 범위에 의도하지 않은 open PR이 없는지 확인합니다.
+3. `develop`을 target으로 하는 release-prep branch에서 `CHANGELOG.md`,
+   package version, README 파일, release evidence를 업데이트합니다.
+4. 전체 local quality bar를 실행합니다.
    - `cargo fmt --all --check`
    - `git diff --check`
    - `cargo test --workspace --all-features --locked`
    - `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
    - `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
-   - `cargo publish --workspace --dry-run --locked` when the release publishes crates
-5. Merge the release-prep PR into `develop` after CI and review pass.
-6. Promote the verified `develop` tree to `main` using a release PR or an
-   explicitly reviewed branch update.
-7. Create the signed annotated tag on `main`.
-8. Create the GitHub Release from that tag.
-9. Sync local `develop` and `main`, prune stale worktrees/branches, and record
-   final release evidence.
+   - crate를 publish하는 릴리스라면 `cargo publish --workspace --dry-run --locked`
+5. CI와 review를 통과한 뒤 release-prep PR을 `develop`에 merge합니다.
+6. release PR 또는 명시적으로 review한 branch update를 사용해 검증한
+   `develop` tree를 `main`으로 promote합니다.
+7. `main`에서 signed annotated tag를 생성합니다.
+8. 해당 tag에서 GitHub Release를 생성합니다.
+9. local `develop`과 `main`을 sync하고 stale worktree/branch를 prune한
+   뒤 최종 release evidence를 기록합니다.
 
-## Current Stable Baseline
+## 현재 안정 기준점
 
-`main` currently points at the `v0.3.1` release commit:
+`main`은 현재 `v0.3.1` release commit을 가리킵니다.
 
 - `v0.3.1^{}`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
 - `origin/main`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
 
-GitHub's default branch remains `develop`.
+GitHub default branch는 계속 `develop`입니다.
 
-## Current Development Baseline
+## 현재 개발 기준점
 
-As of the `0.4.0` compression release-readiness pass, `develop` has advanced
-beyond the stable `main` branch:
+`0.4.0` compression release-readiness pass 기준으로 `develop`은 stable
+`main` branch보다 앞서 있습니다.
 
 - `origin/develop`: `71b3a564025b66d3228df5950e23c08019a6f543`
 - `origin/main`: `6cef44048b97d2d933fcf42e34fd6f3267b4ff30`
 
-Recheck these references before release promotion. Stable release tags still
-belong on `main` after the verified `develop` tree is promoted.
+release promotion 전에 이 reference를 다시 확인합니다. stable release tag는
+검증한 `develop` tree를 promote한 뒤에도 `main`에만 둡니다.
 
-## Guardrails
+## 가드레일
 
-- Never push feature work directly to `main`.
-- Do not tag from a branch other than `main` for stable releases.
-- Do not close a milestone as release-complete until `main`, the version tag,
-  GitHub Release, and local sync evidence have all been checked.
-- Branch protection or repository ruleset changes are operational changes and
-  should be handled in a separate reviewed task.
+- feature work를 `main`에 직접 push하지 않습니다.
+- stable release에서는 `main` 이외의 branch에서 tag하지 않습니다.
+- `main`, version tag, GitHub Release, local sync evidence를 모두 확인하기
+  전에는 milestone을 release-complete로 닫지 않습니다.
+- branch protection 또는 repository ruleset 변경은 operational change이므로
+  별도의 review task로 처리합니다.
