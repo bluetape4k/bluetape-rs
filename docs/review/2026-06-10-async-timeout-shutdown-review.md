@@ -1,38 +1,37 @@
-# Async Timeout And Shutdown Review
+# Async timeout 및 shutdown 검토
 
-## Scope
+## 범위
 
-- Issue: #22
+- 이슈: #22
 - Milestone: 0.2.0
-- Changed surface: `bluetape-rs-async`
-- External reference: Tokio 1.49 documentation for `tokio::time::timeout`,
-  `timeout_at`, `watch`, and `select!` cancellation patterns
+- 변경 대상: `bluetape-rs-async`
+- 외부 참고: `tokio::time::timeout`, `timeout_at`, `watch`, `select!` cancellation pattern에 대한 Tokio 1.49 문서
 
-## 7-Tier Review
+## 7-Tier 검토
 
-| Tier | Result | Evidence |
+| Tier | 결과 | 근거 |
 | --- | --- | --- |
-| API contract | Pass | `AsyncControlError` distinguishes timeout from cancellation; timeout/deadline helpers return typed errors. |
-| Cancellation behavior | Pass | `run_until_cancelled` and `with_timeout_or_cancel` use caller-owned tokens and do not convert dropped wrapper futures into synthetic errors. |
-| Cleanup | Pass | Tests prove cancellation drops the in-flight future and shutdown listeners are notified. |
-| Runtime boundary | Pass | Crate README documents Tokio assumptions and excludes blocking work on core async tasks. |
-| Documentation | Pass | Public Rustdoc and README describe timeout, deadline, cancellation, and shutdown scope. |
-| Tests | Pass | Unit tests cover success, timeout, deadline, cancellation, timeout-vs-cancel precedence, and shutdown notification. |
-| Risk | Moderate | Extends the new async crate but does not change default root facade features. |
+| API contract | 통과 | `AsyncControlError`가 timeout과 cancellation을 구분하고, timeout/deadline helper가 typed error를 반환합니다. |
+| Cancellation 동작 | 통과 | `run_until_cancelled`와 `with_timeout_or_cancel`이 호출자 소유 token을 사용하며, drop된 wrapper future를 synthetic error로 바꾸지 않습니다. |
+| Cleanup | 통과 | 테스트가 in-flight future drop과 shutdown listener notification을 증명합니다. |
+| Runtime 경계 | 통과 | Crate README가 Tokio 가정을 설명하고 core async task에서 blocking work를 제외합니다. |
+| 문서 | 통과 | 공개 Rustdoc과 README가 timeout, deadline, cancellation, shutdown 범위를 설명합니다. |
+| 테스트 | 통과 | Unit test가 success, timeout, deadline, cancellation, timeout-vs-cancel precedence, shutdown notification을 다룹니다. |
+| 위험 | 보통 | 새 async crate를 확장하지만 기본 root facade feature는 변경하지 않습니다. |
 
-## Findings
+## 발견 사항
 
 - P0: 0
 - P1: 0
 - P2: 0
 - P3: 0
 
-## Validation
+## 검증
 
-- Pass: `cargo fmt --all --check`
-- Pass: `cargo check --workspace --all-targets --all-features --locked`
-- Pass: `cargo test -p bluetape-rs-async`
-- Pass: `cargo test --workspace --all-features --locked`
-- Pass: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
-- Pass: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
-- Pass: `git diff --check`
+- 통과: `cargo fmt --all --check`
+- 통과: `cargo check --workspace --all-targets --all-features --locked`
+- 통과: `cargo test -p bluetape-rs-async`
+- 통과: `cargo test --workspace --all-features --locked`
+- 통과: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- 통과: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
+- 통과: `git diff --check`

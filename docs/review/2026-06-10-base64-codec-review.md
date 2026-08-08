@@ -1,47 +1,47 @@
-# Base64 Codec Review
+# Base64 코덱 검토
 
-Date: 2026-06-10
-Issue: #55
-Branch: `feat/issue-55-base64`
+날짜: 2026-06-10
+이슈: #55
+브랜치: `feat/issue-55-base64`
 
-## Scope
+## 범위
 
-Add focused Base64 codec primitives to `bluetape-rs-codec`:
+`bluetape-rs-codec`에 목적이 분명한 Base64 코덱 기본 기능을 추가합니다.
 
-- standard alphabet, padded and unpadded variants
-- URL-safe alphabet, padded and unpadded variants
-- project-owned typed decode error
-- README and README.ko examples
-- `base64` crate dependency through workspace dependencies
+- 표준 알파벳의 padded 및 unpadded variant
+- URL-safe 알파벳의 padded 및 unpadded variant
+- 프로젝트가 소유하는 typed decode error
+- README 및 README.ko 예시
+- workspace dependency를 통한 `base64` crate dependency
 
-Base58 and Base62 are intentionally excluded and tracked by #63.
+Base58과 Base62는 의도적으로 제외하고 #63에서 추적합니다.
 
-## 7-Tier Review
+## 7-Tier 검토
 
-| Tier | Verdict | Evidence |
+| Tier | 판정 | 근거 |
 |---|---|---|
-| 1. Public API / Contract | PASS | Public names make alphabet and padding policy explicit: standard vs URL-safe, padded vs `_unpadded`. Decode returns `Result<Vec<u8>, Base64DecodeError>`. |
-| 2. Architecture / Boundary | PASS | The change stays inside `crates/codec` plus workspace dependency and README wiring. No compression, serde, Base58, or Base62 scope is mixed into #55. |
-| 3. Rust API Shape | PASS | APIs use `impl AsRef<[u8]>` for encode input, `impl AsRef<str>` for decode input, owned output values, and a non-exhaustive error enum. No unsafe code or runtime state is introduced. |
-| 4. Tests | PASS | Unit tests cover empty input, standard and URL-safe alphabets, padded and unpadded round trips, alphabet rejection, missing/extra padding rejection, invalid length, and diagnostic formatting. |
-| 5. Static / Docs | PASS | Rustdoc examples compile under `RUSTDOCFLAGS="-D warnings"`; README and README.ko expose matching Base64 examples. |
-| 6. Release / Cargo | PASS | `base64 = "0.22.1"` is added as a workspace dependency and consumed only by `bluetape-rs-codec`. `Cargo.lock` is refreshed. |
-| 7. Evidence Integrity | PASS | The implementation was validated against the upstream `base64` 0.22.1 padding modes: `RequireCanonical` for padded engines and `RequireNone` for no-padding engines. Staged graph review analyzed 10 files with risk score 0.00 and test gaps 0. |
+| 1. 공개 API / Contract | PASS | 공개 이름이 알파벳과 padding 정책을 명시합니다. 표준과 URL-safe, padded와 `_unpadded`를 구분하며 Decode는 `Result<Vec<u8>, Base64DecodeError>`를 반환합니다. |
+| 2. Architecture / Boundary | PASS | 변경은 `crates/codec`, workspace dependency, README wiring 안에 있습니다. #55에 compression, serde, Base58, Base62 범위를 섞지 않았습니다. |
+| 3. Rust API 형태 | PASS | Encode 입력은 `impl AsRef<[u8]>`, decode 입력은 `impl AsRef<str>`를 사용하고 owned output value와 non-exhaustive error enum을 제공합니다. Unsafe code와 runtime state는 추가하지 않았습니다. |
+| 4. 테스트 | PASS | Unit test가 빈 입력, 표준 및 URL-safe 알파벳, padded 및 unpadded round trip, 알파벳 거부, padding 누락/추가 거부, 잘못된 길이, 진단 formatting을 다룹니다. |
+| 5. 정적 검사 / 문서 | PASS | `RUSTDOCFLAGS="-D warnings"`에서 Rustdoc 예시가 컴파일되고 README와 README.ko가 일치하는 Base64 예시를 노출합니다. |
+| 6. Release / Cargo | PASS | `base64 = "0.22.1"`을 workspace dependency로 추가하고 `bluetape-rs-codec`만 사용합니다. `Cargo.lock`을 갱신했습니다. |
+| 7. 근거 무결성 | PASS | 구현을 upstream `base64` 0.22.1 padding mode와 대조했습니다. Padded engine에는 `RequireCanonical`, no-padding engine에는 `RequireNone`을 사용합니다. Staged graph review는 10개 파일을 분석해 risk score 0.00, test gap 0을 보고했습니다. |
 
 ## P0/P1 Gate
 
 P0=0 P1=0
 
-Native review lanes:
+Native review lane:
 
-- `code-reviewer`: PASS, P0=0 P1=0. Checked API scope, Rust surface, README parity, tests, cargo gates, and no unsafe/debug/secret patterns.
-- `verifier`: PASS for local implementation, P0=0 P1=0. End-to-end workflow remains partial until PR/CI/post-PR gates complete.
+- `code-reviewer`: PASS, P0=0 P1=0. API 범위, Rust surface, README parity, test, cargo gate, unsafe/debug/secret pattern 부재를 확인했습니다.
+- `verifier`: 로컬 구현은 PASS, P0=0 P1=0. PR/CI/post-PR gate가 완료되기 전까지 end-to-end workflow는 부분 상태입니다.
 
-No P2/P3 follow-up is required for #55. PR #62 is still open, so this branch may
-need a rebase after #62 merges because both PRs touch codec README/Rustdoc
-surface area.
+#55에 P2/P3 후속 작업은 필요하지 않습니다. PR #62가 아직 열려 있으므로
+두 PR이 codec README/Rustdoc 영역을 모두 수정한다는 점을 고려해 #62 merge
+후 이 브랜치를 rebase해야 할 수 있습니다.
 
-## Validation
+## 검증
 
 - `cargo test -p bluetape-rs-codec base64::tests:: --all-features --locked`: PASS
 - `git diff --check`: PASS

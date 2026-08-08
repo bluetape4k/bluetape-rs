@@ -1,29 +1,30 @@
-# 0.1.x Coverage Hardening Review
+# 0.1.x coverage 강화 검토
 
-Issue: #49
-Branch: `feat/issue-49-coverage-0-1`
-Baseline: `origin/develop`
-Date: 2026-06-10
+이슈: #49
+브랜치: `feat/issue-49-coverage-0-1`
+기준점: `origin/develop`
+날짜: 2026-06-10
 
-## Scope
+## 범위
 
-This review covers test-only coverage hardening for the 0.1.0 and 0.1.1 foundation scope:
+이 검토는 0.1.0 및 0.1.1 foundation 범위의 테스트 전용 coverage 강화를
+다룹니다.
 
-- `bluetape-rs-core` validation error display and `source()` contracts.
-- `bluetape-rs-collections` collection error display and `source()` contracts.
-- `bluetape-rs-logging` correlation-id rejection and error display contracts.
-- `bluetape-rs-test` async assertion and concurrent tester error display, source, and invalid configuration branches.
+- `bluetape-rs-core` validation error 표시 및 `source()` contract
+- `bluetape-rs-collections` collection error 표시 및 `source()` contract
+- `bluetape-rs-logging` correlation-id 거부 및 error 표시 contract
+- `bluetape-rs-test` async assertion과 concurrent tester의 error 표시, source, 잘못된 configuration 경로
 
 ## Coverage
 
-Baseline from `develop` before this branch:
+이 브랜치 전 `develop` 기준점:
 
 | Crate | Covered / Total | Line coverage |
 | --- | ---: | ---: |
 | `logging` | 84 / 107 | 78.50% |
 | `test` | 345 / 440 | 78.41% |
 
-Final local coverage from `coverage/lcov.info`:
+`coverage/lcov.info`에서 얻은 최종 로컬 coverage:
 
 | Crate | Covered / Total | Line coverage |
 | --- | ---: | ---: |
@@ -33,23 +34,24 @@ Final local coverage from `coverage/lcov.info`:
 | `logging` | 95 / 107 | 88.79% |
 | `test` | 413 / 440 | 93.86% |
 
-Result: no crate remains below 80% line coverage. The previously low `error.rs` files are now covered by focused public error contract tests.
+결과: 80% line coverage 미만인 crate가 없습니다. 이전에 coverage가 낮았던
+`error.rs` 파일은 공개 error contract에 집중한 테스트로 보강했습니다.
 
-## 7-Tier Review Result
+## 7-Tier 검토 결과
 
-| Tier | Gate | Result | Evidence |
+| Tier | Gate | 결과 | 근거 |
 | --- | --- | --- | --- |
-| 1 | Scope | PASS | Changes are limited to test coverage and review evidence for 0.1.x foundation crates. |
-| 2 | Error contracts | PASS | Public `Display` and `source()` behavior is covered for validation, collection, correlation, async assertion, and concurrent assertion errors. |
-| 3 | Boundary coverage | PASS | Blank/too-long/unsafe correlation IDs, invalid tester bounds, and no-source error variants are covered. |
-| 4 | Async/concurrency behavior | PASS | Existing panic/join paths now assert `WorkerJoinFailed` display and source forwarding. |
-| 5 | Coverage target | PASS | `logging` and `test` are both above 80%; all crates are above 80%. |
-| 6 | Local validation | PASS | fmt, diff check, workspace tests, clippy, rustdoc, and llvm-cov completed successfully. |
-| 7 | Subagent review | PASS | Re-review reported P0=0 P1=0 after adding the tracked review artifact and `WorkerJoinFailed` contract coverage. |
+| 1 | 범위 | PASS | 변경은 0.1.x foundation crate의 테스트 coverage와 검토 근거로 제한됩니다. |
+| 2 | Error contract | PASS | validation, collection, correlation, async assertion, concurrent assertion error의 공개 `Display` 및 `source()` 동작을 검증했습니다. |
+| 3 | 경계 coverage | PASS | 빈/과도하게 긴/unsafe correlation ID, 잘못된 tester 경계, source가 없는 error variant를 검증했습니다. |
+| 4 | Async/concurrency 동작 | PASS | 기존 panic/join 경로가 `WorkerJoinFailed` 표시와 source forwarding을 검증합니다. |
+| 5 | Coverage 목표 | PASS | `logging`과 `test`가 모두 80%를 넘고, 모든 crate가 80%를 넘습니다. |
+| 6 | 로컬 검증 | PASS | fmt, diff check, workspace test, clippy, rustdoc, llvm-cov를 성공적으로 완료했습니다. |
+| 7 | Subagent 검토 | PASS | 추적되는 검토 artifact와 `WorkerJoinFailed` contract coverage를 추가한 뒤 재검토 결과 P0=0 P1=0이었습니다. |
 
-## Validation
+## 검증
 
-Commands run:
+실행한 명령:
 
 - `cargo fmt --all --check`
 - `git diff --check`
@@ -62,12 +64,12 @@ Commands run:
 - `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
 - `LLVM_COV=/opt/homebrew/Cellar/llvm/22.1.7_1/bin/llvm-cov LLVM_PROFDATA=/opt/homebrew/Cellar/llvm/22.1.7_1/bin/llvm-profdata cargo llvm-cov --workspace --all-features --locked --lcov --output-path coverage/lcov.info`
 
-## DoD Status
+## DoD 상태
 
-| Item | Status | Evidence |
+| 항목 | 상태 | 근거 |
 | --- | --- | --- |
-| 80% crate coverage gate | PASS | No crate below 80%; `logging` 88.79%, `test` 93.86%. |
-| Low `error.rs` coverage addressed | PASS | `core` and `collections` public error display/source tests added. |
-| 0.1.x public error contracts | PASS | Error display/source contracts covered for core, collections, logging, and test helpers. |
-| Local validation | PASS | fmt, diff check, workspace tests, clippy, rustdoc, and llvm-cov passed locally. |
-| 7-Tier subagent review | PASS | Re-review reported P0=0 P1=0; remaining P3 is satisfied by including this artifact in the commit. |
+| 80% crate coverage gate | PASS | 80% 미만 crate가 없으며 `logging` 88.79%, `test` 93.86%입니다. |
+| 낮은 `error.rs` coverage 보완 | PASS | `core`와 `collections`의 공개 error 표시/source 테스트를 추가했습니다. |
+| 0.1.x 공개 error contract | PASS | core, collections, logging, test helper의 error 표시/source contract를 검증했습니다. |
+| 로컬 검증 | PASS | fmt, diff check, workspace test, clippy, rustdoc, llvm-cov가 로컬에서 통과했습니다. |
+| 7-Tier subagent 검토 | PASS | 재검토에서 P0=0 P1=0을 보고했고, 남은 P3는 이 artifact를 commit에 포함해 해소했습니다. |

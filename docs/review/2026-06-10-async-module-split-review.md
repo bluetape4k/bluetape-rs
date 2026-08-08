@@ -1,34 +1,34 @@
-# Async Module Split Review
+# Async 모듈 분리 검토
 
-## Scope
+## 범위
 
-- Issue: #42
+- 이슈: #42
 - Milestone: 0.2.0
-- Changed surface: `bluetape-rs-async` source layout
+- 변경 대상: `bluetape-rs-async` source layout
 
-## 7-Tier Review
+## 7-Tier 검토
 
-| Tier | Result | Evidence |
+| Tier | 결과 | 근거 |
 | --- | --- | --- |
-| Module structure | Pass | `lib.rs` is a facade over focused `control` and `task_group` modules. |
-| API compatibility | Pass | Public names remain re-exported from `bluetape_rs_async::*`; crate tests and doctests pass. |
-| Behavior | Pass | Existing async unit, integration, workspace, and all-feature tests pass. |
-| Documentation | Pass | Public Rustdoc remains with crate facade and focused implementation modules; rustdoc warnings are denied. |
-| Risk | Low | Refactor-only split with unchanged public API. |
+| 모듈 구조 | 통과 | `lib.rs`가 목적별 `control` 및 `task_group` 모듈을 감싸는 facade입니다. |
+| API 호환성 | 통과 | 공개 이름은 `bluetape_rs_async::*`에서 계속 re-export되고, crate test와 doctest가 통과합니다. |
+| 동작 | 통과 | 기존 async unit, integration, workspace, all-feature test가 통과합니다. |
+| 문서 | 통과 | 공개 Rustdoc이 crate facade와 목적별 구현 모듈에 남아 있고 rustdoc warning은 거부됩니다. |
+| 위험 | 낮음 | 공개 API를 바꾸지 않는 refactor-only 분리입니다. |
 
-## Findings
+## 발견 사항
 
 - P0: 0
 - P1: 0
 - P2: 0
 - P3: 0
 
-## Validation
+## 검증
 
-- Pass: `cargo fmt --all --check`
-- Pass: `cargo check --workspace --all-targets --all-features --locked`
-- Pass: `cargo test -p bluetape-rs-async`
-- Pass: `cargo test --workspace --all-features --locked`
-- Pass: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
-- Pass: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
-- Pass: `git diff --check`
+- 통과: `cargo fmt --all --check`
+- 통과: `cargo check --workspace --all-targets --all-features --locked`
+- 통과: `cargo test -p bluetape-rs-async`
+- 통과: `cargo test --workspace --all-features --locked`
+- 통과: `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
+- 통과: `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked`
+- 통과: `git diff --check`
