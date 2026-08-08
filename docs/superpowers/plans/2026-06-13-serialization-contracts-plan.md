@@ -1,63 +1,93 @@
-# Serialization Contracts Implementation Plan
+# 직렬화 계약 구현 계획
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **에이전트 작업자:** 필수 하위 스킬: 이 계획을 작업별로 구현하려면
+> superpowers:subagent-driven-development(권장) 또는 superpowers:executing-plans를
+> 사용한다. 단계 추적에는 checkbox(`- [ ]`) 문법을 사용한다.
 
-**Goal:** Implement issue #109 by adding Rust-native serialization contract APIs for format ids, trust profiles, payload metadata, typed errors, config defaults, and `serde`-compatible traits without adding any concrete adapter.
+**목표:** 구체적인 adapter를 추가하지 않고 이슈 #109에 Rust 네이티브
+serialization contract API를 추가한다. 대상은 format id, trust profile, payload
+metadata, typed error, config default 및 `serde` 호환 trait다.
 
-**Architecture:** Keep `crates/serialization/src/lib.rs` as the concise export surface and split public contracts into focused modules: `format`, `trust`, `metadata`, `error`, `config`, and `traits`. Encode produces a `SerializedPayload` that owns bytes plus metadata, so payload size cannot diverge from `bytes.len()`. Decode remains caller-typed through `serde::de::DeserializeOwned`, and adapter selection remains explicit with no registry or fallback.
+**아키텍처:** `crates/serialization/src/lib.rs`는 간결한 export surface로
+유지하고 공개 계약을 `format`, `trust`, `metadata`, `error`, `config`, `traits`
+집중 모듈로 나눈다. Encode는 bytes와 metadata를 소유하는
+`SerializedPayload`를 생성하므로 payload size가 `bytes.len()`과 달라질 수
+없다. Decode는 `serde::de::DeserializeOwned`를 통해 호출자 타입을 유지하고,
+adapter 선택은 registry나 fallback 없이 명시적으로 수행한다.
 
-**Tech Stack:** Rust 2024, `serde` public trait bounds, `thiserror` typed errors, Cargo workspace dependencies, compile-checked Rustdoc examples, integration tests under `crates/serialization/tests`.
+**기술 스택:** Rust 2024, `serde` 공개 trait bound, `thiserror` typed error,
+Cargo workspace dependency, 컴파일 검사를 거치는 Rustdoc 예제,
+`crates/serialization/tests` 아래 integration test.
 
 ---
 
-## File Structure
+## 파일 구조
 
-- Modify `Cargo.toml`: add workspace `serde = "1.0"` and keep adapter dependencies out.
-- Modify `crates/serialization/Cargo.toml`: add `serde.workspace = true` and `thiserror.workspace = true`; keep default features empty.
-- Modify `crates/serialization/src/lib.rs`: concise module declarations and public re-exports only.
-- Create `crates/serialization/src/format.rs`: `SerializationFormat`, `ContentType`, `AdapterId`, `PayloadVersion`, validation constants, constructors, `Display`, `AsRef<str>`.
-- Create `crates/serialization/src/trust.rs`: `SerializationTrustProfile` and its safety-oriented Rustdoc.
-- Create `crates/serialization/src/metadata.rs`: `PayloadMetadata`, `SerializedPayload`, `PayloadMetadataPolicy`, payload-size consistency and metadata-policy validation.
-- Create `crates/serialization/src/error.rs`: `SerializationError`, `SerializationErrorKind`, `SerializationOperation`, non-bypassable adapter-source wrapper, typed mismatch/config/malformed/limit variants.
-- Create `crates/serialization/src/config.rs`: `SerializationConfig`, `DEFAULT_MAX_PAYLOAD_SIZE`, safe defaults and validation.
-- Create `crates/serialization/src/traits.rs`: `Serializer<T>`, `Deserializer<T>`, `BinarySerializer<T>`.
-- Create `crates/serialization/tests/contracts.rs`: public API tests for validation, defaults, metadata policy, mismatch errors, payload-size consistency, and source redaction.
-- Modify `crates/serialization/README.md`: document contract APIs, unsupported adapters, no dynamic registry, no payload-selected type, cache rollout guidance.
-- Modify `crates/serialization/README.ko.md`: keep Korean README synchronized with the English README.
-- Modify `README.md` and `README.ko.md`: update serialization package row/guidance from bootstrap-only to contracts-only.
+- `Cargo.toml` 수정: workspace `serde = "1.0"`을 추가하고 adapter dependency는
+  제외한다.
+- `crates/serialization/Cargo.toml` 수정: `serde.workspace = true` 및
+  `thiserror.workspace = true`를 추가하고 default feature는 비워 둔다.
+- `crates/serialization/src/lib.rs` 수정: 간결한 module declaration과 public
+  re-export만 둔다.
+- `crates/serialization/src/format.rs` 생성: `SerializationFormat`,
+  `ContentType`, `AdapterId`, `PayloadVersion`, validation constant, constructor,
+  `Display`, `AsRef<str>`.
+- `crates/serialization/src/trust.rs` 생성: `SerializationTrustProfile`과
+  안전성 중심 Rustdoc.
+- `crates/serialization/src/metadata.rs` 생성: `PayloadMetadata`,
+  `SerializedPayload`, `PayloadMetadataPolicy`, payload-size 일관성 및
+  메타데이터 정책 검증.
+- `crates/serialization/src/error.rs` 생성: `SerializationError`,
+  `SerializationErrorKind`, `SerializationOperation`, 우회할 수 없는
+  adapter-source wrapper, 타입 지정 mismatch/config/malformed/limit variant.
+- `crates/serialization/src/config.rs` 생성: `SerializationConfig`,
+  `DEFAULT_MAX_PAYLOAD_SIZE`, 안전한 기본값 및 validation.
+- `crates/serialization/src/traits.rs` 생성: `Serializer<T>`, `Deserializer<T>`,
+  `BinarySerializer<T>`.
+- `crates/serialization/tests/contracts.rs` 생성: 검증, 기본값, 메타데이터 정책,
+  불일치 오류, payload-size 일관성 및 source redaction에 대한 public API 테스트.
+- `crates/serialization/README.md` 수정: contract API, 지원하지 않는 adapter,
+  dynamic registry 없음, payload-selected type 없음, cache rollout 지침을
+  문서화한다.
+- `crates/serialization/README.ko.md` 수정: 영어 README와 한국어 README를
+  동기화한다.
+- `README.md` 및 `README.ko.md` 수정: serialization package 행/지침을
+  bootstrap-only에서 contracts-only로 갱신한다.
 
-## Task 1: Cargo Dependency Boundary
+## 작업 1: Cargo dependency 경계
 
-**Complexity:** low
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 낮음
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Modify: `Cargo.toml`
-- Modify: `crates/serialization/Cargo.toml`
+**파일:**
+- 수정: `Cargo.toml`
+- 수정: `crates/serialization/Cargo.toml`
 
-- [ ] **Step 1: Write the dependency boundary expectation**
+- [ ] **단계 1: dependency 경계 기대치 작성**
 
-Run before editing:
+편집 전에 실행한다.
 
 ```bash
 rg -n 'serde|thiserror|bincode|serde_json|prost|apache-avro|fory|redis|testcontainers|sqlx' Cargo.toml crates/serialization/Cargo.toml
 ```
 
-Expected before change:
+변경 전 예상 결과:
 
-- root `Cargo.toml` has `thiserror` but no `serde`;
-- `crates/serialization/Cargo.toml` has no dependencies;
-- no adapter dependencies are present in `crates/serialization`.
+- root `Cargo.toml`에는 `thiserror`가 있지만 `serde`는 없다.
+- `crates/serialization/Cargo.toml`에는 dependency가 없다.
+- `crates/serialization`에는 adapter dependency가 없다.
 
-- [ ] **Step 2: Add only allowed workspace dependencies**
+- [ ] **단계 2: 허용된 workspace dependency만 추가**
 
-In root `Cargo.toml`, add this under `[workspace.dependencies]` near the other third-party dependencies:
+root `Cargo.toml`의 `[workspace.dependencies]`에서 다른 third-party dependency
+근처에 다음을 추가한다.
 
 ```toml
 serde = "1.0"
 ```
 
-In `crates/serialization/Cargo.toml`, replace the empty `[dependencies]` section with:
+`crates/serialization/Cargo.toml`의 빈 `[dependencies]` 섹션을 다음으로
+교체한다.
 
 ```toml
 [dependencies]
@@ -68,37 +98,38 @@ thiserror.workspace = true
 serde = { workspace = true, features = ["derive"] }
 ```
 
-Do not add `serde_json`, `bincode`, `prost`, `apache-avro`, Fory, Redis, Testcontainers, SQLx, compression, or resilience dependencies.
+`serde_json`, `bincode`, `prost`, `apache-avro`, Fory, Redis, Testcontainers,
+SQLx, compression 또는 resilience dependency는 추가하지 않는다.
 
-- [ ] **Step 3: Verify the dependency boundary**
+- [ ] **단계 3: dependency 경계 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo check -p bluetape-rs-serialization --all-features
 rg -n 'serde_json|bincode|prost|apache-avro|fory|redis|testcontainers|sqlx|bluetape-rs-compression' crates/serialization Cargo.toml
 ```
 
-Expected:
+예상 결과:
 
-- `cargo check` succeeds and refreshes `Cargo.lock` if needed.
-- `rg` returns no adapter dependency in `crates/serialization`.
+- `cargo check`가 성공하고 필요하면 `Cargo.lock`을 갱신한다.
+- `rg`가 `crates/serialization`에서 adapter dependency를 반환하지 않는다.
 
-## Task 2: Validation Newtypes And Trust Profiles
+## 작업 2: Validation newtype 및 trust profile
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-  - Create: `crates/serialization/src/error.rs`
-- Create: `crates/serialization/src/format.rs`
-- Create: `crates/serialization/src/trust.rs`
-- Create: `crates/serialization/tests/contracts.rs`
-- Modify: `crates/serialization/src/lib.rs`
+**파일:**
+- 생성: `crates/serialization/src/error.rs`
+- 생성: `crates/serialization/src/format.rs`
+- 생성: `crates/serialization/src/trust.rs`
+- 생성: `crates/serialization/tests/contracts.rs`
+- 수정: `crates/serialization/src/lib.rs`
 
-- [ ] **Step 1: Write failing tests for valid and invalid metadata tokens**
+- [ ] **단계 1: 유효·무효 metadata token의 실패 테스트 작성**
 
-Create `crates/serialization/tests/contracts.rs` with this initial test set:
+이 초기 테스트 집합으로 `crates/serialization/tests/contracts.rs`를 생성한다.
 
 ```rust
 use bluetape_rs_serialization::{
@@ -149,21 +180,23 @@ fn rejects_invalid_metadata_tokens() {
 }
 ```
 
-- [ ] **Step 2: Run RED**
+- [ ] **단계 2: RED 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected RED:
+RED 예상 결과:
 
-- test compile fails because `AdapterId`, `ContentType`, `PayloadVersion`, `SerializationFormat`, and `SerializationTrustProfile` are not defined.
+- `AdapterId`, `ContentType`, `PayloadVersion`, `SerializationFormat`,
+  `SerializationTrustProfile`이 정의되지 않아 테스트 컴파일이 실패한다.
 
-- [ ] **Step 3: Implement minimal error scaffold, validation newtypes, and trust enum**
+- [ ] **단계 3: 최소 error scaffold, validation newtype 및 trust enum 구현**
 
-Create the minimal `crates/serialization/src/error.rs` scaffold first so token constructors can return the crate error type during Task 2:
+Task 2 동안 token constructor가 크레이트 error type을 반환할 수 있도록 먼저
+최소 `crates/serialization/src/error.rs` scaffold를 생성한다.
 
 ```rust
 use thiserror::Error;
@@ -199,7 +232,7 @@ impl SerializationError {
 }
 ```
 
-Create `crates/serialization/src/format.rs`:
+`crates/serialization/src/format.rs`를 생성한다.
 
 ```rust
 use crate::SerializationError;
@@ -357,7 +390,7 @@ fn is_content_type_byte(byte: u8) -> bool {
 }
 ```
 
-Create `crates/serialization/src/trust.rs`:
+`crates/serialization/src/trust.rs`를 생성한다.
 
 ```rust
 /// Describes how much serialized data can influence deserialization.
@@ -376,7 +409,7 @@ pub enum SerializationTrustProfile {
 }
 ```
 
-Modify `crates/serialization/src/lib.rs` to add modules and exports:
+모듈과 export를 추가하도록 `crates/serialization/src/lib.rs`를 수정한다.
 
 ```rust
 mod error;
@@ -391,31 +424,31 @@ pub use format::{
 pub use trust::SerializationTrustProfile;
 ```
 
-- [ ] **Step 4: Run GREEN for token tests**
+- [ ] **단계 4: token test GREEN 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected:
+예상 결과:
 
-- metadata token tests pass with the minimal error scaffold.
+- 최소 error scaffold로 metadata token test가 통과한다.
 
-## Task 3: Typed Errors And Redacted Adapter Sources
+## 작업 3: Typed error 및 비식별화한 adapter source
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Create: `crates/serialization/src/error.rs`
-- Modify: `crates/serialization/tests/contracts.rs`
-- Modify: `crates/serialization/src/lib.rs`
+**파일:**
+- 생성: `crates/serialization/src/error.rs`
+- 수정: `crates/serialization/tests/contracts.rs`
+- 수정: `crates/serialization/src/lib.rs`
 
-- [ ] **Step 1: Extend tests for typed errors and redaction**
+- [ ] **단계 1: typed error 및 redaction 테스트 확장**
 
-Append to `crates/serialization/tests/contracts.rs`:
+`crates/serialization/tests/contracts.rs`에 추가한다.
 
 ```rust
 use bluetape_rs_serialization::{SerializationError, SerializationErrorKind};
@@ -499,21 +532,21 @@ fn adapter_source_errors_are_redacted_when_needed() {
 }
 ```
 
-- [ ] **Step 2: Run RED**
+- [ ] **단계 2: RED 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected RED:
+RED 예상 결과:
 
-- compile fails because error constructors and variants are not implemented.
+- error constructor와 variant가 구현되지 않아 컴파일이 실패한다.
 
-- [ ] **Step 3: Implement `SerializationError`**
+- [ ] **단계 3: `SerializationError` 구현**
 
-Create `crates/serialization/src/error.rs` with:
+다음 내용으로 `crates/serialization/src/error.rs`를 생성한다.
 
 ```rust
 use crate::{AdapterId, ContentType, PayloadVersion, SerializationFormat, SerializationTrustProfile};
@@ -825,9 +858,12 @@ impl StdError for AdapterFailureSource {
 }
 ```
 
-Do not expose the raw `AdapterSource` alias or a raw `Box<dyn Error>` source field in the public API. Public adapter failures must be created through explicit safe-source or redacted-source constructors, and Step 6-R must verify that no public API accepts an unwrapped raw adapter source.
+raw `AdapterSource` alias나 raw `Box<dyn Error>` source field를 public API에
+노출하지 않는다. 공개 adapter failure는 명시적인 safe-source 또는
+redacted-source constructor로만 생성해야 하며, Step 6-R에서 unwrapped raw
+adapter source를 받는 public API가 없는지 확인해야 한다.
 
-Modify the error export in `crates/serialization/src/lib.rs` after the full error implementation:
+전체 error 구현 후 `crates/serialization/src/lib.rs`의 error export를 수정한다.
 
 ```rust
 pub use error::{
@@ -835,32 +871,32 @@ pub use error::{
 };
 ```
 
-- [ ] **Step 4: Run GREEN for error tests**
+- [ ] **단계 4: error test GREEN 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected:
+예상 결과:
 
-- token and error tests pass.
+- token 및 error test가 통과한다.
 
-## Task 4: Config, Metadata, And Policy Contracts
+## 작업 4: Config, metadata 및 policy 계약
 
-**Complexity:** high
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 높음
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Create: `crates/serialization/src/config.rs`
-- Create: `crates/serialization/src/metadata.rs`
-- Modify: `crates/serialization/src/lib.rs`
-- Modify: `crates/serialization/tests/contracts.rs`
+**파일:**
+- 생성: `crates/serialization/src/config.rs`
+- 생성: `crates/serialization/src/metadata.rs`
+- 수정: `crates/serialization/src/lib.rs`
+- 수정: `crates/serialization/tests/contracts.rs`
 
-- [ ] **Step 1: Write failing tests for config defaults and payload consistency**
+- [ ] **단계 1: config default 및 payload 일관성 실패 테스트 작성**
 
-Append to `crates/serialization/tests/contracts.rs`:
+`crates/serialization/tests/contracts.rs`에 추가한다.
 
 ```rust
 use bluetape_rs_serialization::{
@@ -1046,21 +1082,22 @@ fn metadata_policy_enforces_version_and_size_boundaries() {
 }
 ```
 
-- [ ] **Step 2: Run RED**
+- [ ] **단계 2: RED 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected RED:
+RED 예상 결과:
 
-- compile fails because `SerializationConfig`, `PayloadMetadataPolicy`, and `SerializedPayload` are not defined.
+- `SerializationConfig`, `PayloadMetadataPolicy`, `SerializedPayload`가
+  정의되지 않아 컴파일이 실패한다.
 
-- [ ] **Step 3: Implement config and metadata**
+- [ ] **단계 3: config 및 metadata 구현**
 
-Create `crates/serialization/src/metadata.rs` with:
+다음 내용으로 `crates/serialization/src/metadata.rs`를 생성한다.
 
 ```rust
 use crate::{
@@ -1266,7 +1303,7 @@ impl PayloadMetadataPolicy {
 }
 ```
 
-Create `crates/serialization/src/config.rs` with:
+다음 내용으로 `crates/serialization/src/config.rs`를 생성한다.
 
 ```rust
 use crate::{
@@ -1396,7 +1433,7 @@ impl PayloadMetadataPolicy {
 }
 ```
 
-Modify `crates/serialization/src/lib.rs`:
+`crates/serialization/src/lib.rs`를 수정한다.
 
 ```rust
 mod config;
@@ -1406,33 +1443,33 @@ pub use config::{DEFAULT_MAX_PAYLOAD_SIZE, SerializationConfig};
 pub use metadata::{PayloadMetadata, PayloadMetadataPolicy, SerializedPayload};
 ```
 
-- [ ] **Step 4: Run GREEN for config and metadata tests**
+- [ ] **단계 4: config 및 metadata test GREEN 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected:
+예상 결과:
 
-- config, metadata, and policy tests pass.
+- config, metadata 및 policy test가 통과한다.
 
-## Task 5: Serde-Compatible Traits And Rustdoc Examples
+## 작업 5: Serde 호환 trait 및 Rustdoc 예제
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Create: `crates/serialization/src/traits.rs`
-- Modify: `crates/serialization/src/lib.rs`
-- Modify: `crates/serialization/src/config.rs`
-- Modify: `crates/serialization/src/metadata.rs`
-- Modify: `crates/serialization/tests/contracts.rs`
+**파일:**
+- 생성: `crates/serialization/src/traits.rs`
+- 수정: `crates/serialization/src/lib.rs`
+- 수정: `crates/serialization/src/config.rs`
+- 수정: `crates/serialization/src/metadata.rs`
+- 수정: `crates/serialization/tests/contracts.rs`
 
-- [ ] **Step 1: Write failing tests for trait implementation shape**
+- [ ] **단계 1: trait 구현 형태의 실패 테스트 작성**
 
-Append to `crates/serialization/tests/contracts.rs`:
+`crates/serialization/tests/contracts.rs`에 추가한다.
 
 ```rust
 use bluetape_rs_serialization::{BinarySerializer, Deserializer, Serializer};
@@ -1507,21 +1544,21 @@ fn traits_round_trip_with_caller_supplied_type() {
 }
 ```
 
-- [ ] **Step 2: Run RED**
+- [ ] **단계 2: RED 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected RED:
+RED 예상 결과:
 
-- compile fails because traits and `serde` derive dev usage are not wired.
+- trait와 `serde` derive dev usage가 연결되지 않아 컴파일이 실패한다.
 
-- [ ] **Step 3: Implement traits**
+- [ ] **단계 3: trait 구현**
 
-Create `crates/serialization/src/traits.rs`:
+`crates/serialization/src/traits.rs`를 생성한다.
 
 ```rust
 use crate::{PayloadMetadataPolicy, SerializedPayload, SerializationError};
@@ -1557,7 +1594,7 @@ where
 }
 ```
 
-Modify `crates/serialization/src/lib.rs`:
+`crates/serialization/src/lib.rs`를 수정한다.
 
 ```rust
 mod traits;
@@ -1565,23 +1602,25 @@ mod traits;
 pub use traits::{BinarySerializer, Deserializer, Serializer};
 ```
 
-The derive macro dev dependency was added in Task 1. The production dependency remains `serde.workspace = true` without requiring derive.
+derive macro dev dependency는 작업 1에서 추가했다. production dependency는
+derive를 요구하지 않는 `serde.workspace = true`로 유지한다.
 
-- [ ] **Step 4: Run GREEN for trait tests**
+- [ ] **단계 4: trait test GREEN 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --test contracts --all-features --locked
 ```
 
-Expected:
+예상 결과:
 
-- trait round-trip test passes.
+- trait round-trip test가 통과한다.
 
-- [ ] **Step 5: Add compile-checked Rustdoc examples**
+- [ ] **단계 5: 컴파일 검사 Rustdoc 예제 추가**
 
-Add `# Examples` and `# Errors` Rustdoc to public constructors and methods:
+다음 공개 constructor와 method에 `# Examples` 및 `# Errors` Rustdoc을
+추가한다.
 
 - `SerializationFormat::new`
 - `ContentType::new`
@@ -1595,36 +1634,40 @@ Add `# Examples` and `# Errors` Rustdoc to public constructors and methods:
 - `Deserializer`
 - `BinarySerializer`
 
-Each example must compile under doctest; examples may use `#` hidden setup lines to keep docs concise. Include one `compile_fail` Rustdoc example showing that borrowed decode targets that cannot satisfy `DeserializeOwned` are rejected.
+각 예제는 doctest에서 컴파일되어야 한다. 문서를 간결하게 유지하기 위해
+예제에서 `#` hidden setup line을 사용할 수 있다. `DeserializeOwned`를
+만족하지 못하는 borrowed decode target이 거부됨을 보여 주는 `compile_fail`
+Rustdoc 예제를 하나 포함한다.
 
-- [ ] **Step 6: Verify docs compile**
+- [ ] **단계 6: 문서 컴파일 검증**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --doc --all-features --locked
 RUSTDOCFLAGS="-D warnings" cargo doc -p bluetape-rs-serialization --all-features --no-deps --locked
 ```
 
-Expected:
+예상 결과:
 
-- doctests pass and crate docs build without warnings.
+- doctest가 통과하고 크레이트 문서가 경고 없이 빌드된다.
 
-## Task 6: Documentation Parity And Public Scope
+## 작업 6: 문서 동등성 및 공개 범위
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`
 
-**Files:**
-- Modify: `crates/serialization/README.md`
-- Modify: `crates/serialization/README.ko.md`
-- Modify: `README.md`
-- Modify: `README.ko.md`
-- Review: `WIP.md`
+**파일:**
+- 수정: `crates/serialization/README.md`
+- 수정: `crates/serialization/README.ko.md`
+- 수정: `README.md`
+- 수정: `README.ko.md`
+- 검토: `WIP.md`
 
-- [ ] **Step 1: Update crate README in English**
+- [ ] **단계 1: 영어 크레이트 README 갱신**
 
-In `crates/serialization/README.md`, replace bootstrap-only wording with contract wording. Include these sections:
+`crates/serialization/README.md`에서 bootstrap-only 문구를 contract 문구로
+교체한다. 다음 섹션을 포함한다.
 
 ```markdown
 ## Contracts
@@ -1652,9 +1695,9 @@ Version cache namespaces or key prefixes when changing format id, content type, 
 Payload-free diagnostic fields are: error kind, operation, format id, content type, version relation, trust profile, adapter id, payload size bucket, and configured size limit.
 ```
 
-- [ ] **Step 2: Update Korean README with equivalent content**
+- [ ] **단계 2: 동등한 내용으로 한국어 README 갱신**
 
-In `crates/serialization/README.ko.md`, mirror the same sections in Korean:
+`crates/serialization/README.ko.md`에서 같은 섹션을 한국어로 미러링한다.
 
 ```markdown
 ## Contracts
@@ -1682,73 +1725,76 @@ Format id, content type, trust profile, incompatible payload version이 바뀌�
 Payload-free diagnostic field는 error kind, operation, format id, content type, version relation, trust profile, adapter id, payload size bucket, configured size limit입니다.
 ```
 
-- [ ] **Step 3: Update root README pair**
+- [ ] **단계 3: root README 쌍 갱신**
 
-In `README.md` and `README.ko.md`, update the serialization package description from crate reservation/bootstrap to contract APIs:
+`README.md` 및 `README.ko.md`에서 serialization package 설명을 crate
+reservation/bootstrap에서 contract API로 갱신한다.
 
-English wording:
+영어 문구:
 
 ```markdown
 | `serialization` | active | Rust-native SerDe contracts: validated format metadata, trust profiles, typed errors, safe config defaults, and `serde`-compatible serializer/deserializer traits. Concrete adapters start in follow-up `0.5.0` issues. |
 ```
 
-Korean wording:
+한국어 문구:
 
 ```markdown
 | `serialization` | active | Rust-native SerDe contract: 검증된 format metadata, trust profile, typed error, safe config default, `serde` 호환 serializer/deserializer trait. Concrete adapter는 후속 `0.5.0` issue에서 시작합니다. |
 ```
 
-If the table wording differs, preserve the existing table shape and update only the serialization row.
+표 문구가 다르면 기존 표 형태를 보존하고 serialization 행만 갱신한다.
 
-- [ ] **Step 4: Review WIP impact**
+- [ ] **단계 4: WIP 영향 검토**
 
-Run:
+실행한다.
 
 ```bash
 rg -n "serialization|Serializer|Deserializer|trust profile|format id" WIP.md
 ```
 
-Expected:
+예상 결과:
 
-- WIP already describes #109 as typed contracts and does not need a scope change.
-- If WIP still says #109 is pending after implementation, add one short note under the 0.5.0 task queue that issue #109 implements contracts only and adapter work remains #111.
+- WIP는 이미 #109를 typed contract로 설명하므로 범위 변경이 필요하지 않다.
+- 구현 후에도 WIP가 #109를 pending으로 표시하면 0.5.0 task queue 아래에
+  이슈 #109는 contract만 구현하고 adapter 작업은 #111에 남긴다는 짧은
+  메모를 추가한다.
 
-## Task 7: Full Validation And Review-Ready State
+## 작업 7: 전체 검증 및 검토 준비 상태
 
-**Complexity:** medium
-**Required skill:** `$bluetape-rs-patterns`, `verification-before-completion`
+**복잡도:** 중간
+**필수 스킬:** `$bluetape-rs-patterns`, `verification-before-completion`
 
-**Files:**
-- All changed files
+**파일:**
+- 모든 변경 파일
 
-- [ ] **Step 1: Run formatting**
+- [ ] **단계 1: formatting 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo fmt --all --check
 ```
 
-Expected:
+예상 결과:
 
-- exit code 0.
+- exit code가 0이다.
 
-- [ ] **Step 2: Run targeted serialization tests**
+- [ ] **단계 2: 대상 serialization test 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test -p bluetape-rs-serialization --all-features --locked
 cargo test -p bluetape-rs-serialization --doc --all-features --locked
 ```
 
-Expected:
+예상 결과:
 
-- all serialization unit, integration, and doctests pass.
+- 모든 serialization unit, integration 및 doctest가 통과한다.
 
-- [ ] **Step 3: Run root facade feature checks**
+- [ ] **단계 3: root facade feature 검사 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo check -p bluetape-rs --locked
@@ -1756,14 +1802,14 @@ cargo check -p bluetape-rs --no-default-features --locked
 cargo check -p bluetape-rs --features serialization --locked
 ```
 
-Expected:
+예상 결과:
 
-- default and no-default builds remain unchanged;
-- `--features serialization` resolves the contract crate.
+- default 및 no-default build가 변경되지 않는다.
+- `--features serialization`이 contract crate를 해석한다.
 
-- [ ] **Step 4: Run workspace validation**
+- [ ] **단계 4: workspace validation 실행**
 
-Run:
+실행한다.
 
 ```bash
 cargo test --workspace --all-features --locked
@@ -1772,26 +1818,27 @@ RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --lock
 git diff --check
 ```
 
-Expected:
+예상 결과:
 
-- all commands exit 0.
+- 모든 명령이 exit 0으로 종료한다.
 
-- [ ] **Step 5: Verify dependency boundary**
+- [ ] **단계 5: dependency 경계 검증**
 
-Run:
+실행한다.
 
 ```bash
 rg -n 'serde_json|bincode|prost|apache-avro|fory|redis|testcontainers|sqlx|bluetape-rs-compression' crates/serialization Cargo.toml Cargo.lock
 ```
 
-Expected:
+예상 결과:
 
-- no production adapter dependency is introduced by issue #109.
-- If a string appears only in old docs or unrelated workspace package metadata, record the path and reason in the Step 6 report.
+- 이슈 #109가 production adapter dependency를 도입하지 않는다.
+- 문자열이 오래된 문서나 관련 없는 workspace package metadata에만 나타나면
+  Step 6 보고서에 경로와 이유를 기록한다.
 
-- [ ] **Step 6: Prepare Step 6-R review input**
+- [ ] **단계 6: Step 6-R 검토 입력 준비**
 
-Run:
+실행한다.
 
 ```bash
 git status --short --branch
@@ -1799,56 +1846,63 @@ git diff --stat origin/develop...HEAD
 git diff --name-only origin/develop...HEAD
 ```
 
-Expected:
+예상 결과:
 
-- all changes are intentional issue #109 files;
-- no unrelated root checkout changes;
-- evidence is ready for Step 6-R code review after implementation.
+- 모든 변경이 의도한 이슈 #109 파일이다.
+- 관련 없는 root checkout 변경이 없다.
+- 구현 후 Step 6-R 코드 검토에 사용할 근거가 준비된다.
 
-- [ ] **Step 7: Complete required workflow review gates before PR readiness**
+- [ ] **단계 7: PR 준비 전에 필수 workflow 검토 gate 완료**
 
-After implementation and validation:
+구현과 검증 후:
 
-- record Step 6-R local/native code review evidence with explicit `P0=0 P1=0`;
-- include allocation/copy review evidence for `SerializedPayload`, metadata construction, and clone behavior;
-- create/update the PR with the required final `## DoD Status` section;
-- run Step 7-R post-PR review before any CI/merge-ready claim;
-- do not claim merge readiness until Step 7-R also has `P0=0 P1=0`.
+- 명시적인 `P0=0 P1=0`과 함께 Step 6-R 로컬/네이티브 코드 검토 근거를
+  기록한다.
+- `SerializedPayload`, metadata construction 및 clone behavior의
+  allocation/copy review 근거를 포함한다.
+- 필요한 마지막 `## DoD Status` 섹션을 포함해 PR을 생성/갱신한다.
+- CI/병합 준비 상태를 주장하기 전에 Step 7-R PR 후 검토를 실행한다.
+- Step 7-R도 `P0=0 P1=0`이 될 때까지 병합 준비 상태를 주장하지 않는다.
 
-## Verification Matrix
+## 검증 매트릭스
 
-| Requirement | Plan coverage |
+| 요구 사항 | 계획 범위 |
 |---|---|
-| Rust-native module split | Tasks 2-5 |
-| `serde`-compatible contracts | Task 5 |
-| Safe defaults and typed config validation | Task 4 |
-| Format/content/adapter/version validation | Task 2 |
-| Payload-size consistency | Task 4 |
-| Metadata policy mismatch mapping | Task 4, including format/content/version/trust/adapter id/size |
-| Adapter-id policy wildcard and strict matching | Task 4 |
-| Direction-bearing error context | Tasks 3-4 |
-| Error context without payload bytes and source-redaction bypass resistance | Task 3 |
-| Cache rollout/operator guidance | Task 6 |
-| Payload-free diagnostic fields | Task 6 |
-| Large payload clone/allocation review | Task 7 Step 7 |
-| README/Rustdoc/README.ko parity | Tasks 5-6 |
-| No adapter dependencies | Tasks 1 and 7 |
+| Rust 네이티브 모듈 분할 | Tasks 2-5 |
+| `serde` 호환 계약 | Task 5 |
+| 안전한 기본값 및 타입 지정 config 검증 | Task 4 |
+| Format/content/adapter/version 검증 | Task 2 |
+| Payload-size 일관성 | Task 4 |
+| 메타데이터 정책 불일치 매핑 | Task 4, format/content/version/trust/adapter id/size 포함 |
+| Adapter-id 정책 와일드카드 및 엄격 일치 | Task 4 |
+| 방향을 포함한 오류 컨텍스트 | Tasks 3-4 |
+| 페이로드 바이트 없는 오류 컨텍스트 및 source-redaction 우회 저항성 | Task 3 |
+| 캐시 롤아웃/운영자 지침 | Task 6 |
+| 페이로드 없는 진단 필드 | Task 6 |
+| 대형 페이로드 clone/allocation 검토 | Task 7 단계 7 |
+| README/Rustdoc/README.ko 동등성 | Tasks 5-6 |
+| 어댑터 의존성 없음 | Tasks 1 및 7 |
 
-## Rollback And Re-run Points
+## 롤백 및 재실행 지점
 
-- If `serde` or `thiserror` dependency wiring breaks root feature checks, revert Task 1 only and re-run Task 1 from RED.
-- If validation newtypes create clippy/doc friction, keep tests from Task 2 and refactor implementation without changing public constants or accepted grammar.
-- If `SerializedPayload` design proves awkward in Task 4 or Task 5, return to the spec before implementation continues; do not silently reintroduce caller-supplied payload size.
-- If README parity drifts, update both README files in the same commit and verify with `rg` against actual exported names.
+- `serde` 또는 `thiserror` dependency 연결로 root feature 검사가 깨지면 Task 1만
+  되돌리고 RED부터 Task 1을 다시 실행한다.
+- validation newtype가 clippy/doc 마찰을 만들면 Task 2의 테스트는 유지하고,
+  public constant나 허용 문법을 바꾸지 않은 채 구현을 리팩터링한다.
+- Task 4 또는 Task 5에서 `SerializedPayload` 설계가 사용하기 어렵다면 구현을
+  계속하기 전에 사양으로 돌아간다. caller-supplied payload size를 조용히
+  다시 도입하지 않는다.
+- README 동등성이 어긋나면 같은 commit에서 두 README 파일을 갱신하고 실제
+  export name을 기준으로 `rg`로 확인한다.
 
-## Step 3 Checklist Completion Report
+## 단계 3 체크리스트 완료 보고
 
-| Item | Status | Notes |
+| 항목 | 상태 | 메모 |
 |------|--------|-------|
-| Plan path confirmed inside feature worktree | Done | `docs/superpowers/plans/2026-06-13-serialization-contracts-plan.md` |
-| All tasks have complexity labels | Done | Tasks 1-7 |
-| `$bluetape-rs-patterns` applied to code-bearing tasks | Done | Explicit in each task |
-| TDD red/green steps included | Done | Tasks 2-5 |
-| Tests and verification tasks included | Done | Task 7 |
-| README locale set tasks included | Done | Task 6 |
-| Risky ordering/dependency assumptions explicit | Done | Rollback and re-run points |
+| feature worktree 안의 plan path 확인 | 완료 | `docs/superpowers/plans/2026-06-13-serialization-contracts-plan.md` |
+| 모든 작업에 복잡도 표기 | 완료 | Tasks 1-7 |
+| 코드 작업에 `$bluetape-rs-patterns` 적용 | 완료 | 각 작업에 명시 |
+| TDD red/green 단계 포함 | 완료 | Tasks 2-5 |
+| 테스트 및 검증 작업 포함 | 완료 | Task 7 |
+| README 로케일 집합 작업 포함 | 완료 | Task 6 |
+| 위험한 순서/dependency 가정 명시 | 완료 | 롤백 및 재실행 지점 |
