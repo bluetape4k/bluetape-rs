@@ -1,38 +1,42 @@
-# Lesson: Serialization Crate Bootstrap
+# 교훈: 직렬화 크레이트 부트스트랩
 
-Date: 2026-06-13
-Scope: issue #108, `bluetape-rs-serialization` bootstrap
+날짜: 2026-06-13
+범위: 이슈 #108, `bluetape-rs-serialization` 부트스트랩
 
-## What Changed
+## 변경 사항
 
-- Added the `crates/serialization` workspace crate as package
-  `bluetape-rs-serialization` and library `bluetape_rs_serialization`.
-- Added the opt-in root `serialization` facade feature without changing root
-  defaults.
-- Kept issue #108 to crate/facade/docs bootstrap only; serializer traits,
-  adapters, and runtime binary encoding remain later `0.5.0` work.
+- `crates/serialization` 워크스페이스 크레이트를 패키지
+  `bluetape-rs-serialization` 및 라이브러리 `bluetape_rs_serialization`으로
+  추가했다.
+- 루트 기본값은 변경하지 않고 옵트인 루트 `serialization` 파사드 피처를
+  추가했다.
+- 이슈 #108의 범위를 크레이트/파사드/docs 부트스트랩으로만 유지했다. 직렬화
+  트레이트, 어댑터, 런타임 바이너리 인코딩은 이후 `0.5.0` 작업으로 남겨 둔다.
 
-## Lessons
+## 교훈
 
-- New crate `lib.rs` files must follow sibling crate style first. Long roadmap,
-  issue history, usage guide, and non-goal prose belongs in README/spec/plan
-  artifacts, not in the crate root.
-- Public README snippets for unreleased crates must not point callers at an
-  already-published version that lacks the new crate or feature. Use git/path or
-  explicit post-release examples until release-prep updates versions.
-- WIP/roadmap traceability matters even for bootstrap issues. Name the package,
-  library, root feature, and non-goals where the milestone scope is described.
-- Step 6-R evidence files are part of the gate, not after-the-fact polish. Add
-  the implementation review artifact before claiming the gate is closed.
+- 새 크레이트의 `lib.rs`는 먼저 자매 크레이트의 스타일을 따라야 한다. 긴
+  로드맵, 이슈 이력, 사용 안내, 비목표 설명은 크레이트 루트가 아니라
+  README/spec/plan 아티팩트에 작성한다.
+- 릴리스되지 않은 크레이트의 공개 README 조각은 새 크레이트 또는 피처가
+  없는 이미 배포된 버전을 호출자에게 가리켜서는 안 된다. 릴리스 준비에서
+  버전을 갱신할 때까지 git/path 또는 명시적인 릴리스 후 예제를 사용한다.
+- 부트스트랩 이슈에서도 WIP/로드맵 추적성이 중요하다. 마일스톤 범위를
+  설명하는 곳에 패키지, 라이브러리, 루트 피처, 비목표를 명시한다.
+- Step 6-R 근거 파일은 사후 꾸미기가 아니라 게이트의 일부다. 게이트가
+  닫혔다고 말하기 전에 구현 검토 아티팩트를 추가한다.
 
-## Checks That Caught The Gaps
+## 차이를 발견한 검사
 
-- Step 6-R user/caller review caught the unpublished `0.4.0` Cargo snippets.
-- Step 6-R operator review caught missing tracked review and lesson artifacts.
-- Step 6-R stability review caught weak `WIP.md` crate/facade traceability.
+- Step 6-R 사용자/호출자 검토에서 배포되지 않은 `0.4.0` Cargo 조각을
+  발견했다.
+- Step 6-R 운영자 검토에서 추적되지 않은 검토 및 lesson 아티팩트의 누락을
+  발견했다.
+- Step 6-R 안정성 검토에서 `WIP.md`의 크레이트/파사드 추적성이 약한 문제를
+  발견했다.
 
-## Forward Rule
+## 앞으로 적용할 규칙
 
-For every future `bluetape-rs` crate bootstrap, compare at least two sibling
-crate roots before writing `lib.rs`, keep public Cargo snippets release-aware,
-and create the Step 6-R review artifact before PR creation.
+앞으로 `bluetape-rs`에서 크레이트를 부트스트랩할 때마다 `lib.rs`를 작성하기
+전에 최소 두 개의 자매 크레이트 루트를 비교하고, 공개 Cargo 조각이 릴리스
+상태를 반영하도록 유지하며, PR 생성 전에 Step 6-R 검토 아티팩트를 만든다.

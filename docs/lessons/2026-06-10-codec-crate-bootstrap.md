@@ -1,29 +1,29 @@
-# Codec Crate Bootstrap Lessons
+# 코덱 크레이트 부트스트랩에서 얻은 교훈
 
-Date: 2026-06-10
-Issue: #53
+날짜: 2026-06-10
+이슈: #53
 
-## What Happened
+## 발생한 일
 
-The `0.3.0` codec line needed a crate boundary before the first encoder APIs.
-The safe slice was workspace registration, an additive root facade feature,
-crate README/Rustdoc, and a smoke test only.
+`0.3.0` 코덱 라인은 첫 인코더 API를 추가하기 전에 크레이트 경계가 필요했다.
+안전한 범위는 워크스페이스 등록, 루트 파사드에 기능을 추가하는 일, 크레이트
+README/Rustdoc, 스모크 테스트뿐이었다.
 
-## What Surprised Us
+## 예상 밖의 문제
 
-`cargo check --locked` failed before `Cargo.lock` was updated because the new
-workspace package had to be recorded. The repair was to run the same check
-without `--locked` in offline mode first, then rerun the locked validation.
+`cargo check --locked`가 `Cargo.lock`을 업데이트하기 전에 새 워크스페이스
+패키지를 기록해야 해서 실패했다. 먼저 오프라인 모드에서 `--locked` 없이
+같은 검사를 실행하고, 그 다음 잠금 검증을 다시 실행해서 해결했다.
 
-Rustdoc also rejected a comment-only Rust code block under `-D warnings`; crate
-bootstrap docs should mark non-compiling examples as `text` instead of relying
-on comment-only Rust blocks.
+Rustdoc은 `-D warnings`에서 주석만 있는 Rust 코드 블록도 거부했다. 크레이트
+부트스트랩 문서에서는 컴파일되지 않는 예제를 주석만 있는 Rust 블록에
+의존하지 말고 `text`로 표시해야 한다.
 
-## Next Time
+## 다음에 할 일
 
-- For new Rust workspace crates, expect one lockfile refresh before locked
-  validation can pass.
-- Keep bootstrap issues free of behavior implementation so follow-up issues can
-  review API and error contracts independently.
-- Mark placeholder manifest snippets as `toml` or `text`; do not use empty or
-  comment-only Rust code blocks in crate Rustdoc.
+- 새 Rust 워크스페이스 크레이트에서는 잠금 검증이 통과하기 전에 락파일을 한 번
+  갱신해야 한다고 예상한다.
+- 부트스트랩 이슈에는 동작 구현을 넣지 않아 후속 이슈에서 API와 오류 계약을
+  독립적으로 검토할 수 있게 한다.
+- 자리표시자 매니페스트 조각은 `toml` 또는 `text`로 표시하고, 크레이트 Rustdoc에서
+  비어 있거나 주석만 있는 Rust 코드 블록을 사용하지 않는다.

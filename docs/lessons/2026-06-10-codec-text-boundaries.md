@@ -1,30 +1,30 @@
-# Codec Text Boundaries
+# 코덱 텍스트 경계
 
-Date: 2026-06-10
-Issue: #56
+날짜: 2026-06-10
+이슈: #56
 
-## Decision
+## 결정
 
-Keep `bluetape-rs-codec` binary/text helpers limited to explicit UTF-8
-text/byte boundary functions:
+`bluetape-rs-codec`의 바이너리/텍스트 헬퍼는 다음과 같은 명시적인 UTF-8
+텍스트/바이트 경계 함수로 한정한다.
 
 - `encode_utf8_text`
 - `decode_utf8_text`
 - `decode_utf8_text_lossy`
 
-These helpers belong in codec only when a caller is moving between text and a
-binary encoder/decoder. They are not a replacement for `bluetape-rs-core`
-string utilities.
+이 헬퍼는 호출자가 텍스트와 바이너리 인코더/디코더 사이를 변환할 때에만
+코덱에 둔다. `bluetape-rs-core`의 문자열 유틸리티를 대체하지 않는다.
 
-## Rejected
+## 채택하지 않은 범위
 
-- Broad text normalization helpers: string utility scope.
-- Compression registry helpers: `0.4.0`.
-- serde/JSON/CBOR/MessagePack wrappers: `0.5.0`.
-- Encryption, signing, checksums, and database bind encoding: separate future
-  package boundaries.
+- 광범위한 텍스트 정규화 헬퍼: 문자열 유틸리티 범위.
+- 압축 레지스트리 헬퍼: `0.4.0`.
+- serde/JSON/CBOR/MessagePack 래퍼: `0.5.0`.
+- 암호화, 서명, 체크섬, 데이터베이스 바인딩 인코딩: 향후 별도 패키지
+  경계로 분리한다.
 
-## Validation Note
+## 검증 메모
 
-Tests must prove both non-lossy UTF-8 rejection and explicit lossy opt-in so the
-codec boundary does not silently corrupt decoded text.
+테스트는 비손실 UTF-8 거부와 명시적인 손실 허용 선택(opt-in)을 모두
+검증해야 한다. 그래야 코덱 경계에서 디코드된 텍스트가 조용히 손상되지
+않는다.

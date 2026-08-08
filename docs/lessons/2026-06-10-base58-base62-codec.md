@@ -1,26 +1,30 @@
-# Base58 And Base62 Codec Lessons
+# Base58 및 Base62 코덱에서 얻은 교훈
 
-Date: 2026-06-10
-Issue: #63
+날짜: 2026-06-10
+이슈: #63
 
-## What Happened
+## 발생한 일
 
-Base58 and Base62 were added as byte-oriented codec primitives instead of
-mechanically porting the Kotlin/JVM object and extension API shape. Base58 uses
-the Bitcoin alphabet and Base62 uses the bluetape numeric-first alphabet.
+Base58과 Base62를 Kotlin/JVM의 객체 및 확장 API 형태로 기계적으로 이식하지
+않고, 바이트 지향 코덱 기본 기능으로 추가했다. Base58은 Bitcoin 알파벳을
+사용하고 Base62는 bluetape 숫자 우선 알파벳을 사용한다.
 
-## What Surprised Us
+## 예상 밖의 문제
 
-The bluetape4k Kotlin line has two Base62 concepts: integer/UUID-oriented
-`Base62` and KSUID-local byte-oriented `BytesBase62`. The Rust issue asked for
-byte slices in and out, so the codec crate should expose byte-oriented
-primitives now and leave integer/UUID rendering to a later ID-focused boundary.
+bluetape4k Kotlin 계열에는 Base62 개념이 두 가지 있다. 하나는 정수/UUID
+지향 `Base62`이고, 다른 하나는 KSUID 전용 바이트 지향 `BytesBase62`이다.
+Rust 이슈는 바이트 슬라이스를 입력과 출력으로 요구하므로, 코덱 크레이트는
+지금 바이트 지향 기본 기능을 제공하고 정수/UUID 렌더링은 이후 ID 중심
+경계에 맡겨야 한다.
 
-The common Base58 sample `2NEpo7TZRRrLZSi2U` is for `Hello World!`, not
-`Hello, World!`. Keep known-vector text exact when documenting examples.
+널리 쓰이는 Base58 예제 `2NEpo7TZRRrLZSi2U`는 `Hello World!`에 대한 값이며
+`Hello, World!`에 대한 값이 아니다. 예제를 문서화할 때는 알려진 벡터의
+텍스트를 정확하게 유지해야 한다.
 
-## Next Time
+## 다음에 할 일
 
-- Name the alphabet and leading-zero policy in public docs for every base-family codec.
-- Keep UUID and integer rendering out of `bluetape-rs-codec` until an ID-focused crate or module owns that API shape.
-- Add thread stress tests for stateless codec paths when shared alphabets or conversion helpers are reused across codecs.
+- 모든 base 계열 코덱의 공개 문서에 알파벳과 선행 0 처리 정책을 명시한다.
+- ID 중심 크레이트 또는 모듈이 해당 API 형태를 맡을 때까지 UUID와 정수
+  렌더링을 `bluetape-rs-codec`에서 제외한다.
+- 공유 알파벳이나 변환 헬퍼를 여러 코덱에서 재사용할 때는 상태가 없는 코덱
+  경로에 대한 스레드 스트레스 테스트를 추가한다.

@@ -1,35 +1,34 @@
-# Strict Hex Codec
+# 엄격한 hex 코덱
 
-## Context
+## 맥락
 
-Issue #54 is the first behavioral API in the `0.3.0` codec crate. It needed to
-stay narrow enough to unblock Base64 and binary/text helpers without turning
-`bluetape-rs-codec` into a broad utility bag.
+이슈 #54는 `0.3.0` 코덱 크레이트의 첫 동작 API다. `bluetape-rs-codec`를 범용
+유틸리티 모음으로 만들지 않으면서 Base64와 바이너리/텍스트 헬퍼를 진행할 수
+있도록 범위를 충분히 좁게 유지해야 했다.
 
-## Decision
+## 결정
 
-Keep strict hex as first-party code with four public items:
+엄격한 hex는 다음 네 가지 공개 항목을 갖는 프로젝트 자체 코드로 유지한다.
 
 - `encode_hex_lower`
 - `encode_hex_upper`
 - `decode_hex`
 - `HexDecodeError`
 
-The decoder accepts only ASCII hexadecimal digits and rejects odd lengths before
-scanning nibbles. Invalid characters report zero-based byte positions and the
-invalid byte value.
+디코더는 ASCII 16진수 숫자만 허용하고 니블을 검사하기 전에 홀수 길이를
+거부한다. 잘못된 문자는 0부터 시작하는 바이트 위치와 잘못된 바이트 값을
+보고한다.
 
-## Rationale
+## 근거
 
-- The implementation is small, allocation behavior is explicit, and no external
-  dependency is needed.
-- Byte-position errors are more useful for service diagnostics than broad string
-  parse failures.
-- Prefix handling belongs outside the strict decoder. Callers that accept `0x`
-  or separators should normalize those inputs explicitly before calling
-  `decode_hex`.
+- 구현이 작고 메모리 할당 동작이 명확하며 외부 의존성이 필요하지 않다.
+- 바이트 위치를 포함한 오류가 광범위한 문자열 파싱 실패보다 서비스 진단에
+  유용하다.
+- 접두사 처리는 엄격한 디코더 외부의 책임이다. `0x` 또는 구분 기호를
+  허용하는 호출자는 `decode_hex`를 호출하기 전에 입력을 명시적으로
+  정규화해야 한다.
 
-## Follow-Up
+## 후속 작업
 
-Base64 work in #55 can follow the same shape: small public functions, typed
-decode errors, strict default behavior, and focused README/Rustdoc examples.
+#55의 Base64 작업도 작은 공개 함수, 타입이 지정된 디코드 오류, 엄격한 기본
+동작, 범위를 좁힌 README/Rustdoc 예제라는 같은 형태를 따를 수 있다.

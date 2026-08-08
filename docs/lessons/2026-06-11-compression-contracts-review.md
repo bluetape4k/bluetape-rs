@@ -1,29 +1,28 @@
-# Compression Contracts Review Lessons
+# 압축 계약 검토에서 얻은 교훈
 
-## Context
+## 맥락
 
-Issue #75 added the first public compression config, error, and stream contracts
-for the 0.4.0 compression line.
+이슈 #75는 0.4.0 압축 라인의 첫 공개 압축 구성, 오류, 스트림 계약을
+추가했다.
 
-## Lessons
+## 교훈
 
-- Safety-limit contracts must be allocation-aware. For lz4 and snappy one-shot
-  decoders, check declared decompressed size before calling APIs that allocate
-  the full output buffer.
-- Public trait expansion should preserve existing implementor source
-  compatibility when possible. Add default methods or split extension traits
-  before adding required methods.
-- Empty default feature sets need lint gates, not only tests. `default = []`
-  should pass no-default clippy with `-D warnings`.
-- Streaming contracts need failure-path tests. Inject failing `Read` and
-  `Write` implementations to prove typed error variants and `source()`
-  traversal, not just successful `Vec` round-trips.
-- Rustdoc must carry wire-format caveats at the API discovery point. README
-  warnings are not enough when registry enum variants expose both one-shot and
-  stream helpers.
+- 안전 한도 계약은 메모리 할당을 고려해야 한다. lz4와 snappy의 일괄 처리
+  디코더에서는 전체 출력 버퍼를 할당하는 API를 호출하기 전에 선언된
+  압축 해제 크기를 확인한다.
+- 공개 트레이트를 확장할 때는 가능하면 기존 구현자의 소스 호환성을 유지한다.
+  필수 메서드를 추가하기 전에 기본 메서드를 추가하거나 확장 트레이트를
+  분리한다.
+- 비어 있는 기본 피처 집합에는 테스트뿐 아니라 린트 게이트도 필요하다.
+  `default = []`는 `-D warnings`를 적용하고 기본 피처를 끈 clippy를 통과해야 한다.
+- 스트리밍 계약에는 실패 경로 테스트가 필요하다. 실패하는 `Read`와
+  `Write` 구현을 주입해 타입이 지정된 오류 변형과 `source()` 순회를 검증하고,
+  성공적인 `Vec` 왕복만 테스트하지 않는다.
+- Rustdoc은 API를 발견하는 지점에 와이어 포맷의 주의 사항을 담아야 한다.
+  레지스트리 열거형 변형이 일괄 처리와 스트림 헬퍼를 모두 노출할 때는 README
+  경고만으로 충분하지 않다.
 
-## Follow-up Guard
+## 후속 규칙
 
-For future codec/compression APIs, include source-compatibility tests for public
-traits and feature-matrix clippy in the local Step 6-R evidence before PR
-creation.
+향후 코덱/압축 API를 추가할 때는 PR을 만들기 전에 로컬 Step 6-R 근거에
+공개 트레이트의 소스 호환성 테스트와 피처 매트릭스 clippy를 포함한다.
