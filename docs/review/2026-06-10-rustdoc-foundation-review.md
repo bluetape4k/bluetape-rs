@@ -1,12 +1,12 @@
-# Rustdoc Foundation Review
+# Rustdoc foundation 검토
 
-Issue: #25
-Branch: `docs/issue-25-rustdoc`
-Date: 2026-06-10
+이슈: #25
+브랜치: `docs/issue-25-rustdoc`
+날짜: 2026-06-10
 
-## Scope
+## 범위
 
-Reviewed Rustdoc-only changes across:
+다음 영역의 Rustdoc-only 변경을 검토했습니다.
 
 - `crates/core/src/error.rs`
 - `crates/core/src/hex.rs`
@@ -19,36 +19,41 @@ Reviewed Rustdoc-only changes across:
 - `crates/test/src/concurrent.rs`
 - `crates/test/src/temp_dir.rs`
 
-## 7-Tier Review
+## 7-Tier 검토
 
-### Tier 1 - Contract Accuracy
+### Tier 1 - Contract 정확성
 
-PASS. `# Errors` sections match the implemented `Result` branches:
+통과. `# Errors` section이 구현된 `Result` branch와 일치합니다.
 
-- Range helpers document invalid range, out-of-range, and non-finite float paths.
-- String helpers document empty, blank, and negative byte-limit paths.
-- Logging subscriber builders document environment/filter parse failures.
-- Test helpers document invalid bounds, operation failures, and join/thread failures.
+- Range helper는 invalid range, out-of-range, non-finite float 경로를 설명합니다.
+- String helper는 empty, blank, negative byte-limit 경로를 설명합니다.
+- Logging subscriber builder는 environment/filter parse failure를 설명합니다.
+- Test helper는 invalid bound, operation failure, join/thread failure를 설명합니다.
 
-### Tier 2 - Rustdoc Compile Reliability
+### Tier 2 - Rustdoc 컴파일 신뢰성
 
-PASS. All added doctests compile and run under `cargo test --workspace`.
+통과. 추가한 모든 doctest가 `cargo test --workspace`에서 컴파일되고 실행됩니다.
 
-### Tier 3 - Panic And Safety Accuracy
+### Tier 3 - Panic 및 safety 정확성
 
-PASS. No `# Safety` sections were added because the public API does not expose unsafe functions or unsafe traits. `# Panics` is limited to `CapturedLogs` methods that call `Mutex::lock().expect(...)`.
+통과. 공개 API가 unsafe function이나 unsafe trait를 노출하지 않으므로
+`# Safety` section을 추가하지 않았습니다. `# Panics`는
+`Mutex::lock().expect(...)`를 호출하는 `CapturedLogs` method로 제한됩니다.
 
-### Tier 4 - Public API Behavior
+### Tier 4 - 공개 API 동작
 
-PASS. The diff adds documentation only. No function bodies, type definitions, dependency declarations, or feature flags were changed.
+통과. Diff는 문서만 추가합니다. Function body, type definition, dependency
+declaration, feature flag는 변경하지 않았습니다.
 
-### Tier 5 - Library User Experience
+### Tier 5 - Library 사용자 경험
 
-PASS. Examples cover common use cases for validation helpers, correlation IDs, capture subscribers, async assertions, concurrency testers, and temporary directories.
+통과. 예시가 validation helper, correlation ID, capture subscriber, async
+assertion, concurrency tester, temporary directory의 일반적인 사용 사례를
+다룹니다.
 
-### Tier 6 - Validation Evidence
+### Tier 6 - 검증 근거
 
-PASS.
+통과.
 
 - `git diff --check`
 - `cargo fmt --all --check`
@@ -57,19 +62,22 @@ PASS.
 - `cargo doc --workspace --no-deps`
 - `RUSTDOCFLAGS='-D warnings' cargo doc --workspace --no-deps`
 
-### Tier 7 - External Review
+### Tier 7 - 외부 검토
 
-PARTIAL. A Codex native `code-reviewer` subagent was started for read-only review, but the agent failed with a network stream error before completion. Local 7-Tier review was completed instead, and stricter rustdoc warning validation passed.
+부분 통과. Codex native `code-reviewer` subagent를 read-only 검토로 시작했으나
+완료 전에 network stream error로 실패했습니다. 대신 로컬 7-Tier 검토를
+완료했고 stricter rustdoc warning validation을 통과했습니다.
 
-## Findings
+## 발견 사항
 
-No P0/P1/P2/P3 findings.
+P0/P1/P2/P3 발견 사항이 없습니다.
 
-## Verdict
+## 판정
 
-PASS.
+PASS
 
-P0 count: 0
-P1 count: 0
+P0 개수: 0
+P1 개수: 0
 
-Remaining risk: external subagent review was unavailable due to transport failure, but local review plus doctest, clippy, and rustdoc warning gates passed.
+잔여 위험: 외부 subagent 검토는 transport failure로 사용할 수 없었지만,
+로컬 검토와 doctest, clippy, rustdoc warning gate는 통과했습니다.

@@ -1,13 +1,13 @@
 # Research
 
-This directory stores repo-local research records for `bluetape-rs`.
+이 디렉터리는 `bluetape-rs`의 repository-local research 기록을 보관합니다.
 
-The wiki remains the durable cross-repository knowledge base. Documents here are
-the implementation-facing summaries that future issues, plans, and PRs in this
-repository should cite.
+Wiki는 repository를 가로지르는 영속적인 지식 기반입니다. 이 디렉터리의
+문서는 이후 이 repository의 이슈, plan, PR이 인용해야 하는 구현 중심
+요약입니다.
 
-## Index
+## 색인
 
-| Date | Document | Purpose |
+| 날짜 | 문서 | 목적 |
 |---|---|---|
-| 2026-06-08 | [Backend library feasibility](2026-06-08-backend-library-feasibility.md) | Rust-native feasibility and roadmap for SQL, leader, AWS, audit, graph, text, and workshop capabilities. |
+| 2026-06-08 | [Backend library feasibility](2026-06-08-backend-library-feasibility.md) | SQL, leader, AWS, audit, graph, text, workshop capability에 대한 Rust-native feasibility 및 roadmap |

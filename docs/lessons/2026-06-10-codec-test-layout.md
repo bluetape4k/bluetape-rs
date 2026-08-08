@@ -1,12 +1,12 @@
-# Codec Test Layout
+# 코덱 테스트 배치
 
-Date: 2026-06-10
-Issue: #57
+날짜: 2026-06-10
+이슈: #57
 
-## Decision
+## 결정
 
-Keep public `bluetape-rs-codec` behavior tests in integration tests under
-`crates/codec/tests/`:
+공개 `bluetape-rs-codec` 동작 테스트는
+`crates/codec/tests/` 아래 integration test로 유지합니다.
 
 - `base58.rs`
 - `base62.rs`
@@ -14,15 +14,15 @@ Keep public `bluetape-rs-codec` behavior tests in integration tests under
 - `hex.rs`
 - `text.rs`
 
-This exercises the public crate boundary that downstream users call.
+이 구조는 downstream 사용자가 호출하는 공개 crate 경계를 검증합니다.
 
-## Exception
+## 예외
 
-Private implementation details can keep source-local tests. The shared
-`base_n` converter remains crate-private, so its algorithm tests stay in
-`crates/codec/src/base_n.rs`.
+비공개 구현 세부 사항은 source-local test로 유지할 수 있습니다. 공유
+`base_n` converter는 crate 비공개이므로 해당 알고리즘 테스트는
+`crates/codec/src/base_n.rs`에 둡니다.
 
-## Rejected
+## 기각한 대안
 
-Moving every workspace test at once would create unrelated churn across crates.
-For #57, the scope is the codec milestone test layout.
+모든 workspace test를 한 번에 옮기면 crate 전반에 무관한 변경이 발생합니다.
+#57의 범위는 코덱 milestone의 테스트 배치로 한정합니다.
