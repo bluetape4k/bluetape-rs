@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="490" viewBox="0 0 1100 490" role="img" aria-label="bluetape-rs-async">
 <defs>
   <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1f2937" flood-opacity="0.10"/></filter>
-  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#758297"/></marker>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse" viewBox="0 0 8 8" data-role="secondary" data-tip-direction="positive-x"><path d="M 1 1 L 7 4 L 1 7 Z" fill="#758297" stroke-dasharray="none"/></marker>
   <style>
     .canvas{fill:#f7f9fc}.frame{fill:#fff;stroke:#d8e0ea;stroke-width:1.5}.body{fill:#fbfcff;stroke:#e5eaf1;stroke-width:1.2}.footer{fill:#f8fafc;stroke:#d8e0ea;stroke-width:1.2}
     .title{font-family:"Architects Daughter","Comic Sans MS",cursive;font-size:38px;font-weight:400;fill:#102033}
