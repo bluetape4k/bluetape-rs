@@ -1,30 +1,30 @@
-# Changelog
+# 변경 기록
 
-All notable changes to this project are documented in this file.
+이 프로젝트의 주요 변경 사항을 이 파일에 기록합니다.
 
-## Unreleased
+## 미공개
 
-No unreleased changes yet.
+아직 미공개 변경 사항은 없습니다.
 
 ## [v0.4.0] - 2026-06-11
 
-### Added
+### 추가
 
-- Added the opt-in `bluetape-rs-compression` crate with gzip, zlib, deflate,
-  zstd, lz4, and snappy compressors behind additive feature flags.
-- Added the optional root crate `compression` facade feature for callers that
-  want compression helpers through `bluetape-rs`.
-- Added same-condition benchmark fixture generation, raw Go capture, and a
-  reproducible Rust benchmark runner for comparing `bluetape-rs`,
-  `bluetape-go`, and `bluetape4k-io` compressors across JSON, text, binary,
-  and random payloads.
-- Added benchmark CSVs, a Markdown comparison report, and chart assets under
-  `docs/benchmark` and `docs/images/readme-charts`.
-- Added config-aware decompression limits, a 64 MiB default decode safety
-  limit, `Read`/`Write` stream copy helpers, and direct stream reader/writer
-  constructors to `bluetape-rs-compression`.
+- 추가 기능 플래그 뒤에서 gzip, zlib, deflate, zstd, lz4, snappy 압축기를
+  제공하는 선택형 `bluetape-rs-compression` crate를 추가했습니다.
+- `bluetape-rs`를 통해 압축 헬퍼를 사용하려는 호출자를 위해 선택형 루트
+  crate `compression` facade feature를 추가했습니다.
+- 동일 조건의 benchmark fixture 생성, Go raw capture, 그리고 JSON, text,
+  binary, random payload에서 `bluetape-rs`, `bluetape-go`,
+  `bluetape4k-io` 압축기를 비교하는 재현 가능한 Rust benchmark runner를
+  추가했습니다.
+- `docs/benchmark`와 `docs/images/readme-charts` 아래에 benchmark CSV,
+  Markdown 비교 보고서, chart asset을 추가했습니다.
+- 설정을 인식하는 decompression limit, 64 MiB 기본 decode safety limit,
+  `Read`/`Write` stream copy helper, `bluetape-rs-compression`용 직접
+  stream reader/writer constructor를 추가했습니다.
 
-### Validation
+### 검증
 
 - `cargo metadata --no-deps --format-version 1`
 - `cargo fmt --all --check`
@@ -35,12 +35,12 @@ No unreleased changes yet.
 
 ## [v0.3.1] - 2026-06-10
 
-### Changed
+### 변경
 
-- Corrected the `0.3.0` milestone release by aligning every workspace package
-  to `0.3.1`.
-- Published the root facade and all focused crates under one workspace release
-  version:
+- `0.3.0` 마일스톤 릴리스에서 모든 workspace package를 `0.3.1`로
+  맞추어 정정했습니다.
+- 루트 facade와 모든 집중형 crate를 하나의 workspace release version으로
+  배포했습니다.
   - `bluetape-rs`
   - `bluetape-rs-core`
   - `bluetape-rs-logging`
@@ -48,16 +48,16 @@ No unreleased changes yet.
   - `bluetape-rs-collections`
   - `bluetape-rs-async`
   - `bluetape-rs-codec`
-- Updated README installation examples so downstream users can depend on the
-  workspace crates with a consistent `0.3.1` version.
+- downstream 사용자가 일관된 `0.3.1` version으로 workspace crate에
+  의존할 수 있도록 README 설치 예제를 업데이트했습니다.
 
-### Release Correction
+### 릴리스 정정
 
-- `v0.3.0` remains immutable because `bluetape-rs-codec@0.3.0` was already
-  published to crates.io.
-- Use `v0.3.1` for the complete `0.3.x` workspace release.
+- `bluetape-rs-codec@0.3.0`이 이미 crates.io에 배포되었으므로
+  `v0.3.0`은 변경하지 않습니다.
+- 완전한 `0.3.x` workspace release에는 `v0.3.1`을 사용합니다.
 
-### Validation
+### 검증
 
 - `cargo fmt --all --check`
 - `git diff --check`
@@ -68,28 +68,29 @@ No unreleased changes yet.
 
 ## [v0.3.0] - 2026-06-10
 
-Superseded by `v0.3.1` for the complete workspace release.
+완전한 workspace release에서는 `v0.3.1`이 이를 대체합니다.
 
-### Added
+### 추가
 
-- Added `bluetape-rs-codec` `0.3.0` with strict hex, Base64 standard,
-  Base64 URL-safe, Bitcoin Base58, byte-oriented Base62, and UTF-8 text
-  boundary helpers.
-- Added the optional root crate `codec` facade feature for callers that want
-  codec helpers through `bluetape-rs`.
-- Added typed decode errors for caller-owned invalid input, including
-  position-aware hex and base-N failures and non-lossy UTF-8 text failures.
-- Added public crate-boundary integration tests for hex, Base64, Base58,
-  Base62, and UTF-8 text helpers.
+- strict hex, Base64 standard, Base64 URL-safe, Bitcoin Base58, byte-oriented
+  Base62, UTF-8 text boundary helper를 제공하는 `bluetape-rs-codec`
+  `0.3.0`을 추가했습니다.
+- `bluetape-rs`를 통해 codec helper를 사용하려는 호출자를 위해 선택형
+  루트 crate `codec` facade feature를 추가했습니다.
+- 호출자가 소유한 잘못된 입력에 대해 위치 정보가 포함된 hex와 base-N
+  실패, 손실 없는 UTF-8 text 실패를 포함하는 typed decode error를
+  추가했습니다.
+- hex, Base64, Base58, Base62, UTF-8 text helper를 대상으로 public
+  crate-boundary integration test를 추가했습니다.
 
-### Changed
+### 변경
 
-- Separated public codec tests under `crates/codec/tests/` while keeping
-  source-local tests for the private shared base-N implementation.
-- Confirmed compression remains deferred to `0.4.0` and serde-oriented
-  serialization remains deferred to `0.5.0`.
+- private shared base-N 구현의 source-local test는 유지하면서 public codec
+  test를 `crates/codec/tests/` 아래로 분리했습니다.
+- compression은 `0.4.0`, serde 기반 serialization은 `0.5.0`으로
+  계속 연기됨을 확인했습니다.
 
-### Validation
+### 검증
 
 - `cargo fmt --all --check`
 - `git diff --check`
@@ -102,25 +103,27 @@ Superseded by `v0.3.1` for the complete workspace release.
 
 ## [v0.2.0] - 2026-06-10
 
-### Added
+### 추가
 
-- Added `bluetape-rs-collections` `0.2.0` with focused iterator, slice,
-  map, pagination, grouping, chunking, and error-aware transform helpers.
-- Added `bluetape-rs-async` `0.2.0` with Tokio-first bounded task execution,
-  cancellation, timeout, deadline, and shutdown coordination helpers.
-- Added deterministic async and concurrency tests for cancellation, dropped
-  futures, join failures, bounded execution, and collection helper boundaries.
-- Added README architecture diagrams and crate-level usage examples for the
-  current collections and async/concurrency release line.
+- 집중형 iterator, slice, map, pagination, grouping, chunking, error-aware
+  transform helper를 제공하는 `bluetape-rs-collections` `0.2.0`을
+  추가했습니다.
+- Tokio 우선 bounded task execution, cancellation, timeout, deadline,
+  shutdown coordination helper를 제공하는 `bluetape-rs-async` `0.2.0`을
+  추가했습니다.
+- cancellation, dropped future, join failure, bounded execution, collection
+  helper 경계를 검증하는 결정적 async 및 concurrency test를 추가했습니다.
+- 현재 collections 및 async/concurrency release train을 위한 README
+  architecture diagram과 crate-level usage example을 추가했습니다.
 
-### Changed
+### 변경
 
-- Split implementation modules away from large `lib.rs` files so future crate
-  work follows Rust module conventions from the start.
-- Hardened CI with pull-request checks, coverage reporting, clippy, rustdoc,
-  and nightly workflow coverage.
+- 향후 crate 작업이 처음부터 Rust module convention을 따르도록 큰
+  `lib.rs` 파일에서 implementation module을 분리했습니다.
+- pull-request check, coverage reporting, clippy, rustdoc, nightly workflow
+  coverage를 추가하여 CI를 강화했습니다.
 
-### Validation
+### 검증
 
 - `cargo fmt --all --check`
 - `git diff --check`
@@ -132,16 +135,17 @@ Superseded by `v0.3.1` for the complete workspace release.
 
 ## [v0.1.1] - 2026-06-10
 
-### Changed
+### 변경
 
-- Enriched Rustdoc for foundation public APIs across `bluetape-rs-core`,
-  `bluetape-rs-logging`, and `bluetape-rs-test`.
-- Added compile-checked examples and explicit error contracts for validation,
-  logging, async assertion, concurrency, and temporary directory helpers.
-- Documented repository-local Rust ecosystem convention guidance for future
-  contributors and agents.
+- `bluetape-rs-core`, `bluetape-rs-logging`, `bluetape-rs-test`의 기반
+  public API Rustdoc을 보강했습니다.
+- validation, logging, async assertion, concurrency, temporary directory
+  helper에 대해 compile-checked example과 명시적 error contract를
+  추가했습니다.
+- 향후 contributor와 agent를 위한 repository-local Rust ecosystem
+  convention 지침을 문서화했습니다.
 
-### Validation
+### 검증
 
 - `cargo fmt --all --check`
 - `cargo test --workspace`
